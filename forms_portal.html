@@ -361,11 +361,11 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
         </div>
       </div>
       <div class="pp-tabs">
-        <div class="pp-tab active" onclick=\"showPolicy('finance','general',this)\">📋 General Rules</div>
-        <div class="pp-tab" onclick=\"showPolicy('finance','travel',this)\">✈️ Travel &amp; Per Diem</div>
-        <div class="pp-tab" onclick=\"showPolicy('finance','accommodation',this)\" style="display:none;">🏠 Accommodation</div>
-        <div class="pp-tab" onclick=\"showPolicy('finance','expense',this)\">🧾 Expense Claims</div>
-        <div class="pp-tab" onclick=\"showPolicy('finance','payment',this)\">💳 Payment Process</div>
+        <div class="pp-tab active" onclick="showPolicy('finance','general',this)">📋 General Rules</div>
+        <div class="pp-tab" onclick="showPolicy('finance','travel',this)">✈️ Travel &amp; Per Diem</div>
+        <div class="pp-tab" onclick="showPolicy('finance','accommodation',this)" style="display:none;">🏠 Accommodation</div>
+        <div class="pp-tab" onclick="showPolicy('finance','expense',this)">🧾 Expense Claims</div>
+        <div class="pp-tab" onclick="showPolicy('finance','payment',this)">💳 Payment Process</div>
       </div>
       <div class="pp-body">
 
@@ -591,7 +591,7 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
       </div>
     </div>
 
-    <div class="policy-panel" id="policy-panel-hr" style="display:none;">
+    <div class="policy-panel" id="policy-panel-hr">
       <div class="pp-header">
         <div class="pp-header-ico">📜</div>
         <div>
@@ -600,9 +600,9 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
         </div>
       </div>
       <div class="pp-tabs">
-        <div class="pp-tab active" onclick=\"showPolicy('hr','leave',this)\">🏖 Leave Policy</div>
-        <div class="pp-tab" onclick=\"showPolicy('hr','wfh',this)\">🏠 WFH Policy</div>
-        <div class="pp-tab" onclick=\"showPolicy('hr','conduct',this)\">📋 General Conduct</div>
+        <div class="pp-tab active" onclick="showPolicy('hr','leave',this)">🏖 Leave Policy</div>
+        <div class="pp-tab" onclick="showPolicy('hr','wfh',this)">🏠 WFH Policy</div>
+        <div class="pp-tab" onclick="showPolicy('hr','conduct',this)">📋 General Conduct</div>
       </div>
       <div class="pp-body">
         <div class="pp-section active" id="pol-hr-leave">
@@ -662,7 +662,7 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
       </div>
     </div>
 
-    <div class="policy-panel" id="policy-panel-admin" style="display:none;">
+    <div class="policy-panel" id="policy-panel-admin">
       <div class="pp-header">
         <div class="pp-header-ico">📜</div>
         <div>
@@ -671,8 +671,8 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
         </div>
       </div>
       <div class="pp-tabs">
-        <div class="pp-tab active" onclick=\"showPolicy('admin','assets',this)\">💻 Asset Management</div>
-        <div class="pp-tab" onclick=\"showPolicy('admin','office',this)\">🏢 Office Rules</div>
+        <div class="pp-tab active" onclick="showPolicy('admin','assets',this)">💻 Asset Management</div>
+        <div class="pp-tab" onclick="showPolicy('admin','office',this)">🏢 Office Rules</div>
       </div>
       <div class="pp-body">
         <div class="pp-section active" id="pol-admin-assets">
@@ -722,7 +722,8 @@ function togglePolicy(id){
 // ── Policy tabs ────────────────────────────────────────────────
 function showPolicy(dept, tab, clickedEl){
   document.querySelectorAll('[id^="pol-' + dept + '-"]').forEach(function(s){ s.classList.remove('active'); });
-  document.querySelectorAll('.pp-tab[onclick*="'' + dept + ''"]').forEach(function(t){ t.classList.remove('active'); });
+  var panel = document.getElementById('policy-panel-' + dept);
+  if(panel) panel.querySelectorAll('.pp-tab').forEach(function(t){ t.classList.remove('active'); });
   var target = document.getElementById('pol-' + dept + '-' + tab);
   if(target) target.classList.add('active');
   if(clickedEl) clickedEl.classList.add('active');
