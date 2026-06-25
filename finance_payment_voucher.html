@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment Voucher – Envisage Finance</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#daeaf8 0%,#eaf4fb 100%);padding:20px;color:#1a2744;min-height:100vh;}
+
+.page{background:#fff;max-width:940px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+
+input[type="text"],input[type="number"],input[type="date"],input[type="email"],input[type="tel"],select,textarea{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #3a7bd5;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input[type="text"]:focus,input[type="number"]:focus,input[type="date"]:focus,
+input[type="email"]:focus,input[type="tel"]:focus,select:focus,textarea:focus{
+  border-bottom-color:#00b8a9;background:rgba(0,184,169,.05);
+}
+input[type="number"]{text-align:right;}
+input.invalid,select.invalid{border-bottom-color:#e74c3c!important;background:rgba(231,76,60,.05);}
+input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-color:#1a2744;}
+input[readonly]{background:#f0f4f8;color:#555;cursor:default;}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:2px solid #e0eaf4;}
+.header-logo{width:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.header-logo svg{width:72px;height:72px;}
+.header-center{flex:1;padding:0 12px;}
+.header-center h1{font-size:22px;font-weight:800;color:#1a2744;line-height:1.1;letter-spacing:.4px;}
+.header-center .sub{font-size:11px;color:#444;font-weight:600;margin-top:4px;line-height:1.6;}
+.header-right{width:210px;flex-shrink:0;border:2px solid #c5d8ec;border-radius:8px;padding:10px 12px;font-size:12px;}
+.pr-box-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-weight:700;}
+.pr-box-row .lbl{white-space:nowrap;}
+.pr-box-row input,.pr-box-row select{flex:1;min-width:0;}
+
+/* SECTION HEADERS */
+.sec-hdr{background:#1a2744;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:#00b8a9;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+/* SECTIONS */
+.section{padding:14px 20px;border-bottom:1px solid #e0eaf4;}
+.frow{display:flex;align-items:flex-end;gap:6px;margin-bottom:10px;font-size:12px;font-weight:700;}
+.frow label{white-space:nowrap;font-weight:700;color:#1a2744;}
+.frow input,.frow select,.frow textarea{flex:1;min-width:40px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
+.four-col{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0 16px;}
+
+/* ITEMS TABLE */
+.items-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;margin-bottom:10px;}
+.items-table th{background:#1a2744;color:#fff;padding:8px 6px;text-align:center;font-weight:700;font-size:11px;}
+.items-table th:nth-child(1){width:32px;}
+.items-table th:nth-child(2){width:auto;}
+.items-table th:nth-child(3){width:120px;}
+.items-table th:nth-child(4){width:98px;}
+.items-table th:nth-child(5){width:110px;}
+.items-table th:nth-child(6){width:32px;}
+.items-table td{padding:4px 6px;border-bottom:1px solid #e0eaf4;vertical-align:middle;height:36px;}
+.items-table td:first-child,.items-table td:last-child{text-align:center;}
+.items-table td:nth-child(5){text-align:right;}
+.items-table td input,.items-table td select{width:100%;min-width:0;}
+.items-table td input[type="number"]{text-align:right;}
+.del-btn{background:none;border:none;cursor:pointer;color:#e74c3c;font-size:15px;padding:2px 4px;}
+.del-btn:hover{color:#c0392b;}
+.add-row-btn{background:#f0f6fc;border:1.5px dashed #3a7bd5;color:#1a2744;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;padding:7px 18px;border-radius:6px;cursor:pointer;transition:all .2s;}
+.add-row-btn:hover{background:#daeaf8;border-color:#1a2744;}
+
+/* TOTALS PANEL */
+.totals-panel{background:#f7fbff;border:1.5px solid #c5d8ec;border-radius:8px;padding:14px 18px;min-width:280px;}
+.tot-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;margin-bottom:8px;}
+.tot-row .tot-lbl{color:#555;}
+.tot-row .tot-val{color:#1a2744;min-width:110px;text-align:right;}
+.tot-row.vat-row,.tot-row.wht-row{background:#fff8e1;border-radius:6px;padding:4px 8px;margin-bottom:6px;}
+.tot-divider{border:none;border-top:2px solid #1a2744;margin:8px 0;}
+.tot-net{display:flex;justify-content:space-between;align-items:center;}
+.tot-net .lbl{font-size:13px;font-weight:800;color:#1a2744;}
+.tot-net .val{font-size:20px;font-weight:800;color:#e74c3c;}
+
+/* VAT / WHT TOGGLES */
+.tax-toggle{display:flex;gap:20px;margin-bottom:10px;}
+.tax-opt{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.tax-opt input{width:14px;height:14px;}
+.tax-fields{border:1.5px solid #ffc107;border-radius:8px;padding:10px 14px;background:#fff8e1;margin-bottom:10px;}
+
+/* PAYMENT METHOD */
+.pay-method{display:flex;gap:20px;align-items:center;}
+.pay-opt{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;}
+.pay-opt input{width:14px;height:14px;accent-color:#1a2744;}
+
+/* BANK BOX */
+.bank-box{background:#f0f6fc;border:1.5px solid #c5d8ec;border-radius:8px;padding:12px 16px;margin-top:10px;}
+.bank-title{font-size:11px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px;}
+
+/* AMOUNT HIGHLIGHT */
+.amount-highlight{background:linear-gradient(135deg,#1a2744 0%,#2a3d6e 100%);border-radius:10px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.amount-highlight .lbl{color:rgba(255,255,255,.8);font-size:13px;font-weight:700;}
+.amount-highlight .val{color:#00b8a9;font-size:24px;font-weight:800;}
+.amount-highlight .currency{color:rgba(255,255,255,.6);font-size:13px;margin-left:6px;}
+
+/* APPROVAL TABLE */
+.appr-section{padding:0;border-bottom:1px solid #e0eaf4;}
+.appr-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.appr-table th{background:#f0f6fc;color:#1a2744;padding:7px 10px;font-weight:700;text-align:center;border:1px solid #c5d8ec;font-size:11px;}
+.appr-table th:nth-child(1){width:26%;}
+.appr-table th:nth-child(2){width:22%;}
+.appr-table th:nth-child(3){width:22%;}
+.appr-table th:nth-child(4){width:18%;}
+.appr-table th:nth-child(5){width:12%;}
+.appr-table td{padding:5px 8px;border:1px solid #e0eaf4;vertical-align:middle;height:32px;}
+.appr-table td input{width:100%;min-width:0;font-size:12px;}
+.role-cell{display:flex;align-items:center;gap:7px;white-space:normal;}
+.ava{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:#fff;}
+.ava-b{background:#3a7bd5;}.ava-g{background:#27ae60;}.ava-p{background:#8e44ad;}
+.ava-t{background:#00b8a9;}.ava-r{background:#e74c3c;}
+.badge{display:inline-block;padding:3px 10px;border-radius:10px;font-size:10px;font-weight:700;}
+.badge-submitted{background:#e8f8f0;color:#27ae60;}
+.badge-pending{background:#f0f4f8;color:#888;}
+
+/* DOCS / NOTES */
+.info-bar{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #e0eaf4;}
+.docs-box{padding:14px 20px;border-right:1px solid #e0eaf4;}
+.notes-box{padding:14px 20px;}
+.docs-title{font-size:12px;font-weight:800;color:#1a2744;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;}
+.checklist-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#333;line-height:1.4;margin-bottom:7px;}
+.note-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11px;color:#333;line-height:1.4;}
+.note-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;}
+.nd-red{background:#fde8e8;color:#e74c3c;border:1.5px solid #e74c3c;}
+.nd-ora{background:#fff3e0;color:#e67e22;border:1.5px solid #e67e22;}
+.nd-yel{background:#fff8e1;color:#f39c12;border:1.5px solid #f39c12;}
+.nd-grn{background:#e8f8f0;color:#27ae60;border:1.5px solid #27ae60;}
+
+/* FOOTER */
+.footer-banner{background:#1a2744;color:#fff;text-align:center;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.footer-banner .shield{width:34px;height:34px;background:#00b8a9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.footer-banner .main-txt{font-size:14px;font-weight:800;letter-spacing:.5px;}
+.footer-banner .sub-txt{font-size:10px;opacity:.85;margin-top:2px;}
+.footer-note{background:#fff;text-align:center;font-size:12px;padding:9px;color:#333;}
+
+/* ACTION BAR */
+.action-bar{display:flex;justify-content:center;gap:14px;padding:14px 20px;background:#f7fbff;border-top:2px solid #e0eaf4;flex-wrap:wrap;}
+.btn{padding:10px 26px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:#1a2744;color:#fff;}
+.btn-primary:hover{background:#243660;transform:translateY(-1px);box-shadow:0 3px 10px rgba(26,39,68,.3);}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #1a2744;}
+.btn-outline:hover{background:#f0f6fc;}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:30px 34px;max-width:460px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.modal h2{font-size:20px;font-weight:800;color:#1a2744;margin-bottom:10px;}
+.modal p{font-size:13px;color:#555;line-height:1.6;margin-bottom:6px;}
+.modal .pv-id{font-size:22px;font-weight:800;color:#00b8a9;margin:12px 0;}
+.modal .close-btn{margin-top:18px;background:#1a2744;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
+
+.val-msg{display:none;background:#fff3cd;border:1px solid #ffc107;color:#856404;font-size:12px;padding:10px 16px;margin:0 20px 10px;border-radius:6px;font-weight:600;}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.connection-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
+.connection-dot.ok{background:#27ae60;}.connection-dot.err{background:#e74c3c;}
+.cfo-row{display:none;}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;border-radius:0;}
+  .action-bar,.back-link-wrap{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="back-link-wrap" style="max-width:940px;margin:0 auto;padding:14px 20px 0;">
+  <a href="../forms_portal.html" style="display:inline-flex;align-items:center;gap:6px;color:#1a2744;font-size:13px;font-weight:700;text-decoration:none;padding:6px 14px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.12);font-family:'Sarabun',sans-serif;">← Back to Portal</a>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="overlay" id="success_overlay">
+  <div class="modal">
+    <div style="font-size:46px;margin-bottom:8px;">✅</div>
+    <h2>Payment Request Submitted!</h2>
+    <p>Your payment voucher has been submitted for approval.<br>The manager has been notified by email.</p>
+    <div class="pv-id" id="modal_pv_id">PVCH-XXXXXX</div>
+    <p style="font-size:11px;color:#888;">Please attach original supporting documents to Finance.</p>
+    <button class="close-btn" onclick="closeModal()">OK – New Request</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <rect x="6" y="10" width="52" height="60" rx="5" fill="#e8f0fa" stroke="#1a2744" stroke-width="2"/>
+        <rect x="14" y="22" width="36" height="3" rx="1.5" fill="#1a2744" opacity=".25"/>
+        <rect x="14" y="30" width="26" height="3" rx="1.5" fill="#1a2744" opacity=".2"/>
+        <rect x="14" y="38" width="30" height="3" rx="1.5" fill="#1a2744" opacity=".15"/>
+        <circle cx="60" cy="58" r="16" fill="#1a2744"/>
+        <circle cx="60" cy="58" r="11" fill="none" stroke="#00b8a9" stroke-width="2.5"/>
+        <text x="60" y="63" text-anchor="middle" font-size="13" fill="#00b8a9" font-weight="bold" font-family="Arial">฿</text>
+        <polyline points="52,30 56,26 60,30 68,22" stroke="#27ae60" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="header-center">
+      <h1>PAYMENT VOUCHER / PAYMENT REQUEST</h1>
+      <div class="sub">
+        Finance Department &nbsp;·&nbsp; Envisage Worldwide Co., Ltd.<br>
+        <span id="connection_status"><span class="connection-dot ok"></span>Connected to Finance Sheet</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="pr-box-row">
+        <span class="lbl">PV No.</span>
+        <input type="text" id="pv_no" readonly style="background:#f0f4f8;color:#555;font-weight:700;font-size:11px;">
+      </div>
+      <div class="pr-box-row">
+        <span class="lbl">Date</span>
+        <input type="date" id="pv_date">
+      </div>
+      <div class="pr-box-row">
+        <span class="lbl">Dept.</span>
+        <select id="dept">
+          <option value="">— Select —</option>
+          <option>Management</option>
+          <option>Finance &amp; Accounting</option>
+          <option>HR &amp; Admin</option>
+          <option>Operations</option>
+          <option>Sales &amp; Marketing</option>
+          <option>IT</option>
+          <option>Project</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1. PAYEE INFORMATION -->
+  <div class="sec-hdr"><span class="ico">🏢</span> 1. Payee / Vendor Information</div>
+  <div class="section">
+    <div class="frow">
+      <label style="min-width:120px;">Payee / Vendor Name <span style="color:#e74c3c;">*</span></label>
+      <input type="text" id="payee_name" placeholder="Full legal name of payee or vendor">
+    </div>
+    <div class="two-col">
+      <div class="frow">
+        <label style="min-width:60px;">Tax ID</label>
+        <input type="text" id="tax_id" placeholder="0000000000000">
+      </div>
+      <div class="frow">
+        <label style="min-width:80px;">Contact / Tel</label>
+        <input type="text" id="payee_contact" placeholder="Phone or email">
+      </div>
+    </div>
+    <div class="frow">
+      <label style="min-width:120px;">Address</label>
+      <textarea id="payee_address" rows="2" placeholder="Billing address (optional)"></textarea>
+    </div>
+  </div>
+
+  <!-- 2. BANK / PAYMENT METHOD -->
+  <div class="sec-hdr"><span class="ico">🏦</span> 2. Payment Method &amp; Bank Details</div>
+  <div class="section">
+    <div class="frow" style="margin-bottom:14px;">
+      <label style="min-width:130px;">Payment Method <span style="color:#e74c3c;">*</span></label>
+      <div class="pay-method">
+        <label class="pay-opt"><input type="radio" name="pay_method" value="Bank Transfer" onchange="toggleBank(this)" checked> Bank Transfer</label>
+        <label class="pay-opt"><input type="radio" name="pay_method" value="Cash" onchange="toggleBank(this)"> Cash</label>
+        <label class="pay-opt"><input type="radio" name="pay_method" value="Cheque" onchange="toggleBank(this)"> Cheque</label>
+        <label class="pay-opt"><input type="radio" name="pay_method" value="Other" onchange="toggleBank(this)"> Other</label>
+      </div>
+    </div>
+
+    <div class="bank-box" id="bank_box">
+      <div class="bank-title">🏦 Bank Account Details</div>
+      <div class="two-col">
+        <div class="frow">
+          <label style="min-width:100px;">Bank Name <span style="color:#e74c3c;">*</span></label>
+          <input type="text" id="bank_name" placeholder="e.g. Kasikorn Bank (KBank)">
+        </div>
+        <div class="frow">
+          <label style="min-width:80px;">Branch</label>
+          <input type="text" id="bank_branch" placeholder="Branch name">
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="frow">
+          <label style="min-width:100px;">Account Name <span style="color:#e74c3c;">*</span></label>
+          <input type="text" id="acct_name" placeholder="Account holder name">
+        </div>
+        <div class="frow">
+          <label style="min-width:100px;">Account No. <span style="color:#e74c3c;">*</span></label>
+          <input type="text" id="acct_no" placeholder="000-0-00000-0">
+        </div>
+      </div>
+      <div class="frow">
+        <label style="min-width:130px;">Pay by Date</label>
+        <input type="date" id="pay_by_date" style="max-width:180px;">
+        <span style="font-size:11px;color:#888;margin-left:10px;white-space:nowrap;">Requested payment date</span>
+      </div>
+    </div>
+
+    <div id="cash_box" style="display:none;">
+      <div class="frow" style="margin-top:10px;">
+        <label style="min-width:130px;">Pay by Date</label>
+        <input type="date" id="pay_by_date_cash" style="max-width:180px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. PAYMENT DETAILS -->
+  <div class="sec-hdr"><span class="ico">📋</span> 3. Payment Details</div>
+  <div class="section">
+    <div class="frow">
+      <label style="min-width:120px;">Payment For <span style="color:#e74c3c;">*</span></label>
+      <input type="text" id="payment_for" placeholder="Brief purpose of this payment">
+    </div>
+
+    <table class="items-table" id="items_table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th style="text-align:left;padding-left:8px;">Description</th>
+          <th>Invoice No.</th>
+          <th>Invoice Date</th>
+          <th>Amount (THB)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="items_body">
+        <!-- rows injected by JS -->
+      </tbody>
+    </table>
+    <button class="add-row-btn" onclick="addItemRow()">+ Add Item</button>
+
+    <!-- TOTALS PANEL -->
+    <div style="display:flex;justify-content:flex-end;margin-top:14px;">
+      <div class="totals-panel">
+
+        <div class="tot-row">
+          <span class="tot-lbl">Subtotal</span>
+          <span class="tot-val" id="display_subtotal">0.00 THB</span>
+        </div>
+
+        <!-- VAT Toggle -->
+        <div style="margin-bottom:6px;">
+          <label class="tax-opt" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:6px;">
+            <input type="checkbox" id="vat_toggle" onchange="recalc()" style="width:14px;height:14px;"> Include VAT 7%
+          </label>
+          <div class="tot-row vat-row" id="vat_row" style="display:none;">
+            <span class="tot-lbl">VAT 7%</span>
+            <span class="tot-val" id="display_vat">0.00 THB</span>
+          </div>
+        </div>
+
+        <!-- WHT Toggle -->
+        <div style="margin-bottom:8px;">
+          <label class="tax-opt" style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;margin-bottom:6px;">
+            <input type="checkbox" id="wht_toggle" onchange="toggleWHT()" style="width:14px;height:14px;"> Withholding Tax (WHT)
+          </label>
+          <div id="wht_box" style="display:none;margin-bottom:6px;">
+            <div class="frow" style="margin-bottom:0;">
+              <label style="min-width:50px;font-size:11px;">WHT Rate</label>
+              <select id="wht_rate" onchange="recalc()" style="max-width:140px;">
+                <option value="1">1%</option>
+                <option value="1.5">1.5%</option>
+                <option value="3" selected>3%</option>
+                <option value="5">5%</option>
+                <option value="10">10%</option>
+                <option value="15">15%</option>
+              </select>
+            </div>
+          </div>
+          <div class="tot-row wht-row" id="wht_row" style="display:none;">
+            <span class="tot-lbl">WHT (<span id="wht_rate_display">3</span>%)</span>
+            <span class="tot-val" id="display_wht" style="color:#27ae60;">- 0.00 THB</span>
+          </div>
+        </div>
+
+        <hr class="tot-divider">
+        <div class="tot-net">
+          <span class="lbl">Net Payment</span>
+          <span class="val" id="display_net">0.00 THB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. GL CODING -->
+  <div class="sec-hdr"><span class="ico">📂</span> 4. GL Coding</div>
+  <div class="section">
+    <div class="four-col">
+      <div class="frow">
+        <label>GL Account</label>
+        <input type="text" id="gl_account" placeholder="e.g. 5110">
+      </div>
+      <div class="frow">
+        <label>Cost Center</label>
+        <input type="text" id="cost_center" placeholder="e.g. CC-001">
+      </div>
+      <div class="frow">
+        <label>Project Code</label>
+        <input type="text" id="project_code" placeholder="e.g. PRJ-2026">
+      </div>
+      <div class="frow">
+        <label>Reference</label>
+        <input type="text" id="reference" placeholder="PO / Contract No.">
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. SUPPORTING DOCUMENTS & NOTES -->
+  <div class="info-bar">
+    <div class="docs-box">
+      <div class="docs-title">📎 Supporting Documents Attached</div>
+      <label class="checklist-item"><input type="checkbox" id="doc_invoice"> &nbsp;Original Invoice / Tax Invoice</label>
+      <label class="checklist-item"><input type="checkbox" id="doc_receipt"> &nbsp;Receipt</label>
+      <label class="checklist-item"><input type="checkbox" id="doc_do"> &nbsp;Delivery Note / DO</label>
+      <label class="checklist-item"><input type="checkbox" id="doc_po"> &nbsp;Purchase Order</label>
+      <label class="checklist-item"><input type="checkbox" id="doc_contract"> &nbsp;Contract / Agreement</label>
+      <label class="checklist-item"><input type="checkbox" id="doc_wht"> &nbsp;Withholding Tax Certificate (Por Ngor Dor 3/53)</label>
+      <div class="frow" style="margin-top:6px;">
+        <label style="min-width:50px;font-size:11px;">Other</label>
+        <input type="text" id="doc_other" placeholder="Describe other documents…" style="font-size:11px;">
+      </div>
+    </div>
+    <div class="notes-box">
+      <div class="docs-title">⚠️ Important Notes</div>
+      <div class="note-item"><div class="note-dot nd-red">!</div><span>Submit original invoice — photocopies will not be accepted.</span></div>
+      <div class="note-item"><div class="note-dot nd-ora">!</div><span>Payment processed within <strong>3–5 business days</strong> after full approval.</span></div>
+      <div class="note-item"><div class="note-dot nd-yel">i</div><span>WHT certificate issued by Finance upon payment.</span></div>
+      <div class="note-item"><div class="note-dot nd-grn">✓</div><span>Amounts ≥ 10,000 THB require CFO approval.</span></div>
+      <div class="frow" style="margin-top:10px;">
+        <label style="min-width:50px;font-size:11px;">Remarks</label>
+        <textarea id="remarks" rows="2" placeholder="Any additional notes…" style="font-size:11px;"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. APPROVAL TABLE -->
+  <div class="appr-section">
+    <div class="sec-hdr"><span class="ico">✅</span> 6. Approval</div>
+    <table class="appr-table">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Name</th>
+          <th>Signature / Date</th>
+          <th>Decision</th>
+          <th>Required?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="role-cell"><span class="ava ava-b">R</span> Requested by</div></td>
+          <td><input type="text" id="req_name" placeholder="Your name"></td>
+          <td><input type="date" id="req_date"></td>
+          <td><span class="badge badge-submitted">✔ Submitted</span></td>
+          <td style="text-align:center;font-size:11px;color:#27ae60;">Always</td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><span class="ava ava-t">F</span> Checked by Finance</div></td>
+          <td><input type="text" placeholder="Finance officer" readonly style="background:#f7fbff;color:#999;"></td>
+          <td><input type="date" readonly style="background:#f7fbff;color:#999;"></td>
+          <td><span class="badge badge-pending">⏳ Pending</span></td>
+          <td style="text-align:center;font-size:11px;color:#888;">Always</td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><span class="ava ava-g">M</span> Approved by Manager</div></td>
+          <td><input type="text" placeholder="Manager" readonly style="background:#f7fbff;color:#999;"></td>
+          <td><input type="date" readonly style="background:#f7fbff;color:#999;"></td>
+          <td><span class="badge badge-pending">⏳ Pending</span></td>
+          <td style="text-align:center;font-size:11px;color:#888;">Always</td>
+        </tr>
+        <tr class="cfo-row" id="cfo_row">
+          <td><div class="role-cell"><span class="ava ava-p">C</span> CFO</div></td>
+          <td><input type="text" placeholder="CFO" readonly style="background:#fff8e1;color:#999;"></td>
+          <td><input type="date" readonly style="background:#fff8e1;color:#999;"></td>
+          <td><span class="badge badge-pending">⏳ Pending</span></td>
+          <td style="text-align:center;font-size:11px;color:#e67e22;">≥ 10,000 THB</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- VALIDATION MESSAGE -->
+  <div class="val-msg" id="val_msg"></div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
+    <button class="btn btn-outline" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn btn-primary" id="submit_btn" onclick="submitForm()">💳 Submit Payment Request</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-banner">
+    <div class="shield">💳</div>
+    <div>
+      <div class="main-txt">ENVISAGE WORLDWIDE CO., LTD. — FINANCE DEPARTMENT</div>
+      <div class="sub-txt">Confidential — For internal use only</div>
+    </div>
+  </div>
+  <div class="footer-note">
+    Retain a copy for your records &nbsp;|&nbsp; <strong>Original invoice required</strong> — submit to Finance with this form
+  </div>
+
+</div><!-- end .page -->
+
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
+var CC_EMAILS  = 'accounting@envisageworldwide.com, mallika@envisageworldwide.com';
+
+// ── Auto-generate PV number ───────────────────────────────────────
+(function(){
+  var now  = new Date();
+  var yy   = String(now.getFullYear()).slice(2);
+  var mm   = String(now.getMonth()+1).padStart(2,'0');
+  var dd   = String(now.getDate()).padStart(2,'0');
+  var rand = Math.floor(1000+Math.random()*9000);
+  document.getElementById('pv_no').value = 'PVCH-'+yy+mm+dd+'-'+rand;
+
+  var d = now.toISOString().split('T')[0];
+  document.getElementById('pv_date').value = d;
+  document.getElementById('req_date').value = d;
+})();
+
+// ── Item rows ─────────────────────────────────────────────────────
+var itemCount = 0;
+function addItemRow(desc, invNo, invDate, amt){
+  itemCount++;
+  var n = itemCount;
+  var tr = document.createElement('tr');
+  tr.id = 'irow_'+n;
+  tr.innerHTML =
+    '<td style="text-align:center;color:#888;font-size:11px;">'+n+'</td>'+
+    '<td><input type="text" id="idesc_'+n+'" placeholder="Description" value="'+(desc||'')+'"></td>'+
+    '<td><input type="text" id="iinv_'+n+'" placeholder="INV-XXXX" value="'+(invNo||'')+'"></td>'+
+    '<td><input type="date" id="idate_'+n+'" value="'+(invDate||'')+'"></td>'+
+    '<td><input type="number" id="iamt_'+n+'" placeholder="0.00" min="0" step="0.01" value="'+(amt||'')+'" oninput="recalc()"></td>'+
+    '<td><button class="del-btn" onclick="delItemRow('+n+')" title="Remove">✕</button></td>';
+  document.getElementById('items_body').appendChild(tr);
+}
+function delItemRow(n){
+  var el = document.getElementById('irow_'+n);
+  if(el) el.remove();
+  recalc();
+}
+
+// seed one empty row
+addItemRow();
+
+// ── Totals ────────────────────────────────────────────────────────
+function fmt(n){ return n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' THB'; }
+function recalc(){
+  var sub = 0;
+  document.querySelectorAll('[id^="iamt_"]').forEach(function(el){ sub += parseFloat(el.value)||0; });
+
+  var vat = document.getElementById('vat_toggle').checked ? sub*0.07 : 0;
+  var vatRow = document.getElementById('vat_row');
+  vatRow.style.display = vat > 0 ? 'flex' : 'none';
+
+  var whtRate = parseFloat(document.getElementById('wht_rate').value)||3;
+  var wht = document.getElementById('wht_toggle').checked ? sub*whtRate/100 : 0;
+  var whtRow = document.getElementById('wht_row');
+  whtRow.style.display = wht > 0 ? 'flex' : 'none';
+  document.getElementById('wht_rate_display').textContent = whtRate;
+
+  var net = sub + vat - wht;
+
+  document.getElementById('display_subtotal').textContent = fmt(sub);
+  document.getElementById('display_vat').textContent = fmt(vat);
+  document.getElementById('display_wht').textContent = '- '+fmt(wht);
+  document.getElementById('display_net').textContent = fmt(net);
+
+  // CFO row
+  document.getElementById('cfo_row').style.display = net >= 10000 ? '' : 'none';
+}
+
+function toggleWHT(){
+  var on = document.getElementById('wht_toggle').checked;
+  document.getElementById('wht_box').style.display = on ? 'block' : 'none';
+  recalc();
+}
+
+// ── Bank box toggle ───────────────────────────────────────────────
+function toggleBank(el){
+  var isBankTransfer = (el.value === 'Bank Transfer');
+  document.getElementById('bank_box').style.display = isBankTransfer ? 'block' : 'none';
+  document.getElementById('cash_box').style.display = isBankTransfer ? 'none' : 'block';
+}
+
+// ── Collect items ─────────────────────────────────────────────────
+function collectItems(){
+  var items = [];
+  document.querySelectorAll('[id^="irow_"]').forEach(function(row){
+    var n = row.id.replace('irow_','');
+    var desc = (document.getElementById('idesc_'+n)||{}).value||'';
+    var inv  = (document.getElementById('iinv_'+n) ||{}).value||'';
+    var dt   = (document.getElementById('idate_'+n)||{}).value||'';
+    var amt  = parseFloat((document.getElementById('iamt_'+n)||{}).value)||0;
+    if(desc||amt) items.push({desc:desc,inv:inv,date:dt,amount:amt});
+  });
+  return items;
+}
+
+// ── Validate ──────────────────────────────────────────────────────
+function validate(){
+  var miss=[];
+  if(!document.getElementById('payee_name').value.trim()) miss.push('Payee Name');
+  if(!document.getElementById('payment_for').value.trim()) miss.push('Payment For');
+  if(!document.getElementById('dept').value) miss.push('Department');
+  if(!document.getElementById('req_name').value.trim()) miss.push('Requested By (name)');
+
+  var payMethod = document.querySelector('input[name="pay_method"]:checked');
+  if(payMethod && payMethod.value === 'Bank Transfer'){
+    if(!document.getElementById('bank_name').value.trim()) miss.push('Bank Name');
+    if(!document.getElementById('acct_name').value.trim()) miss.push('Account Name');
+    if(!document.getElementById('acct_no').value.trim()) miss.push('Account Number');
+  }
+
+  var items = collectItems();
+  if(items.length === 0) miss.push('At least one payment item with amount');
+
+  var sub = 0;
+  items.forEach(function(i){sub+=i.amount;});
+  if(sub <= 0) miss.push('Total amount must be greater than 0');
+
+  ['payee_name','payment_for','req_name'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.toggle('invalid',!el.value.trim());
+  });
+  return miss;
+}
+
+// ── Submit ────────────────────────────────────────────────────────
+function submitForm(){
+  var miss = validate();
+  var vm = document.getElementById('val_msg');
+  if(miss.length > 0){
+    vm.style.display='block';
+    vm.innerHTML='⚠️ Please fill in: <strong>'+miss.join(', ')+'</strong>';
+    vm.scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
+  vm.style.display='none';
+
+  var items   = collectItems();
+  var sub     = items.reduce(function(a,i){return a+i.amount;},0);
+  var vat     = document.getElementById('vat_toggle').checked ? sub*0.07 : 0;
+  var whtRate = parseFloat(document.getElementById('wht_rate').value)||3;
+  var wht     = document.getElementById('wht_toggle').checked ? sub*whtRate/100 : 0;
+  var net     = sub + vat - wht;
+
+  var payMethod = document.querySelector('input[name="pay_method"]:checked');
+
+  // Collect docs
+  var docs = [];
+  ['invoice','receipt','do','po','contract','wht'].forEach(function(d){
+    if(document.getElementById('doc_'+d).checked) docs.push(d);
+  });
+  var docOther = document.getElementById('doc_other').value.trim();
+  if(docOther) docs.push(docOther);
+
+  var payload = {
+    action        : 'submit',
+    form_type     : 'Payment Voucher',
+    cc_emails     : CC_EMAILS,
+    pv_no         : document.getElementById('pv_no').value,
+    pv_date       : document.getElementById('pv_date').value,
+    dept          : document.getElementById('dept').value,
+    payee_name    : document.getElementById('payee_name').value.trim(),
+    tax_id        : document.getElementById('tax_id').value.trim(),
+    payee_contact : document.getElementById('payee_contact').value.trim(),
+    payee_address : document.getElementById('payee_address').value.trim(),
+    payment_method: (payMethod ? payMethod.value : 'Bank Transfer'),
+    bank_name     : document.getElementById('bank_name').value.trim(),
+    bank_branch   : document.getElementById('bank_branch').value.trim(),
+    acct_name     : document.getElementById('acct_name').value.trim(),
+    acct_no       : document.getElementById('acct_no').value.trim(),
+    pay_by_date   : document.getElementById('pay_by_date').value || document.getElementById('pay_by_date_cash').value,
+    payment_for   : document.getElementById('payment_for').value.trim(),
+    items         : JSON.stringify(items),
+    subtotal      : sub.toFixed(2),
+    vat_included  : document.getElementById('vat_toggle').checked ? 'Yes' : 'No',
+    vat_amount    : vat.toFixed(2),
+    wht_included  : document.getElementById('wht_toggle').checked ? 'Yes' : 'No',
+    wht_rate      : document.getElementById('wht_toggle').checked ? whtRate : 0,
+    wht_amount    : wht.toFixed(2),
+    total_amount  : net.toFixed(2),
+    gl_account    : document.getElementById('gl_account').value.trim(),
+    cost_center   : document.getElementById('cost_center').value.trim(),
+    project_code  : document.getElementById('project_code').value.trim(),
+    reference     : document.getElementById('reference').value.trim(),
+    documents     : docs.join(', '),
+    remarks       : document.getElementById('remarks').value.trim(),
+    cert_name     : document.getElementById('req_name').value.trim(),
+    cert_date     : document.getElementById('req_date').value
+  };
+
+  var btn = document.getElementById('submit_btn');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span> Submitting…';
+
+  var form = document.createElement('form');
+  form.method='POST'; form.action=SCRIPT_URL; form.target='hidden_iframe';
+  var inp = document.createElement('input');
+  inp.type='hidden'; inp.name='data'; inp.value=JSON.stringify(payload);
+  form.appendChild(inp); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+
+  setTimeout(function(){
+    document.getElementById('modal_pv_id').textContent = payload.pv_no;
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled=false; btn.innerHTML='💳 Submit Payment Request';
+  }, 2200);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  clearForm();
+}
+
+function clearForm(){
+  document.querySelectorAll('input[type="text"],input[type="number"],input[type="date"],textarea,select').forEach(function(el){
+    if(!el.readOnly) el.value='';
+  });
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(el){ el.checked=false; });
+  document.querySelector('input[name="pay_method"][value="Bank Transfer"]').checked=true;
+  document.getElementById('bank_box').style.display='block';
+  document.getElementById('cash_box').style.display='none';
+  document.getElementById('vat_row').style.display='none';
+  document.getElementById('wht_row').style.display='none';
+  document.getElementById('wht_box').style.display='none';
+  document.getElementById('cfo_row').style.display='none';
+  document.getElementById('val_msg').style.display='none';
+  document.getElementById('items_body').innerHTML='';
+  itemCount=0;
+  addItemRow();
+  recalc();
+
+  var now = new Date();
+  var d = now.toISOString().split('T')[0];
+  document.getElementById('pv_date').value = d;
+  document.getElementById('req_date').value = d;
+  document.getElementById('display_subtotal').textContent='0.00 THB';
+  document.getElementById('display_net').textContent='0.00 THB';
+}
+</script>
+</body>
+</html>
