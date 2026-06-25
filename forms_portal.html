@@ -766,4 +766,39 @@ window.addEventListener('scroll', function(){
     var el = document.getElementById(id);
     if(!el) return;
     var top = el.offsetTop;
-    var bottom = top 
+    var bottom = top + el.offsetHeight;
+    var link = document.querySelector('.mbn-item[href="#'+id+'"]');
+    if(link) link.classList.toggle('active', scrollY >= top && scrollY < bottom);
+  });
+}, {passive:true});
+
+// Dept filter pills
+document.querySelectorAll('.dept-pill[data-dept]').forEach(function(pill){
+  pill.addEventListener('click', function(){
+    var target = this.dataset.dept;
+    document.querySelectorAll('.dept-pill').forEach(function(p){ p.classList.remove('active'); });
+    this.classList.add('active');
+    document.querySelectorAll('.dept-section').forEach(function(sec){
+      sec.style.display = (target === 'all' || sec.dataset.dept === target) ? '' : 'none';
+    });
+  });
+});
+
+// Search
+var searchInput = document.getElementById('search_input');
+if(searchInput){
+  searchInput.addEventListener('input', function(){
+    var q = this.value.toLowerCase().trim();
+    document.querySelectorAll('.form-card').forEach(function(card){
+      var kw = (card.dataset.keywords || '') + ' ' + (card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '');
+      card.style.display = (!q || kw.toLowerCase().indexOf(q) > -1) ? '' : 'none';
+    });
+    document.querySelectorAll('.dept-section').forEach(function(sec){
+      var anyVisible = Array.from(sec.querySelectorAll('.form-card')).some(function(c){ return c.style.display !== 'none'; });
+      sec.style.display = anyVisible ? '' : 'none';
+    });
+  });
+}
+</script>
+</body>
+</html>
