@@ -445,4 +445,79 @@ function submitForm(){
     vm.scrollIntoView({behavior:'smooth', block:'center'});
     return;
   }
-  vm.styl
+  vm.style.display = 'none';
+  var btn = document.getElementById('submit_btn');
+  btn.disabled = true; btn.textContent = '⏳ Submitting…';
+
+  var leaveType = document.querySelector('input[name="leave_type"]:checked').value;
+  if(leaveType === 'Other') leaveType = document.getElementById('other_specify').value || 'Other';
+
+  var data = {
+    form_type        : 'Leave Request',
+    lr_no            : document.getElementById('lr_no').value,
+    submit_date      : document.getElementById('submit_date').value,
+    emp_name         : document.getElementById('emp_name').value,
+    emp_id           : document.getElementById('emp_id').value,
+    dept             : document.getElementById('emp_dept').value,
+    position         : document.getElementById('emp_position').value,
+    emp_email        : document.getElementById('emp_email').value,
+    emp_phone        : document.getElementById('emp_phone').value,
+    emp_manager      : document.getElementById('emp_manager').value,
+    leave_type       : leaveType,
+    date_from        : document.getElementById('date_from').value,
+    date_to          : document.getElementById('date_to').value,
+    session          : document.getElementById('session').value,
+    total_days       : document.getElementById('ds_days').textContent,
+    contact_leave    : document.getElementById('contact_leave').value,
+    emergency_contact: document.getElementById('emergency_contact').value,
+    reason           : document.getElementById('reason').value,
+    handover_person  : document.getElementById('handover_person').value,
+    handover_notes   : document.getElementById('handover_notes').value,
+    appr_requester   : document.getElementById('appr_requester').value,
+    cc               : CC_EMAILS
+  };
+
+  var iframeId = 'submit_frame_' + Date.now();
+  var iframe = document.createElement('iframe');
+  iframe.name = iframeId; iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  var form = document.createElement('form');
+  form.method = 'POST'; form.action = SCRIPT_URL; form.target = iframeId;
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(data);
+  form.appendChild(inp); document.body.appendChild(form); form.submit();
+
+  setTimeout(function(){
+    document.getElementById('modal_ref_id').textContent = data.lr_no;
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled = false; btn.textContent = '✅ Submit Request';
+    try{ document.body.removeChild(form); document.body.removeChild(iframe); }catch(e){}
+  }, 2200);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  clearForm();
+}
+
+function clearForm(){
+  var today = new Date().toISOString().split('T')[0];
+  ['emp_name','emp_id','emp_dept','emp_position','emp_email','emp_phone','emp_manager',
+   'other_specify','contact_leave','emergency_contact','reason','handover_person','handover_notes','appr_requester'
+  ].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  document.querySelectorAll('input[name="leave_type"]').forEach(function(r){ r.checked=false; });
+  document.querySelectorAll('.leave-type-card').forEach(function(c){ c.classList.remove('selected'); });
+  document.getElementById('other_specify_row').style.display = 'none';
+  document.getElementById('date_from').value = today;
+  document.getElementById('date_to').value = today;
+  document.getElementById('session').value = 'full';
+  document.getElementById('lr_no').value = generateFormNo('LR');
+  document.getElementById('submit_date').value = today;
+  document.getElementById('val_msg').style.display = 'none';
+  document.querySelectorAll('.invalid').forEach(function(el){ el.classList.remove('invalid'); });
+  calcDays();
+}
+</script>
+</body>
+</html>

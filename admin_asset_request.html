@@ -409,3 +409,66 @@ function submitForm(){
 
   var payload = {
     action:        'submit',
+    form_type      : 'Asset Request',
+    ar_no          : document.getElementById('ar_no').value,
+    ar_date        : document.getElementById('ar_date').value,
+    emp_name       : document.getElementById('req_name').value,
+    emp_id         : document.getElementById('req_id').value,
+    dept           : document.getElementById('req_dept').value,
+    emp_email      : document.getElementById('req_email').value,
+    required_by    : document.getElementById('required_by').value,
+    asset_category : assetCatEl ? assetCatEl.value : '',
+    cat_other      : document.getElementById('cat_other').value,
+    items          : JSON.stringify(items),
+    justification  : document.getElementById('justification').value,
+    urgency        : urgencyEl ? urgencyEl.value : 'normal',
+    cc             : CC_EMAILS
+  };
+
+  var btn = document.getElementById('submit_btn');
+  btn.disabled = true; btn.textContent = '⏳ Submitting…';
+
+  var iframeId = 'submit_frame_' + Date.now();
+  var iframe = document.createElement('iframe');
+  iframe.name = iframeId; iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  var form = document.createElement('form');
+  form.method = 'POST'; form.action = SCRIPT_URL; form.target = iframeId;
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp); document.body.appendChild(form); form.submit();
+
+  setTimeout(function(){
+    document.getElementById('modal_ref_id').textContent = payload.ar_no;
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled = false; btn.textContent = '✅ Submit Request';
+    try{ document.body.removeChild(form); document.body.removeChild(iframe); }catch(e){}
+  }, 2200);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  clearForm();
+}
+
+function clearForm(){
+  var today = new Date().toISOString().split('T')[0];
+  ['req_name','req_id','req_dept','req_email','cat_other','justification'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('required_by').value = '';
+  document.querySelectorAll('input[name="asset_cat"],input[name="urgency"]').forEach(function(r){ r.checked=false; });
+  document.querySelectorAll('.asset-cat-card,.urg-opt').forEach(function(c){ c.className=c.className.replace(/selected(-\w+)?/g,'').trim(); });
+  document.getElementById('cat_other_row').style.display='none';
+  document.getElementById('ar_no').value = generateFormNo('AR');
+  document.getElementById('ar_date').value = today;
+  document.getElementById('val_msg').style.display='none';
+  document.querySelectorAll('.invalid').forEach(function(el){ el.classList.remove('invalid'); });
+  // Reset items table to 3 blank rows
+  var tbody = document.querySelector('.items-table tbody');
+  if(tbody){ tbody.innerHTML=''; for(var i=0;i<3;i++) addRow(); }
+}
+</script>
+</body>
+</html>

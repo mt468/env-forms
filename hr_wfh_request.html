@@ -477,4 +477,72 @@ function submitForm(){
     pr_no:         document.getElementById('wfh_no').value,
     pr_date:       document.getElementById('submit_date').value,
     dept:          document.getElementById('emp_dept').value,
-    purpose:       (wfhT
+    purpose:       (wfhT    emp_name       : document.getElementById('emp_name').value,
+    emp_id         : document.getElementById('emp_id').value,
+    position       : document.getElementById('emp_position').value,
+    emp_email      : document.getElementById('emp_email').value,
+    emp_phone      : document.getElementById('emp_phone').value,
+    emp_manager    : document.getElementById('emp_manager').value,
+    wfh_type       : wfhTypeEl ? wfhTypeEl.value : '',
+    date_from      : document.getElementById('date_from').value,
+    date_to        : document.getElementById('date_to').value,
+    session        : document.getElementById('session').value,
+    total_days     : document.getElementById('ds_days').textContent,
+    wfh_location   : document.getElementById('wfh_location').value,
+    internet       : document.getElementById('internet').value,
+    connectivity   : connCards,
+    tasks          : document.getElementById('tasks').value,
+    avail_hours    : document.getElementById('avail_hours').value,
+    response_time  : document.getElementById('response_time').value,
+    cc             : CC_EMAILS
+  };
+
+  var btn = document.getElementById('submit_btn');
+  btn.disabled = true; btn.textContent = '⏳ Submitting…';
+
+  var iframeId = 'submit_frame_' + Date.now();
+  var iframe = document.createElement('iframe');
+  iframe.name = iframeId; iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  var form = document.createElement('form');
+  form.method = 'POST'; form.action = SCRIPT_URL; form.target = iframeId;
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp); document.body.appendChild(form); form.submit();
+
+  setTimeout(function(){
+    document.getElementById('modal_ref_id').textContent = payload.pr_no;
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled = false; btn.textContent = '✅ Submit Request';
+    try{ document.body.removeChild(form); document.body.removeChild(iframe); }catch(e){}
+  }, 2200);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  clearForm();
+}
+
+function clearForm(){
+  var today = new Date().toISOString().split('T')[0];
+  ['emp_name','emp_id','emp_dept','emp_position','emp_email','emp_phone','emp_manager',
+   'wfh_location','tasks'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.querySelectorAll('input[name="wfh_type"]').forEach(function(r){ r.checked=false; });
+  document.querySelectorAll('.conn-card').forEach(function(c){ c.classList.remove('selected'); c.querySelector('input').checked=false; });
+  document.getElementById('recurring_days').style.display='none';
+  document.getElementById('date_from').value = today;
+  document.getElementById('date_to').value   = today;
+  document.getElementById('session').value   = 'full';
+  document.getElementById('internet').value  = 'home_wifi';
+  document.getElementById('wfh_no').value    = generateFormNo('WFH');
+  document.getElementById('submit_date').value = today;
+  document.getElementById('val_msg').style.display = 'none';
+  document.querySelectorAll('.invalid').forEach(function(el){ el.classList.remove('invalid'); });
+  calcDays();
+}
+</script>
+</body>
+</html>
