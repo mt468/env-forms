@@ -507,15 +507,16 @@ function submitForm(){
   vm.style.display = 'none';
 
   var wfhTypeEl = document.querySelector('input[name="wfh_type"]:checked');
-  var connCards = Array.from(document.querySelectorAll('.conn-card.selected')).map(function(c){ return c.querySelector('.conn-name') ? c.querySelector('.conn-name').textContent : ''; }).join(', ');
+  var connCards = Array.from(document.querySelectorAll('.conn-card.selected')).map(function(c){
+    return c.querySelector('.conn-name') ? c.querySelector('.conn-name').textContent : '';
+  }).join(', ');
 
   var payload = {
-    action:        'submit',
-    form_type:     'WFH Request',
-    pr_no:         document.getElementById('wfh_no').value,
-    pr_date:       document.getElementById('submit_date').value,
-    dept:          document.getElementById('emp_dept').value,
-    purpose:       (wfhT    emp_name       : document.getElementById('emp_name').value,
+    form_type      : 'WFH Request',
+    pr_no          : document.getElementById('wfh_no').value,
+    pr_date        : document.getElementById('submit_date').value,
+    dept           : document.getElementById('emp_dept').value,
+    emp_name       : document.getElementById('emp_name').value,
     emp_id         : document.getElementById('emp_id').value,
     position       : document.getElementById('emp_position').value,
     emp_email      : document.getElementById('emp_email').value,
