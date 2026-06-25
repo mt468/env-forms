@@ -119,6 +119,44 @@ textarea{resize:vertical;border:1.5px solid #8e44ad;border-radius:4px;padding:6p
 .modal .close-btn{margin-top:18px;background:#1a2744;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
 
 @media print{body{background:#fff;padding:0;}.page{box-shadow:none;border-radius:0;}.action-bar,.back-link{display:none;}}
+
+@media(max-width:680px){
+  body{padding:10px;}
+  .header{flex-direction:column;align-items:flex-start;padding:14px 14px 10px;gap:10px;}
+  .header-right{width:100%;}
+  .header-logo{display:none;}
+  .header-center h1{font-size:18px;}
+  .header-center .sub{font-size:11px;}
+  .back-link{font-size:12px;padding:5px 10px;}
+  .sec-hdr{font-size:12px;padding:7px 12px;}
+  .section{padding:12px 14px;}
+  .two-col,.three-col,.four-col{grid-template-columns:1fr!important;gap:0;}
+  .frow{gap:4px;margin-bottom:10px;}
+  .frow label{font-size:11px;}
+  input[type="text"],input[type="number"],input[type="date"],
+  input[type="email"],input[type="tel"],select,textarea{font-size:16px!important;}
+  .appr-section,.appr-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .appr-table{min-width:500px;}
+  .items-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .items-table{min-width:480px;font-size:11px;}
+  .totals-panel{min-width:unset;width:100%;}
+  .tax-toggle,.pay-method{flex-wrap:wrap;gap:10px;}
+  .amount-highlight .val{font-size:18px;}
+  .action-bar{flex-direction:column;gap:10px;padding:12px 14px;}
+  .action-bar .btn{width:100%;padding:13px;font-size:14px;}
+  .notes-bar,.info-bar{grid-template-columns:1fr!important;}
+  .nb-left,.nb-right,.docs-box{padding:12px 14px;}
+  .docs-box{border-right:none;border-bottom:1px solid #e0eaf4;}
+  .date-summary{gap:14px;padding:10px 12px;}
+  .ds-item .ds-val{font-size:18px;}
+  .leave-types{grid-template-columns:1fr 1fr!important;}
+  .footer-banner{flex-direction:column;gap:8px;text-align:center;padding:14px;}
+  .footer-banner .main-txt{font-size:12px;}
+  .val-msg{margin:0 14px 10px;font-size:11px;}
+  .modal{padding:20px 18px;}
+  .modal h2{font-size:17px;}
+  .modal .ref-id{font-size:18px;}
+}
 </style>
 </head>
 <body>
