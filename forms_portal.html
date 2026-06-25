@@ -707,33 +707,7 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
 </div>
 
 <script>
-// Dept filter pills
-document.querySelectorAll('.dept-pill').forEach(function(pill){
-  pill.addEventListener('click', function(){
-    var target = this.dataset.dept;
-    document.querySelectorAll('.dept-pill').forEach(function(p){ p.classList.remove('active'); });
-    this.classList.add('active');
-    document.querySelectorAll('.dept-section').forEach(function(sec){
-      sec.style.display = (target === 'all' || sec.dataset.dept === target) ? '' : 'none';
-    });
-  });
-});
-
-// Search
-document.getElementById('search_input').addEventListener('input', function(){
-  var q = this.value.toLowerCase().trim();
-  document.querySelectorAll('.form-card').forEach(function(card){
-    var kw = (card.dataset.keywords || '') + ' ' + (card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '');
-    card.closest('a') && (card.closest('a').style.display = (!q || kw.toLowerCase().indexOf(q) > -1) ? '' : 'none');
-    card.style.display = (!q || kw.toLowerCase().indexOf(q) > -1) ? '' : 'none';
-  });
-  document.querySelectorAll('.dept-section').forEach(function(sec){
-    var anyVisible = Array.from(sec.querySelectorAll('.form-card')).some(function(c){ return c.style.display !== 'none'; });
-    sec.style.display = anyVisible ? '' : 'none';
-  });
-});
-
-// Policy toggle
+// ── Policy toggle ──────────────────────────────────────────────
 function togglePolicy(id){
   var panel = document.getElementById('policy-panel-' + id);
   var btn   = document.getElementById('policy-toggle-' + id);
@@ -742,27 +716,51 @@ function togglePolicy(id){
   panel.classList.toggle('open', !isOpen);
   btn.classList.toggle('open', !isOpen);
   var arrow = btn.querySelector('.pt-arrow');
-  if(arrow) arrow.textContent = isOpen ? '▴' : '▾';
+  if(arrow) arrow.textContent = isOpen ? '▾' : '▴';
 }
 
-// Policy tabs
+// ── Policy tabs ────────────────────────────────────────────────
 function showPolicy(dept, tab, clickedEl){
-  // Hide all sections for this dept
   document.querySelectorAll('[id^="pol-' + dept + '-"]').forEach(function(s){ s.classList.remove('active'); });
-  // Deactivate all tabs for this dept
-  document.querySelectorAll('.pp-tab[onclick*="' + dept + '"]').forEach(function(t){ t.classList.remove('active'); });
-  // Show target section
+  document.querySelectorAll('.pp-tab[onclick*="'' + dept + ''"]').forEach(function(t){ t.classList.remove('active'); });
   var target = document.getElementById('pol-' + dept + '-' + tab);
   if(target) target.classList.add('active');
-  // Activate clicked tab
   if(clickedEl) clickedEl.classList.add('active');
 }
 
-// Active bottom nav on scroll
-var sections = ['finance','hr','admin'];
+// ── Search / filter ────────────────────────────────────────────
+function filterForms(q){
+  q = (q || '').toLowerCase().trim();
+  document.querySelectorAll('.dept-section').forEach(function(sec){
+    var anyVisible = false;
+    sec.querySelectorAll('a.form-card, div.form-card').forEach(function(card){
+      var kw = (card.dataset.keywords || '') + ' ' + (card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '');
+      var show = !q || kw.toLowerCase().indexOf(q) > -1;
+      card.style.display = show ? '' : 'none';
+      if(show) anyVisible = true;
+    });
+    sec.style.display = (!q || anyVisible) ? '' : 'none';
+  });
+}
+
+// ── Dept pill filter ───────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  document.querySelectorAll('.dept-pill[data-dept]').forEach(function(pill){
+    pill.addEventListener('click', function(){
+      var target = this.dataset.dept;
+      document.querySelectorAll('.dept-pill').forEach(function(p){ p.classList.remove('active'); });
+      this.classList.add('active');
+      document.querySelectorAll('.dept-section').forEach(function(sec){
+        sec.style.display = (target === 'all' || sec.id === target) ? '' : 'none';
+      });
+    });
+  });
+});
+
+// ── Bottom nav active state on scroll ─────────────────────────
 window.addEventListener('scroll', function(){
   var scrollY = window.scrollY + 80;
-  sections.forEach(function(id){
+  ['finance','hr','admin'].forEach(function(id){
     var el = document.getElementById(id);
     if(!el) return;
     var top = el.offsetTop;
@@ -771,34 +769,6 @@ window.addEventListener('scroll', function(){
     if(link) link.classList.toggle('active', scrollY >= top && scrollY < bottom);
   });
 }, {passive:true});
-
-// Dept filter pills
-document.querySelectorAll('.dept-pill[data-dept]').forEach(function(pill){
-  pill.addEventListener('click', function(){
-    var target = this.dataset.dept;
-    document.querySelectorAll('.dept-pill').forEach(function(p){ p.classList.remove('active'); });
-    this.classList.add('active');
-    document.querySelectorAll('.dept-section').forEach(function(sec){
-      sec.style.display = (target === 'all' || sec.dataset.dept === target) ? '' : 'none';
-    });
-  });
-});
-
-// Search
-var searchInput = document.getElementById('search_input');
-if(searchInput){
-  searchInput.addEventListener('input', function(){
-    var q = this.value.toLowerCase().trim();
-    document.querySelectorAll('.form-card').forEach(function(card){
-      var kw = (card.dataset.keywords || '') + ' ' + (card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '');
-      card.style.display = (!q || kw.toLowerCase().indexOf(q) > -1) ? '' : 'none';
-    });
-    document.querySelectorAll('.dept-section').forEach(function(sec){
-      var anyVisible = Array.from(sec.querySelectorAll('.form-card')).some(function(c){ return c.style.display !== 'none'; });
-      sec.style.display = anyVisible ? '' : 'none';
-    });
-  });
-}
 </script>
 </body>
 </html>
