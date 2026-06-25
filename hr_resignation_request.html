@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resignation Request | Envisage HR</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#daeaf8 0%,#eaf4fb 100%);padding:20px;color:#1a2744;min-height:100vh;}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#00b8a9;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:14px;padding:6px 12px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.back-link:hover{color:#009e90;}
+.page{background:#fff;max-width:860px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+
+input[type="text"],input[type="date"],input[type="email"],input[type="tel"],input[type="number"],select,textarea{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #3a7bd5;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input:focus,select:focus,textarea:focus{border-bottom-color:#00b8a9;background:rgba(0,184,169,.05);}
+input.invalid{border-bottom-color:#e74c3c!important;background:rgba(231,76,60,.05);}
+input[type="checkbox"]{width:15px;height:15px;accent-color:#1a2744;cursor:pointer;flex-shrink:0;}
+textarea{resize:vertical;border:1.5px solid #3a7bd5;border-radius:4px;padding:6px;background:#fafcff;}
+textarea:focus{border-color:#00b8a9;}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:3px solid #e74c3c;}
+.header-left{display:flex;align-items:center;gap:14px;}
+.logo-box{width:58px;height:58px;background:linear-gradient(135deg,#1a2744,#243660);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;flex-shrink:0;}
+.header-text h1{font-size:23px;font-weight:800;color:#1a2744;line-height:1.1;}
+.header-text .sub{font-size:12px;color:#555;margin-top:3px;font-weight:600;}
+.header-right{text-align:right;min-width:170px;border:2px solid #e0eaf4;border-radius:8px;padding:10px 12px;font-size:12px;flex-shrink:0;}
+.ref-row{display:flex;align-items:center;gap:6px;font-weight:700;margin-bottom:6px;justify-content:flex-end;}
+.ref-row input{width:120px;flex:none;}
+
+/* NOTICE BANNER */
+.notice-banner{background:#fff8e1;border-left:4px solid #f39c12;padding:10px 18px;font-size:12px;color:#7d5a00;font-weight:600;line-height:1.6;}
+.notice-banner strong{color:#1a2744;}
+
+/* SEC HEADERS */
+.sec-hdr{background:#1a2744;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:#00b8a9;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.section{padding:14px 22px;border-bottom:1px solid #e0eaf4;}
+.frow{display:flex;align-items:flex-end;gap:8px;margin-bottom:12px;font-size:12px;font-weight:700;}
+.frow label{white-space:nowrap;font-weight:700;color:#1a2744;}
+.frow input,.frow select{flex:1;min-width:40px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
+
+/* DATE SUMMARY */
+.date-summary{background:#fff3f3;border:1.5px solid #f5c6c6;border-radius:8px;padding:12px 16px;margin-top:10px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.ds-item{text-align:center;}
+.ds-item .ds-val{font-size:20px;font-weight:800;color:#e74c3c;}
+.ds-item .ds-lbl{font-size:10px;color:#888;font-weight:700;text-transform:uppercase;margin-top:2px;}
+
+/* REASON OPTIONS */
+.reason-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.reason-card{border:2px solid #e0eaf4;border-radius:8px;padding:9px 12px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:8px;}
+.reason-card:hover{border-color:#1a2744;background:#f7f9fc;}
+.reason-card.selected{border-color:#1a2744;background:#eef2f8;}
+.reason-card input[type="radio"]{margin-top:2px;flex-shrink:0;accent-color:#1a2744;}
+.rc-name{font-size:12px;font-weight:700;color:#1a2744;}
+.rc-note{font-size:10px;color:#888;margin-top:2px;}
+
+/* CHECKLIST */
+.checklist{list-style:none;}
+.cl-item{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #f0f4f8;font-size:12px;line-height:1.5;}
+.cl-item:last-child{border-bottom:none;}
+.cl-item input[type="checkbox"]{margin-top:2px;flex-shrink:0;}
+.cl-item .cl-label strong{display:block;font-weight:700;color:#1a2744;}
+.cl-item .cl-label span{font-size:11px;color:#888;}
+
+/* APPROVAL TABLE */
+.appr-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.appr-table th{background:#f0f6fc;color:#1a2744;padding:7px 10px;font-weight:700;text-align:center;border:1px solid #c5d8ec;font-size:11px;}
+.appr-table th:nth-child(1){width:28%;}
+.appr-table th:nth-child(2){width:22%;}
+.appr-table th:nth-child(3){width:18%;}
+.appr-table th:nth-child(4){width:18%;}
+.appr-table th:nth-child(5){width:14%;}
+.appr-table td{padding:6px 10px;border:1px solid #e0eaf4;vertical-align:middle;height:34px;}
+.appr-table td input,.appr-table td select{width:100%;}
+.role-cell{display:flex;align-items:center;gap:7px;white-space:normal;}
+.ava{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:#fff;}
+.ava-n{background:#1a2744;}.ava-b{background:#3a7bd5;}.ava-t{background:#00b8a9;}
+.ava-r{background:#e74c3c;}.ava-p{background:#8e44ad;}
+
+/* CERTIFICATION */
+.cert-box{background:#fafcff;border:1.5px solid #c5d8ec;border-radius:8px;padding:14px 18px;font-size:12px;line-height:1.7;color:#333;}
+.cert-box strong{color:#1a2744;}
+
+/* VAL MSG */
+.val-msg{display:none;background:#fff3cd;border:1px solid #ffc107;color:#856404;font-size:12px;padding:10px 16px;margin:0 22px 10px;border-radius:6px;font-weight:600;}
+
+/* ACTIONS */
+.action-bar{display:flex;justify-content:center;gap:14px;padding:14px 20px;background:#f7fbff;border-top:2px solid #e0eaf4;flex-wrap:wrap;}
+.btn{padding:10px 26px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-danger{background:#e74c3c;color:#fff;}
+.btn-danger:hover{background:#c0392b;transform:translateY(-1px);}
+.btn-navy{background:#1a2744;color:#fff;}
+.btn-navy:hover{background:#243660;transform:translateY(-1px);}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #1a2744;}
+.btn-outline:hover{background:#f0f6fc;}
+
+/* FOOTER */
+.footer-banner{background:#1a2744;color:#fff;text-align:center;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.footer-banner .shield{width:34px;height:34px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.footer-banner .main-txt{font-size:14px;font-weight:800;letter-spacing:.5px;}
+.footer-banner .sub-txt{font-size:10px;opacity:.85;margin-top:2px;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:30px 34px;max-width:460px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.modal h2{font-size:20px;font-weight:800;color:#1a2744;margin-bottom:10px;}
+.modal p{font-size:13px;color:#555;line-height:1.6;margin-bottom:6px;}
+.modal .ref-id{font-size:20px;font-weight:800;color:#e74c3c;margin:12px 0;}
+.modal .close-btn{margin-top:18px;background:#1a2744;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
+
+@media print{body{background:#fff;padding:0;}.page{box-shadow:none;border-radius:0;}.action-bar,.back-link{display:none;}}
+</style>
+</head>
+<body>
+
+<div style="max-width:860px;margin:0 auto;">
+  <a class="back-link" href="forms_portal.html">← Back to Portal</a>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="success_overlay">
+  <div class="modal">
+    <div style="font-size:46px;margin-bottom:8px;">📝</div>
+    <h2>Resignation Submitted</h2>
+    <p>Your resignation letter has been received by HR.<br>Your manager will be notified to begin the handover process.</p>
+    <div class="ref-id" id="modal_ref_id">RES-XXXXXXX</div>
+    <p style="font-size:12px;color:#888;">Please ensure all handover and asset return tasks are completed before your last working day.</p>
+    <button class="close-btn" onclick="document.getElementById('success_overlay').classList.remove('show')">OK</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-box">E</div>
+      <div class="header-text">
+        <h1>RESIGNATION REQUEST</h1>
+        <div class="sub">Human Resources Department · Envisage Worldwide</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="ref-row"><span>📋 RES No. :</span><input type="text" id="res_no" placeholder="RES-001"></div>
+      <div class="ref-row"><span>📅 Date :</span><input type="date" id="submit_date"></div>
+    </div>
+  </div>
+
+  <!-- NOTICE BANNER -->
+  <div class="notice-banner">
+    ⚠️ Per Envisage HR Policy: <strong>one month's written notice is required</strong> before the resignation takes effect. The resignation is not final until acknowledged in writing by management.
+  </div>
+
+  <!-- SECTION 1: EMPLOYEE INFORMATION -->
+  <div class="sec-hdr"><div class="ico">👤</div>1. EMPLOYEE INFORMATION</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Full Name :</label><input type="text" id="emp_name" placeholder="First and Last Name" required></div>
+      <div class="frow"><label>Employee ID :</label><input type="text" id="emp_id" placeholder="e.g. ENV-0001"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Department :</label><input type="text" id="emp_dept" placeholder="Your department" required></div>
+      <div class="frow"><label>Position / Title :</label><input type="text" id="emp_position" placeholder="Your job title" required></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Email :</label><input type="email" id="emp_email" placeholder="your@envisageworldwide.com" required></div>
+      <div class="frow"><label>Phone :</label><input type="tel" id="emp_phone" placeholder="Contact number"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Direct Manager :</label><input type="text" id="emp_manager" placeholder="Manager's full name" required></div>
+      <div class="frow"><label>Date of Joining :</label><input type="date" id="date_joined"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: RESIGNATION DETAILS -->
+  <div class="sec-hdr"><div class="ico">📅</div>2. RESIGNATION DETAILS</div>
+  <div class="section">
+    <div class="three-col">
+      <div class="frow"><label>Resignation Date :</label><input type="date" id="res_date" onchange="calcDates()" required></div>
+      <div class="frow"><label>Last Working Day :</label><input type="date" id="last_day" onchange="calcDates()" required></div>
+      <div class="frow"><label>Notice Period :</label>
+        <select id="notice_period" onchange="calcDates()">
+          <option value="30">1 Month (Standard)</option>
+          <option value="14">2 Weeks (Agreed)</option>
+          <option value="60">2 Months (Voluntary)</option>
+          <option value="0">Immediate (Special)</option>
+        </select>
+      </div>
+    </div>
+    <div class="date-summary">
+      <div class="ds-item"><div class="ds-val" id="ds_notice">–</div><div class="ds-lbl">Days Notice</div></div>
+      <div class="ds-item"><div class="ds-val" id="ds_res" style="font-size:14px;">–</div><div class="ds-lbl">Resignation Date</div></div>
+      <div class="ds-item"><div class="ds-val" id="ds_last" style="font-size:14px;">–</div><div class="ds-lbl">Last Working Day</div></div>
+      <div class="ds-item"><div class="ds-val" id="ds_status" style="font-size:13px;">–</div><div class="ds-lbl">Notice Status</div></div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: REASON FOR LEAVING -->
+  <div class="sec-hdr"><div class="ico">📝</div>3. REASON FOR LEAVING</div>
+  <div class="section">
+    <div class="reason-grid">
+      <label class="reason-card" onclick="selectReason(this,'Career Growth')">
+        <input type="radio" name="resign_reason" value="Career Growth">
+        <div><div class="rc-name">📈 Career Growth</div><div class="rc-note">Better opportunity elsewhere</div></div>
+      </label>
+      <label class="reason-card" onclick="selectReason(this,'Personal Reasons')">
+        <input type="radio" name="resign_reason" value="Personal Reasons">
+        <div><div class="rc-name">👤 Personal Reasons</div><div class="rc-note">Family or personal circumstances</div></div>
+      </label>
+      <label class="reason-card" onclick="selectReason(this,'Relocation')">
+        <input type="radio" name="resign_reason" value="Relocation">
+        <div><div class="rc-name">✈️ Relocation</div><div class="rc-note">Moving to another city/country</div></div>
+      </label>
+      <label class="reason-card" onclick="selectReason(this,'Further Study')">
+        <input type="radio" name="resign_reason" value="Further Study">
+        <div><div class="rc-name">🎓 Further Study</div><div class="rc-note">Returning to education</div></div>
+      </label>
+      <label class="reason-card" onclick="selectReason(this,'Health Reasons')">
+        <input type="radio" name="resign_reason" value="Health Reasons">
+        <div><div class="rc-name">🏥 Health Reasons</div><div class="rc-note">Medical or wellness needs</div></div>
+      </label>
+      <label class="reason-card" onclick="selectReason(this,'Other')">
+        <input type="radio" name="resign_reason" value="Other">
+        <div><div class="rc-name">📌 Other</div><div class="rc-note">Please specify below</div></div>
+      </label>
+    </div>
+    <div class="frow" style="align-items:flex-start;flex-direction:column;gap:4px;">
+      <label style="margin-bottom:4px;">Additional Details / Comments :</label>
+      <textarea id="reason_detail" rows="3" placeholder="Provide any additional context about your resignation (optional but appreciated)…" style="width:100%;"></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 4: HANDOVER PLAN -->
+  <div class="sec-hdr"><div class="ico">🤝</div>4. WORK HANDOVER PLAN</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Handover Person :</label><input type="text" id="handover_person" placeholder="Name of colleague taking over duties"></div>
+      <div class="frow"><label>Handover Completion Date :</label><input type="date" id="handover_date"></div>
+    </div>
+    <div class="frow" style="align-items:flex-start;flex-direction:column;gap:4px;">
+      <label style="margin-bottom:4px;">Key Responsibilities to Hand Over :</label>
+      <textarea id="handover_tasks" rows="4" placeholder="List the main tasks, projects, systems, and contacts to be handed over. Include any deadlines or priorities your replacement should be aware of…" style="width:100%;"></textarea>
+    </div>
+    <div class="frow" style="align-items:flex-start;flex-direction:column;gap:4px;margin-top:4px;">
+      <label style="margin-bottom:4px;">Ongoing Projects / Pending Items :</label>
+      <textarea id="pending_items" rows="3" placeholder="List any ongoing projects, pending approvals, or unresolved items that need follow-up…" style="width:100%;"></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 5: ASSET RETURN CHECKLIST -->
+  <div class="sec-hdr"><div class="ico">📦</div>5. ASSET RETURN CHECKLIST</div>
+  <div class="section">
+    <p style="font-size:12px;color:#555;margin-bottom:12px;font-weight:600;">All items below must be returned or actioned on or before your last working day:</p>
+    <ul class="checklist">
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Company laptop / computer</strong><span>Returned to Admin/IT with all data intact — no files deleted</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Mobile phone / SIM card</strong><span>Company-issued phone or SIM returned to Admin</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Access cards / office keys</strong><span>All physical access items returned to Admin</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Online accounts &amp; passwords transferred</strong><span>All company accounts, passwords, and 2FA handed over to IT or manager</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Cloud storage turned over</strong><span>Google Drive, Dropbox, and all cloud file storage transferred to Envisage ownership</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>All company files returned</strong><span>No Envisage files retained on personal devices or storage — all copies returned</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Email handed over — not deleted</strong><span>Company email account and all correspondence remain property of Envisage</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Outstanding cash advances cleared</strong><span>All finance advances settled with the Finance department before last day</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Company credit cards returned</strong><span>Any company-issued payment cards returned to Finance</span></div></li>
+      <li class="cl-item"><input type="checkbox"><div class="cl-label"><strong>Work handover completed &amp; signed off</strong><span>Supervisor has confirmed that responsibilities are fully handed over</span></div></li>
+    </ul>
+  </div>
+
+  <!-- SECTION 6: CERTIFICATION -->
+  <div class="sec-hdr"><div class="ico">🛡️</div>6. EMPLOYEE CERTIFICATION</div>
+  <div class="section">
+    <div class="cert-box">
+      I, <strong id="cert_name_display">__________________________</strong>, hereby formally submit my resignation from my position at <strong>Envisage Worldwide</strong>,
+      effective from my last working day as stated above. I confirm that:
+      <br><br>
+      • I understand and accept my obligation to serve the required notice period as per my employment agreement.<br>
+      • I commit to completing a full and proper handover of my responsibilities.<br>
+      • I will return all company property, files, and access on or before my last working day.<br>
+      • I will maintain confidentiality of all Envisage and partner information after my departure.
+    </div>
+    <div class="two-col" style="margin-top:14px;">
+      <div class="frow"><label>Employee Signature :</label><input type="text" id="emp_sig" placeholder="Signed"></div>
+      <div class="frow"><label>Date :</label><input type="date" id="sig_date"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 7: HR & MANAGEMENT ACKNOWLEDGEMENT -->
+  <div class="sec-hdr"><div class="ico">✅</div>7. ACKNOWLEDGEMENT</div>
+  <div class="section" style="padding:0;">
+    <table class="appr-table">
+      <thead>
+        <tr><th>Role</th><th>Name</th><th>Decision</th><th>Signature</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-n">👤</div>Employee (Requester)</div></td>
+          <td><input type="text" placeholder="Full name"></td>
+          <td><select><option>Submitted</option></select></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><input type="date"></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-b">👤</div>Direct Manager</div></td>
+          <td><input type="text" placeholder="Manager name"></td>
+          <td><select><option value="">–</option><option>Acknowledged</option><option>Pending discussion</option></select></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><input type="date"></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-t">👤</div>HR Department</div></td>
+          <td><input type="text" placeholder="HR officer name"></td>
+          <td><select><option value="">–</option><option>Accepted</option><option>Under review</option></select></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><input type="date"></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-r">👤</div>Director<br><span style="font-size:10px;color:#888;">(If Required)</span></div></td>
+          <td><input type="text" placeholder="Director name"></td>
+          <td><select><option value="">–</option><option>Noted</option><option>Accepted</option></select></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><input type="date"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- HR USE ONLY -->
+  <div class="sec-hdr" style="background:#555;"><div class="ico" style="background:#888;">📋</div>8. FOR HR USE ONLY</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Final Salary Period :</label><input type="text" placeholder="e.g. 1–31 July 2026"></div>
+      <div class="frow"><label>Unused Leave Balance (Days) :</label><input type="number" placeholder="0" min="0"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Outstanding Advance (THB) :</label><input type="number" placeholder="0.00" min="0"></div>
+      <div class="frow"><label>Severance Entitlement :</label><input type="text" placeholder="Per policy / management discretion"></div>
+    </div>
+    <div class="frow"><label>Eligible for Rehire :</label>
+      <select style="max-width:180px;">
+        <option value="">–</option>
+        <option>Yes</option>
+        <option>No</option>
+        <option>Under review</option>
+      </select>
+    </div>
+    <div class="frow" style="align-items:flex-start;flex-direction:column;gap:4px;margin-top:4px;">
+      <label style="margin-bottom:4px;">HR Notes :</label>
+      <textarea rows="2" placeholder="Internal HR notes (not shared with employee)…" style="width:100%;"></textarea>
+    </div>
+  </div>
+
+  <!-- VAL MSG -->
+  <div class="val-msg" id="val_msg">⚠️ Please fill in all required fields: <span id="val_fields"></span></div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
+    <button class="btn btn-navy" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn btn-danger" id="submit_btn" onclick="submitForm()">📝 Submit Resignation</button>
+  </div>
+
+  <div class="footer-banner">
+    <div class="shield">🤝</div>
+    <div>
+      <div class="main-txt">THANK YOU FOR YOUR SERVICE TO ENVISAGE.</div>
+      <div class="sub-txt">Please ensure a complete and respectful handover before your departure.</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── CONFIG ──
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKDBKsZHDBT94IIM4Jw3FsuVVtonrIGBjxC3--kGYZImmlCLkCFbiHXGiuyG984xZWlQ/exec';
+var CC_EMAILS  = 'admin@envisageworldwide.com, gift@envisageworldwide.com';  // PRODUCTION
+
+function generateFormNo(prefix) {
+  var d = new Date();
+  var yy = d.getFullYear().toString().slice(2);
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  var rnd = String(Math.floor(Math.random()*9000)+1000);
+  return prefix + '-' + yy + mm + dd + '-' + rnd;
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('submit_date').value = today;
+  document.getElementById('res_date').value    = today;
+  document.getElementById('sig_date').value    = today;
+  var f = document.getElementById('res_no');
+  f.value = generateFormNo('RES'); f.readOnly = true;
+  f.style.cssText += ';background:#f0f4f8;color:#555;cursor:default;';
+  // Default last working day = today + 30 days
+  var lwd = new Date(); lwd.setDate(lwd.getDate() + 30);
+  document.getElementById('last_day').value = lwd.toISOString().split('T')[0];
+  calcDates();
+  // Live update cert name
+  document.getElementById('emp_name').addEventListener('input', function(){
+    document.getElementById('cert_name_display').textContent = this.value || '__________________________';
+  });
+});
+
+function selectReason(el, val){
+  document.querySelectorAll('.reason-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+}
+
+function calcDates(){
+  var res  = document.getElementById('res_date').value;
+  var last = document.getElementById('last_day').value;
+  var dRes  = res  ? new Date(res)  : null;
+  var dLast = last ? new Date(last) : null;
+  if(dRes && dLast && dLast >= dRes){
+    var diff = Math.round((dLast - dRes) / 86400000);
+    document.getElementById('ds_notice').textContent = diff;
+    document.getElementById('ds_res').textContent    = formatDate(dRes);
+    document.getElementById('ds_last').textContent   = formatDate(dLast);
+    var status = diff >= 30 ? '✅ Meets Policy' : diff >= 14 ? '⚠️ Short Notice' : '❌ Below Policy';
+    document.getElementById('ds_status').textContent = status;
+    document.getElementById('ds_status').style.color = diff >= 30 ? '#27ae60' : diff >= 14 ? '#e67e22' : '#e74c3c';
+  } else {
+    ['ds_notice','ds_res','ds_last','ds_status'].forEach(function(id){
+      document.getElementById(id).textContent = '–';
+    });
+  }
+}
+
+function formatDate(d){
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function validate(){
+  var required = [
+    {id:'emp_name',    label:'Full Name'},
+    {id:'emp_dept',    label:'Department'},
+    {id:'emp_position',label:'Position'},
+    {id:'emp_email',   label:'Email'},
+    {id:'emp_manager', label:'Manager'},
+    {id:'res_date',    label:'Resignation Date'},
+    {id:'last_day',    label:'Last Working Day'},
+  ];
+  var missing = [];
+  required.forEach(function(f){
+    var el = document.getElementById(f.id);
+    if(!el.value.trim()){ missing.push(f.label); el.classList.add('invalid'); }
+    else el.classList.remove('invalid');
+  });
+  return missing;
+}
+
+function submitForm(){
+  var missing = validate();
+  var vm = document.getElementById('val_msg');
+  if(missing.length > 0){
+    document.getElementById('val_fields').textContent = missing.join(', ');
+    vm.style.display = 'block';
+    vm.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  vm.style.display = 'none';
+
+  var reasonCard = document.querySelector('.reason-card.selected');
+  var noticeDays = document.getElementById('ds_notice') ? document.getElementById('ds_notice').textContent : '';
+
+  var payload = {
+    action:        'submit',
+    form_type:     'Resignation',
+    pr_no:         document.getElementById('res_no').value,
+    pr_date:       document.getElementById('submit_date').value,
+    dept:          document.getElementById('emp_dept').value,
+    purpose:       (reasonCard ? reasonCard.querySelector('.rc-label') ? reasonCard.querySelector('.rc-label').textContent : '' : '') + ' — ' + (document.getElementById('reason_detail').value || ''),
+    traveler:      document.getElementById('emp_name').value,
+    position:      document.getElementById('emp_position').value,
+    emp_id:        document.getElementById('emp_id').value,
+    contact:       document.getElementById('emp_email').value,
+    travel_from:   document.getElementById('res_date').value,
+    travel_to:     document.getElementById('last_day').value,
+    date_joined:   document.getElementById('date_joined').value,
+    res_date:      document.getElementById('res_date').value,
+    last_day:      document.getElementById('last_day').value,
+    notice_period: document.getElementById('notice_period').value,
+    notice_days:   noticeDays,
+    manager:       document.getElementById('emp_manager').value,
+    phone:         document.getElementById('emp_phone').value,
+    reason_detail: document.getElementById('reason_detail').value,
+    total_amount:  0,
+    cert_name:     document.getElementById('emp_name').value,
+    cert_date:     document.getElementById('submit_date').value,
+    cc_emails:     CC_EMAILS
+  };
+
+  var btn = document.getElementById('submit_btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
+
+  var form = document.createElement('form');
+  form.method = 'POST'; form.action = SCRIPT_URL; form.target = 'hidden_iframe';
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+
+  setTimeout(function(){
+    document.getElementById('modal_ref_id').textContent = payload.pr_no;
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled = false; btn.innerHTML = '📝 Submit Resignation';
+  }, 2200);
+}
+
+function clearForm(silent){
+  if(!silent && !confirm('Clear all entered data?')) return;
+  document.querySelectorAll('input[type="text"],input[type="date"],input[type="email"],input[type="tel"],input[type="number"]').forEach(function(i){i.value='';i.classList.remove('invalid');});
+  document.querySelectorAll('input[type="radio"],input[type="checkbox"]').forEach(function(i){i.checked=false;});
+  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
+  document.querySelectorAll('textarea').forEach(function(t){t.value='';});
+  document.querySelectorAll('.reason-card').forEach(function(c){c.classList.remove('selected');});
+  document.getElementById('cert_name_display').textContent = '__________________________';
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('submit_date').value = today;
+  document.getElementById('res_date').value    = today;
+  document.getElementById('sig_date').value    = today;
+  document.getElementById('res_no').value = generateFormNo('RES');
+  var lwd = new Date(); lwd.setDate(lwd.getDate() + 30);
+  document.getElementById('last_day').value = lwd.toISOString().split('T')[0];
+  calcDates();
+  document.getElementById('val_msg').style.display = 'none';
+}
+</script>
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+</body>
+</html>

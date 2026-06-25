@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Employee Onboarding | Envisage HR</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#daeaf8 0%,#eaf4fb 100%);padding:20px;color:#1a2744;min-height:100vh;}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#00b8a9;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:14px;padding:6px 12px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.back-link:hover{color:#009e90;}
+.page{background:#fff;max-width:860px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+input[type="text"],input[type="date"],input[type="email"],input[type="tel"],select,textarea{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #3a7bd5;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input[type="text"]:focus,input[type="date"]:focus,input[type="email"]:focus,
+input[type="tel"]:focus,select:focus,textarea:focus{border-bottom-color:#00b8a9;background:rgba(0,184,169,.05);}
+input.invalid{border-bottom-color:#e74c3c!important;}
+input[type="checkbox"]{width:15px;height:15px;accent-color:#00b8a9;cursor:pointer;flex-shrink:0;}
+textarea{resize:vertical;border:1.5px solid #3a7bd5;border-radius:4px;padding:6px;background:#fafcff;}
+textarea:focus{border-color:#00b8a9;}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:center;gap:16px;border-bottom:2px solid #e0eaf4;}
+.logo-box{width:60px;height:60px;background:linear-gradient(135deg,#00b8a9,#009e90);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0;}
+.header-text h1{font-size:24px;font-weight:800;color:#1a2744;}
+.header-text .sub{font-size:12px;color:#555;margin-top:3px;font-weight:600;}
+.header-meta{margin-left:auto;text-align:right;font-size:12px;}
+.header-meta .frow{display:flex;align-items:center;gap:6px;font-weight:700;margin-bottom:6px;}
+.header-meta input{width:130px;}
+
+/* SEC HEADERS */
+.sec-hdr{background:#00b8a9;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:rgba(255,255,255,.25);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+.section{padding:14px 22px;border-bottom:1px solid #e0eaf4;}
+.frow{display:flex;align-items:flex-end;gap:8px;margin-bottom:12px;font-size:12px;font-weight:700;}
+.frow label{white-space:nowrap;font-weight:700;color:#1a2744;}
+.frow input,.frow select{flex:1;min-width:40px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
+
+/* CHECKLIST */
+.checklist{list-style:none;}
+.checklist li{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #f0f4f8;font-size:13px;line-height:1.4;}
+.checklist li:last-child{border-bottom:none;}
+.checklist li .item-label{flex:1;}
+.checklist li .item-label strong{display:block;font-weight:700;color:#1a2744;}
+.checklist li .item-label span{font-size:11px;color:#888;}
+.checklist li .by-col{font-size:11px;color:#555;min-width:80px;text-align:center;font-weight:700;}
+.checklist li input[type="checkbox"]{margin-top:2px;}
+.checklist-header{display:flex;gap:10px;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;padding:6px 0;border-bottom:2px solid #e0eaf4;margin-bottom:4px;}
+.checklist-header .ch-lbl{flex:1;}
+.checklist-header .ch-by{min-width:80px;text-align:center;}
+.checklist-header .ch-done{width:50px;text-align:center;}
+
+/* PROGRESS */
+.progress-bar-wrap{background:#f0f4f8;border-radius:30px;height:10px;overflow:hidden;margin-top:10px;}
+.progress-bar-fill{background:linear-gradient(90deg,#00b8a9,#009e90);height:10px;border-radius:30px;transition:width .4s;}
+.progress-label{font-size:12px;font-weight:700;color:#00b8a9;margin-top:4px;}
+
+/* DOCUMENT CHECKLIST */
+.doc-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 20px;}
+.doc-item{display:flex;align-items:center;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid #f0f4f8;}
+.doc-item input[type="checkbox"]{flex-shrink:0;}
+
+/* ACTION BAR */
+.action-bar{display:flex;justify-content:center;gap:14px;padding:14px 20px;background:#f7fbff;border-top:2px solid #e0eaf4;flex-wrap:wrap;}
+.btn{padding:10px 26px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:#00b8a9;color:#fff;}
+.btn-primary:hover{background:#009e90;transform:translateY(-1px);}
+.btn-navy{background:#1a2744;color:#fff;}
+.btn-navy:hover{background:#243660;transform:translateY(-1px);}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #1a2744;}
+.btn-outline:hover{background:#f0f6fc;}
+
+/* FOOTER */
+.footer-banner{background:#1a2744;color:#fff;text-align:center;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.footer-banner .shield{width:34px;height:34px;background:#00b8a9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.footer-banner .main-txt{font-size:14px;font-weight:800;letter-spacing:.5px;}
+.footer-banner .sub-txt{font-size:10px;opacity:.85;margin-top:2px;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:30px 34px;max-width:440px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.modal h2{font-size:20px;font-weight:800;color:#1a2744;margin-bottom:10px;}
+.modal p{font-size:13px;color:#555;line-height:1.6;}
+.modal .close-btn{margin-top:18px;background:#1a2744;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;border-radius:0;}
+  .action-bar,.back-link{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div style="max-width:860px;margin:0 auto;">
+  <a class="back-link" href="forms_portal.html">← Back to Portal</a>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="success_overlay">
+  <div class="modal">
+    <div style="font-size:46px;margin-bottom:8px;">🎉</div>
+    <h2>Onboarding Form Saved!</h2>
+    <p>The employee onboarding record has been saved.<br>HR will follow up with next steps.</p>
+    <button class="close-btn" onclick="document.getElementById('success_overlay').classList.remove('show')">OK</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-box">E</div>
+    <div class="header-text">
+      <h1>NEW EMPLOYEE ONBOARDING</h1>
+      <div class="sub">Human Resources Department · Envisage Worldwide</div>
+    </div>
+    <div class="header-meta">
+      <div class="frow"><span>📋 ID :</span><input type="text" id="ob_id" placeholder="OB-001"></div>
+      <div class="frow"><span>📅 Date :</span><input type="date" id="ob_date"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: PERSONAL INFORMATION -->
+  <div class="sec-hdr"><div class="ico">👤</div>1. PERSONAL INFORMATION</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Full Name (TH) :</label><input type="text" id="name_th" placeholder="ชื่อ-นามสกุล ภาษาไทย"></div>
+      <div class="frow"><label>Full Name (EN) :</label><input type="text" id="name_en" placeholder="First and Last Name" required></div>
+    </div>
+    <div class="three-col">
+      <div class="frow"><label>Nickname :</label><input type="text" id="nickname" placeholder="Preferred name"></div>
+      <div class="frow"><label>Date of Birth :</label><input type="date" id="dob"></div>
+      <div class="frow"><label>Nationality :</label><input type="text" id="nationality" placeholder="e.g. Thai"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>National ID / Passport :</label><input type="text" id="national_id" placeholder="ID or Passport number" required></div>
+      <div class="frow"><label>ID Expiry Date :</label><input type="date" id="id_expiry"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Personal Email :</label><input type="email" id="personal_email" placeholder="Personal email address"></div>
+      <div class="frow"><label>Phone Number :</label><input type="tel" id="phone" placeholder="Mobile number" required></div>
+    </div>
+    <div class="frow"><label>Current Address :</label><input type="text" id="address" placeholder="House number, street, city, postcode"></div>
+  </div>
+
+  <!-- SECTION 2: EMPLOYMENT DETAILS -->
+  <div class="sec-hdr"><div class="ico">💼</div>2. EMPLOYMENT DETAILS</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Department :</label><input type="text" id="department" placeholder="Department name" required></div>
+      <div class="frow"><label>Position / Title :</label><input type="text" id="position" placeholder="Job title" required></div>
+    </div>
+    <div class="three-col">
+      <div class="frow"><label>Start Date :</label><input type="date" id="start_date" required></div>
+      <div class="frow"><label>Employment Type :</label>
+        <select id="emp_type">
+          <option value="">Select…</option>
+          <option>Full-time</option>
+          <option>Part-time</option>
+          <option>Probation</option>
+          <option>Contract</option>
+          <option>Intern</option>
+        </select>
+      </div>
+      <div class="frow"><label>Probation End :</label><input type="date" id="probation_end"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Direct Manager :</label><input type="text" id="manager" placeholder="Manager's full name" required></div>
+      <div class="frow"><label>Work Email (assigned) :</label><input type="email" id="work_email" placeholder="name@envisageworldwide.com"></div>
+    </div>
+    <div class="frow"><label>Work Location :</label><input type="text" id="work_location" placeholder="Office / branch location"></div>
+  </div>
+
+  <!-- SECTION 3: BANK & PAYROLL -->
+  <div class="sec-hdr"><div class="ico">🏦</div>3. BANK & PAYROLL INFORMATION</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Bank Name :</label><input type="text" id="bank_name" placeholder="e.g. Kasikorn Bank"></div>
+      <div class="frow"><label>Account Number :</label><input type="text" id="bank_acc" placeholder="Account number"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Account Name :</label><input type="text" id="bank_acc_name" placeholder="As shown on bank book"></div>
+      <div class="frow"><label>Branch :</label><input type="text" id="bank_branch" placeholder="Bank branch"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Tax ID :</label><input type="text" id="tax_id" placeholder="Personal tax ID (13 digits)"></div>
+      <div class="frow"><label>Social Security No. :</label><input type="text" id="ssn" placeholder="SSN if applicable"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: EMERGENCY CONTACT -->
+  <div class="sec-hdr"><div class="ico">🆘</div>4. EMERGENCY CONTACT</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Emergency Contact Name :</label><input type="text" id="ec_name" placeholder="Full name" required></div>
+      <div class="frow"><label>Relationship :</label><input type="text" id="ec_relation" placeholder="e.g. Spouse, Parent"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Phone :</label><input type="tel" id="ec_phone" placeholder="Contact number" required></div>
+      <div class="frow"><label>Alternate Phone :</label><input type="tel" id="ec_phone2" placeholder="Backup contact"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: REQUIRED DOCUMENTS -->
+  <div class="sec-hdr"><div class="ico">📎</div>5. DOCUMENTS SUBMITTED</div>
+  <div class="section">
+    <p style="font-size:12px;color:#555;margin-bottom:12px;font-weight:600;">Please check each document provided by the new employee:</p>
+    <div class="doc-grid">
+      <div class="doc-item"><input type="checkbox" id="doc1"><label for="doc1">National ID Card / Passport (copy)</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc2"><label for="doc2">Bank Book / Account Statement (copy)</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc3"><label for="doc3">Educational Certificate(s)</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc4"><label for="doc4">CV / Resume</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc5"><label for="doc5">Signed Employment Contract</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc6"><label for="doc6">Social Security Registration Form</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc7"><label for="doc7">House Registration Book (copy)</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc8"><label for="doc8">Medical Examination Report</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc9"><label for="doc9">Work Permit (if applicable)</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc10"><label for="doc10">Reference Letter(s)</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc11"><label for="doc11">Photo (2×2 inch, 2 copies)</label></div>
+      <div class="doc-item"><input type="checkbox" id="doc12"><label for="doc12">Tax Form (if transferring)</label></div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: ONBOARDING CHECKLIST -->
+  <div class="sec-hdr"><div class="ico">✅</div>6. ONBOARDING CHECKLIST</div>
+  <div class="section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <span style="font-size:12px;color:#555;font-weight:600;">Track completion progress:</span>
+      <span class="progress-label" id="progress-label">0% complete</span>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progress-bar" style="width:0%;"></div></div>
+    <div style="height:10px;"></div>
+    <div class="checklist-header">
+      <div class="ch-lbl">Task</div>
+      <div class="ch-by">Responsible</div>
+      <div class="ch-done">Done</div>
+    </div>
+    <ul class="checklist" id="checklist">
+      <li><div class="item-label"><strong>Office tour & introductions</strong><span>Show employee around office, introduce to team</span></div><div class="by-col">HR / Manager</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>IT setup (laptop, email, accounts)</strong><span>Assign equipment, set up company email and system access</span></div><div class="by-col">IT / Admin</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>Email accounts & Line OA access</strong><span>Add to company Line group and communication channels</span></div><div class="by-col">IT / Admin</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>Company policy briefing</strong><span>Review code of conduct, leave policy, expense policy</span></div><div class="by-col">HR</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>Benefits & payroll orientation</strong><span>Explain salary date, social security, health insurance</span></div><div class="by-col">HR / Finance</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>Key software & tools training</strong><span>Clockify, project tools, internal systems</span></div><div class="by-col">Manager / IT</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>Assign buddy / mentor</strong><span>Pair with a senior team member for first month</span></div><div class="by-col">Manager</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>First-week check-in with HR</strong><span>15-minute catch-up to address any concerns</span></div><div class="by-col">HR</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>30-day probation review scheduled</strong><span>Set date for first formal check-in with manager</span></div><div class="by-col">Manager</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+      <li><div class="item-label"><strong>All HR documents filed</strong><span>Complete employee file with all required documents</span></div><div class="by-col">HR</div><input type="checkbox" class="cl-check" onchange="updateProgress()"></li>
+    </ul>
+  </div>
+
+  <!-- SECTION 7: HR NOTES -->
+  <div class="sec-hdr"><div class="ico">📝</div>7. HR NOTES</div>
+  <div class="section">
+    <div class="frow" style="align-items:flex-start;flex-direction:column;gap:4px;">
+      <label style="margin-bottom:4px;">Additional Notes :</label>
+      <textarea rows="3" placeholder="Any special arrangements, notes, or follow-up actions…" style="width:100%;"></textarea>
+    </div>
+    <div class="two-col" style="margin-top:12px;">
+      <div class="frow"><label>Processed by (HR) :</label><input type="text" placeholder="HR officer name"></div>
+      <div class="frow"><label>Date Processed :</label><input type="date"></div>
+    </div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
+    <button class="btn btn-navy" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn btn-primary" onclick="saveForm()">💾 Save Onboarding Record</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-banner">
+    <div class="shield">🤝</div>
+    <div>
+      <div class="main-txt">WELCOME TO THE ENVISAGE FAMILY.</div>
+      <div class="sub-txt">A great onboarding experience sets the foundation for success.</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+window.addEventListener('DOMContentLoaded', function(){
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('ob_date').value = today;
+  updateProgress();
+});
+
+function updateProgress(){
+  var checks = document.querySelectorAll('.cl-check');
+  var done = Array.from(checks).filter(function(c){return c.checked;}).length;
+  var pct = Math.round((done / checks.length) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-label').textContent = pct + '% complete (' + done + '/' + checks.length + ')';
+}
+
+function saveForm(){
+  var name = document.getElementById('name_en').value.trim();
+  if(!name){ alert('Please enter the employee name.'); document.getElementById('name_en').classList.add('invalid'); return; }
+  document.getElementById('success_overlay').classList.add('show');
+}
+
+function clearForm(silent){
+  if(!silent && !confirm('Clear all entered data?')) return;
+  document.querySelectorAll('input[type="text"],input[type="date"],input[type="email"],input[type="tel"]').forEach(function(i){i.value='';i.classList.remove('invalid');});
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(i){i.checked=false;});
+  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
+  document.querySelectorAll('textarea').forEach(function(t){t.value='';});
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('ob_date').value = today;
+  updateProgress();
+}
+</script>
+</body>
+</html>

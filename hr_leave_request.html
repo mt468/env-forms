@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leave Request | Envisage HR</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#daeaf8 0%,#eaf4fb 100%);padding:20px;color:#1a2744;min-height:100vh;}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#00b8a9;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:14px;padding:6px 12px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.back-link:hover{color:#009e90;}
+
+.page{background:#fff;max-width:860px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+
+input[type="text"],input[type="number"],input[type="date"],input[type="email"],input[type="tel"],select,textarea{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #3a7bd5;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input[type="text"]:focus,input[type="date"]:focus,input[type="email"]:focus,
+input[type="tel"]:focus,select:focus,textarea:focus{border-bottom-color:#00b8a9;background:rgba(0,184,169,.05);}
+input.invalid{border-bottom-color:#e74c3c!important;background:rgba(231,76,60,.05);}
+input[type="radio"],input[type="checkbox"]{width:14px;height:14px;accent-color:#00b8a9;cursor:pointer;}
+select{cursor:pointer;}
+textarea{resize:vertical;min-height:52px;border:1.5px solid #3a7bd5;border-radius:4px;padding:6px;background:#fafcff;}
+textarea:focus{border-color:#00b8a9;}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:2px solid #e0eaf4;}
+.header-logo{width:70px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.header-logo .logo-circle{width:60px;height:60px;background:linear-gradient(135deg,#00b8a9,#009e90);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;}
+.header-center{flex:1;padding:0 12px;}
+.header-center h1{font-size:26px;font-weight:800;color:#1a2744;line-height:1.1;}
+.header-center .sub{font-size:12px;color:#555;margin-top:4px;font-weight:600;}
+.header-right{width:200px;flex-shrink:0;border:2px solid #c5d8ec;border-radius:8px;padding:10px 12px;font-size:12px;}
+.ref-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-weight:700;}
+.ref-row input{flex:1;min-width:0;}
+
+/* SECTION HEADERS */
+.sec-hdr{background:#00b8a9;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:rgba(255,255,255,.25);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+/* SECTIONS */
+.section{padding:14px 22px;border-bottom:1px solid #e0eaf4;}
+.frow{display:flex;align-items:flex-end;gap:8px;margin-bottom:12px;font-size:12px;font-weight:700;}
+.frow label{white-space:nowrap;font-weight:700;color:#1a2744;}
+.frow input,.frow select{flex:1;min-width:40px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
+
+/* LEAVE TYPE GRID */
+.leave-types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.leave-type-card{border:2px solid #e0eaf4;border-radius:8px;padding:10px 12px;cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:8px;}
+.leave-type-card:hover{border-color:#00b8a9;background:#f0fdfb;}
+.leave-type-card input[type="radio"]{margin-top:3px;flex-shrink:0;}
+.leave-type-card .lt-info .lt-name{font-size:12px;font-weight:700;color:#1a2744;}
+.leave-type-card .lt-info .lt-note{font-size:10px;color:#888;margin-top:2px;}
+.leave-type-card.selected{border-color:#00b8a9;background:#e8faf8;}
+
+/* DATE SUMMARY */
+.date-summary{background:#f7fbff;border:1.5px solid #c5d8ec;border-radius:8px;padding:12px 16px;margin-top:10px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;}
+.ds-item{text-align:center;}
+.ds-item .ds-val{font-size:22px;font-weight:800;color:#00b8a9;}
+.ds-item .ds-lbl{font-size:10px;color:#888;font-weight:700;text-transform:uppercase;}
+
+/* APPROVAL TABLE */
+.appr-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.appr-table th{background:#f0f6fc;color:#1a2744;padding:7px 10px;font-weight:700;text-align:center;border:1px solid #c5d8ec;font-size:11px;}
+.appr-table th:nth-child(1){width:26%;}
+.appr-table th:nth-child(2){width:22%;}
+.appr-table th:nth-child(3){width:16%;}
+.appr-table th:nth-child(4){width:18%;}
+.appr-table th:nth-child(5){width:18%;}
+.appr-table td{padding:6px 10px;border:1px solid #e0eaf4;vertical-align:middle;height:34px;}
+.appr-table td input{width:100%;min-width:0;}
+.role-cell{display:flex;align-items:center;gap:7px;}
+.ava{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:#fff;}
+.ava-t{background:#00b8a9;}.ava-b{background:#3a7bd5;}.ava-p{background:#8e44ad;}
+
+/* NOTES BAR */
+.notes-bar{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e0eaf4;}
+.nb-left{padding:14px 20px;border-right:1px solid #e0eaf4;}
+.nb-right{padding:14px 20px;}
+.nb-title{font-size:12px;font-weight:800;color:#1a2744;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;}
+.note-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11px;color:#333;line-height:1.4;}
+.note-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;}
+.nd-red{background:#fde8e8;color:#e74c3c;border:1.5px solid #e74c3c;}
+.nd-ora{background:#fff3e0;color:#e67e22;border:1.5px solid #e67e22;}
+.nd-grn{background:#e8f8f0;color:#27ae60;border:1.5px solid #27ae60;}
+.nd-teal{background:#e0faf8;color:#00b8a9;border:1.5px solid #00b8a9;}
+
+/* ACTION BAR */
+.action-bar{display:flex;justify-content:center;gap:14px;padding:14px 20px;background:#f7fbff;border-top:2px solid #e0eaf4;flex-wrap:wrap;}
+.btn{padding:10px 26px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:#00b8a9;color:#fff;}
+.btn-primary:hover{background:#009e90;transform:translateY(-1px);}
+.btn-navy{background:#1a2744;color:#fff;}
+.btn-navy:hover{background:#243660;transform:translateY(-1px);}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #1a2744;}
+.btn-outline:hover{background:#f0f6fc;}
+
+/* FOOTER */
+.footer-banner{background:#1a2744;color:#fff;text-align:center;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.footer-banner .shield{width:34px;height:34px;background:#00b8a9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.footer-banner .main-txt{font-size:14px;font-weight:800;letter-spacing:.5px;}
+.footer-banner .sub-txt{font-size:10px;opacity:.85;margin-top:2px;}
+
+/* VAL MSG */
+.val-msg{display:none;background:#fff3cd;border:1px solid #ffc107;color:#856404;font-size:12px;padding:10px 16px;margin:0 20px 10px;border-radius:6px;font-weight:600;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:30px 34px;max-width:440px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.modal h2{font-size:20px;font-weight:800;color:#1a2744;margin-bottom:10px;}
+.modal p{font-size:13px;color:#555;line-height:1.6;margin-bottom:6px;}
+.modal .ref-id{font-size:22px;font-weight:800;color:#00b8a9;margin:12px 0;}
+.modal .close-btn{margin-top:18px;background:#1a2744;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;border-radius:0;}
+  .action-bar,.back-link{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div style="max-width:860px;margin:0 auto;">
+  <a class="back-link" href="forms_portal.html">← Back to Portal</a>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="overlay" id="success_overlay">
+  <div class="modal">
+    <div style="font-size:46px;margin-bottom:8px;">✅</div>
+    <h2>Leave Request Submitted!</h2>
+    <p>Your request has been sent to your manager for approval.</p>
+    <div class="ref-id" id="modal_ref_id">LR-XXXXXXX</div>
+    <p>You will be notified once approved.</p>
+    <button class="close-btn" onclick="closeModal()">OK – New Request</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <div class="logo-circle">E</div>
+    </div>
+    <div class="header-center">
+      <h1>LEAVE REQUEST FORM</h1>
+      <div class="sub">Human Resources Department · Envisage Worldwide</div>
+    </div>
+    <div class="header-right">
+      <div class="ref-row">
+        <span>📋</span>
+        <span style="font-weight:700;">LR No. :</span>
+        <input type="text" id="lr_no" placeholder="e.g. LR-001">
+      </div>
+      <div class="ref-row">
+        <span>📅</span>
+        <span style="font-weight:700;">Date :</span>
+        <input type="date" id="submit_date">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: EMPLOYEE INFORMATION -->
+  <div class="sec-hdr"><div class="ico">👤</div>1. EMPLOYEE INFORMATION</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Full Name :</label><input type="text" id="emp_name" placeholder="First and Last Name" required></div>
+      <div class="frow"><label>Employee ID :</label><input type="text" id="emp_id" placeholder="e.g. ENV-0001"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Department :</label><input type="text" id="emp_dept" placeholder="Your department" required></div>
+      <div class="frow"><label>Position / Title :</label><input type="text" id="emp_position" placeholder="Your job title"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Email :</label><input type="email" id="emp_email" placeholder="your@envisageworldwide.com" required></div>
+      <div class="frow"><label>Phone / Line :</label><input type="tel" id="emp_phone" placeholder="Contact number"></div>
+    </div>
+    <div class="frow"><label>Manager / Supervisor :</label><input type="text" id="emp_manager" placeholder="Direct manager's name" required></div>
+  </div>
+
+  <!-- SECTION 2: LEAVE TYPE -->
+  <div class="sec-hdr"><div class="ico">📋</div>2. TYPE OF LEAVE</div>
+  <div class="section">
+    <div class="leave-types">
+      <label class="leave-type-card" id="lt_annual_card">
+        <input type="radio" name="leave_type" id="lt_annual" value="Annual Leave" onchange="selectLeaveType(this)">
+        <div class="lt-info">
+          <div class="lt-name">🌴 Annual Leave</div>
+          <div class="lt-note">Vacation / personal leave</div>
+        </div>
+      </label>
+      <label class="leave-type-card" id="lt_sick_card">
+        <input type="radio" name="leave_type" id="lt_sick" value="Sick Leave" onchange="selectLeaveType(this)">
+        <div class="lt-info">
+          <div class="lt-name">🏥 Sick Leave</div>
+          <div class="lt-note">Illness / medical appointment</div>
+        </div>
+      </label>
+      <label class="leave-type-card" id="lt_personal_card">
+        <input type="radio" name="leave_type" id="lt_personal" value="Personal Leave" onchange="selectLeaveType(this)">
+        <div class="lt-info">
+          <div class="lt-name">👤 Personal Leave</div>
+          <div class="lt-note">Personal matters (unpaid)</div>
+        </div>
+      </label>
+      <label class="leave-type-card" id="lt_business_card">
+        <input type="radio" name="leave_type" id="lt_business" value="Business Leave" onchange="selectLeaveType(this)">
+        <div class="lt-info">
+          <div class="lt-name">💼 Business Leave</div>
+          <div class="lt-note">Work travel or external duty</div>
+        </div>
+      </label>
+      <label class="leave-type-card" id="lt_maternity_card">
+        <input type="radio" name="leave_type" id="lt_maternity" value="Maternity/Paternity Leave" onchange="selectLeaveType(this)">
+        <div class="lt-info">
+          <div class="lt-name">👶 Maternity / Paternity</div>
+          <div class="lt-note">Parental leave</div>
+        </div>
+      </label>
+      <label class="leave-type-card" id="lt_wfh_card">
+        <input type="radio" name="leave_type" id="lt_wfh" value="Work from Home" onchange="selectLeaveType(this)">
+        <div class="lt-info">
+          <div class="lt-name">🏠 Work from Home</div>
+          <div class="lt-note">Remote work day(s)</div>
+        </div>
+      </label>
+      <label class="leave-type-card" id="lt_other_card">
+        <input type="radio" name="leave_type" id="lt_other" value="Other" onchange="selectLeaveType(this)">
+        <div class="lt-info">
+          <div class="lt-name">📌 Other</div>
+          <div class="lt-note">Specify below</div>
+        </div>
+      </label>
+    </div>
+    <div class="frow" id="other_specify_row" style="display:none;">
+      <label>Please Specify :</label>
+      <input type="text" id="other_specify" placeholder="Describe leave type…">
+    </div>
+  </div>
+
+  <!-- SECTION 3: LEAVE DATES -->
+  <div class="sec-hdr"><div class="ico">📅</div>3. LEAVE DATES & DURATION</div>
+  <div class="section">
+    <div class="three-col">
+      <div class="frow"><label>Start Date :</label><input type="date" id="date_from" onchange="calcDays()" required></div>
+      <div class="frow"><label>End Date :</label><input type="date" id="date_to" onchange="calcDays()" required></div>
+      <div class="frow">
+        <label>Session :</label>
+        <select id="session" onchange="calcDays()">
+          <option value="full">Full Day(s)</option>
+          <option value="am">Morning (AM)</option>
+          <option value="pm">Afternoon (PM)</option>
+        </select>
+      </div>
+    </div>
+    <div class="date-summary">
+      <div class="ds-item"><div class="ds-val" id="ds_days">0</div><div class="ds-lbl">Days</div></div>
+      <div class="ds-item"><div class="ds-val" id="ds_from">–</div><div class="ds-lbl">From</div></div>
+      <div class="ds-item"><div class="ds-val" id="ds_to">–</div><div class="ds-lbl">To</div></div>
+      <div class="ds-item"><div class="ds-val" id="ds_session" style="font-size:14px;">–</div><div class="ds-lbl">Session</div></div>
+    </div>
+    <div class="frow" style="margin-top:12px;"><label>Contact During Leave :</label><input type="text" id="contact_leave" placeholder="Phone number or email to reach you if needed"></div>
+    <div class="frow"><label>Emergency Contact :</label><input type="text" id="emergency_contact" placeholder="Name and phone of emergency contact"></div>
+  </div>
+
+  <!-- SECTION 4: REASON & HANDOVER -->
+  <div class="sec-hdr"><div class="ico">📝</div>4. REASON & WORK HANDOVER</div>
+  <div class="section">
+    <div class="frow" style="align-items:flex-start;flex-direction:column;gap:4px;">
+      <label style="margin-bottom:4px;">Reason for Leave :</label>
+      <textarea id="reason" rows="3" placeholder="Briefly explain the reason for your leave request…" style="width:100%;"></textarea>
+    </div>
+    <div class="frow" style="margin-top:10px;"><label>Handover Person :</label><input type="text" id="handover_person" placeholder="Name of colleague covering your duties"></div>
+    <div class="frow" style="align-items:flex-start;flex-direction:column;gap:4px;">
+      <label style="margin-bottom:4px;">Handover Notes :</label>
+      <textarea id="handover_notes" rows="2" placeholder="Key tasks or responsibilities handed over…" style="width:100%;"></textarea>
+    </div>
+  </div>
+
+  <!-- SECTION 5: APPROVAL -->
+  <div class="sec-hdr"><div class="ico">✅</div>5. APPROVAL</div>
+  <div class="section" style="padding:0;">
+    <table class="appr-table">
+      <thead>
+        <tr><th>Role</th><th>Name</th><th>Decision</th><th>Signature</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-t">👤</div>Requester</div></td>
+          <td><input type="text" id="appr_requester" placeholder="Full name"></td>
+          <td><span style="display:inline-block;padding:3px 10px;border-radius:12px;background:#e8f8f0;color:#27ae60;font-size:11px;font-weight:700;border:1px solid #27ae60;">✔ Submitted</span></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><input type="date"></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-b">👤</div>Direct Manager</div></td>
+          <td><input type="text" placeholder="Manager name" style="color:#aaa;" title="To be filled by approver"></td>
+          <td><span style="display:inline-block;padding:3px 10px;border-radius:12px;background:#f7f7f7;color:#aaa;font-size:11px;font-weight:700;border:1px solid #ddd;">⏳ Pending</span></td>
+          <td><input type="text" placeholder="Approver signs" style="color:#aaa;"></td>
+          <td><input type="date" style="color:#aaa;"></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-p">👤</div>HR Department</div></td>
+          <td><input type="text" placeholder="HR officer name" style="color:#aaa;" title="To be filled by approver"></td>
+          <td><span style="display:inline-block;padding:3px 10px;border-radius:12px;background:#f7f7f7;color:#aaa;font-size:11px;font-weight:700;border:1px solid #ddd;">⏳ Pending</span></td>
+          <td><input type="text" placeholder="Approver signs" style="color:#aaa;"></td>
+          <td><input type="date" style="color:#aaa;"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- NOTES BAR -->
+  <div class="notes-bar">
+    <div class="nb-left">
+      <div class="nb-title">📋 Leave Balance (for HR use)</div>
+      <div class="two-col" style="gap:10px;">
+        <div class="frow"><label>Annual Leave :</label><input type="number" placeholder="Days remaining" min="0"></div>
+        <div class="frow"><label>Sick Leave :</label><input type="number" placeholder="Days remaining" min="0"></div>
+      </div>
+    </div>
+    <div class="nb-right">
+      <div class="nb-title">⚠️ Important Notes</div>
+      <div class="note-item"><div class="note-dot nd-teal">✓</div><span>Submit at least 3 days in advance for planned leave.</span></div>
+      <div class="note-item"><div class="note-dot nd-ora">!</div><span>Sick leave above 3 days requires a medical certificate.</span></div>
+      <div class="note-item"><div class="note-dot nd-red">✕</div><span>Unauthorized absence will be treated as unpaid leave.</span></div>
+      <div class="note-item"><div class="note-dot nd-grn">✓</div><span>Ensure work handover is completed before departure.</span></div>
+    </div>
+  </div>
+
+  <!-- VALIDATION -->
+  <div class="val-msg" id="val_msg">⚠️ Please fill in all required fields: <span id="val_fields"></span></div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
+    <button class="btn btn-navy" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn btn-primary" id="submit_btn" onclick="submitForm()">✅ Submit Request</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-banner">
+    <div class="shield">👥</div>
+    <div>
+      <div class="main-txt">PEOPLE FIRST, ALWAYS.</div>
+      <div class="sub-txt">Submit your leave request with sufficient notice and proper handover.</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── CONFIG ──
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKDBKsZHDBT94IIM4Jw3FsuVVtonrIGBjxC3--kGYZImmlCLkCFbiHXGiuyG984xZWlQ/exec';
+var CC_EMAILS  = 'admin@envisageworldwide.com, gift@envisageworldwide.com';  // PRODUCTION
+
+function generateFormNo(prefix) {
+  var d = new Date();
+  var yy = d.getFullYear().toString().slice(2);
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  var rnd = String(Math.floor(Math.random()*9000)+1000);
+  return prefix + '-' + yy + mm + dd + '-' + rnd;
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('submit_date').value = today;
+  document.getElementById('date_from').value = today;
+  document.getElementById('date_to').value = today;
+  var f = document.getElementById('lr_no');
+  f.value = generateFormNo('LR'); f.readOnly = true;
+  f.style.cssText += ';background:#f0f4f8;color:#555;cursor:default;';
+  calcDays();
+});
+
+function selectLeaveType(radio){
+  document.querySelectorAll('.leave-type-card').forEach(function(c){ c.classList.remove('selected'); });
+  radio.closest('.leave-type-card').classList.add('selected');
+  var otherRow = document.getElementById('other_specify_row');
+  otherRow.style.display = radio.value === 'Other' ? 'flex' : 'none';
+}
+
+function calcDays(){
+  var from = document.getElementById('date_from').value;
+  var to   = document.getElementById('date_to').value;
+  var sess = document.getElementById('session').value;
+  var dFrom = from ? new Date(from) : null;
+  var dTo   = to   ? new Date(to)   : null;
+
+  if(dFrom && dTo && dTo >= dFrom){
+    var diff = Math.round((dTo - dFrom) / 86400000) + 1;
+    var days = sess === 'full' ? diff : 0.5;
+    document.getElementById('ds_days').textContent = sess === 'full' ? diff : '½';
+    document.getElementById('ds_from').textContent = formatDate(dFrom);
+    document.getElementById('ds_to').textContent   = formatDate(dTo);
+    var sessMap = {full:'Full Day(s)',am:'Morning',pm:'Afternoon'};
+    document.getElementById('ds_session').textContent = sessMap[sess];
+  } else {
+    document.getElementById('ds_days').textContent = '0';
+    document.getElementById('ds_from').textContent = '–';
+    document.getElementById('ds_to').textContent   = '–';
+    document.getElementById('ds_session').textContent = '–';
+  }
+}
+
+function formatDate(d){
+  return d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'});
+}
+
+function validate(){
+  var required = [
+    {id:'emp_name',   label:'Full Name'},
+    {id:'emp_dept',   label:'Department'},
+    {id:'emp_email',  label:'Email'},
+    {id:'emp_manager',label:'Manager'},
+    {id:'date_from',  label:'Start Date'},
+    {id:'date_to',    label:'End Date'},
+  ];
+  var missing = [];
+  required.forEach(function(f){
+    var el = document.getElementById(f.id);
+    if(!el.value.trim()){ missing.push(f.label); el.classList.add('invalid'); }
+    else el.classList.remove('invalid');
+  });
+  if(!document.querySelector('input[name="leave_type"]:checked')) missing.push('Leave Type');
+  return missing;
+}
+
+function submitForm(){
+  var missing = validate();
+  var vm = document.getElementById('val_msg');
+  if(missing.length > 0){
+    document.getElementById('val_fields').textContent = missing.join(', ');
+    vm.style.display = 'block';
+    vm.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+  vm.style.display = 'none';
+
+  var leaveTypeEl = document.querySelector('input[name="leave_type"]:checked');
+  var sessionEl   = document.getElementById('session');
+
+  var payload = {
+    action:       'submit',
+    form_type:    'Leave Request',
+    pr_no:        document.getElementById('lr_no').value,
+    pr_date:      document.getElementById('submit_date').value,
+    dept:         document.getElementById('emp_dept').value,
+    purpose:      (leaveTypeEl ? leaveTypeEl.value : '') + ' — ' + (document.getElementById('reason').value || ''),
+    traveler:     document.getElementById('emp_name').value,
+    position:     document.getElementById('emp_position').value,
+    emp_id:       document.getElementById('emp_id').value,
+    contact:      document.getElementById('emp_email').value,
+    travel_from:  document.getElementById('date_from').value,
+    travel_to:    document.getElementById('date_to').value,
+    leave_type:   leaveTypeEl ? leaveTypeEl.value : '',
+    session:      sessionEl ? sessionEl.value : 'full',
+    days_count:   document.getElementById('ds_days').textContent,
+    manager:      document.getElementById('emp_manager').value,
+    phone:        document.getElementById('emp_phone').value,
+    contact_leave: document.getElementById('contact_leave').value,
+    reason:       document.getElementById('reason').value,
+    total_amount: 0,
+    cert_name:    document.getElementById('emp_name').value,
+    cert_date:    document.getElementById('submit_date').value,
+    cc_emails:    CC_EMAILS
+  };
+
+  var btn = document.getElementById('submit_btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
+
+  var form = document.createElement('form');
+  form.method = 'POST'; form.action = SCRIPT_URL; form.target = 'hidden_iframe';
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+
+  setTimeout(function(){
+    document.getElementById('modal_ref_id').textContent = payload.pr_no;
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled = false; btn.innerHTML = '✅ Submit Request';
+  }, 2200);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  clearForm(true);
+}
+
+function clearForm(silent){
+  if(!silent && !confirm('Clear all entered data?')) return;
+  document.querySelectorAll('input[type="text"],input[type="date"],input[type="email"],input[type="tel"],input[type="number"]').forEach(function(i){i.value='';i.classList.remove('invalid');});
+  document.querySelectorAll('input[type="radio"]').forEach(function(i){i.checked=false;});
+  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
+  document.querySelectorAll('textarea').forEach(function(t){t.value='';});
+  document.querySelectorAll('.leave-type-card').forEach(function(c){c.classList.remove('selected');});
+  document.getElementById('other_specify_row').style.display = 'none';
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('submit_date').value = today;
+  document.getElementById('date_from').value = today;
+  document.getElementById('date_to').value = today;
+  document.getElementById('lr_no').value = generateFormNo('LR');
+  calcDays();
+  document.getElementById('val_msg').style.display = 'none';
+}
+</script>
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+</body>
+</html>

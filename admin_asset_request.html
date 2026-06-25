@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Asset Request | Envisage Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#f0e8fb 0%,#f8f4ff 100%);padding:20px;color:#1a2744;min-height:100vh;}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#6c3fa0;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:14px;padding:6px 12px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.back-link:hover{color:#8e44ad;}
+.page{background:#fff;max-width:860px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+input[type="text"],input[type="number"],input[type="date"],input[type="email"],select,textarea{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #8e44ad;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input[type="text"]:focus,input[type="number"]:focus,input[type="date"]:focus,
+input[type="email"]:focus,select:focus,textarea:focus{border-bottom-color:#6c3fa0;background:rgba(108,63,160,.05);}
+input.invalid{border-bottom-color:#e74c3c!important;}
+input[type="checkbox"],input[type="radio"]{width:14px;height:14px;accent-color:#8e44ad;cursor:pointer;}
+input[type="number"]{text-align:right;}
+textarea{resize:vertical;border:1.5px solid #8e44ad;border-radius:4px;padding:6px;}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:center;gap:16px;border-bottom:2px solid #ede0f4;}
+.logo-box{width:60px;height:60px;background:linear-gradient(135deg,#6c3fa0,#8e44ad);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0;}
+.header-text h1{font-size:24px;font-weight:800;color:#1a2744;}
+.header-text .sub{font-size:12px;color:#555;margin-top:3px;font-weight:600;}
+.header-meta{margin-left:auto;text-align:right;font-size:12px;border:2px solid #ede0f4;border-radius:8px;padding:10px 12px;}
+.header-meta .frow{display:flex;align-items:center;gap:6px;font-weight:700;margin-bottom:6px;}
+.header-meta input{width:130px;border-bottom-color:#8e44ad;}
+
+.sec-hdr{background:#6c3fa0;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:rgba(255,255,255,.2);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.section{padding:14px 22px;border-bottom:1px solid #ede0f4;}
+.frow{display:flex;align-items:flex-end;gap:8px;margin-bottom:12px;font-size:12px;font-weight:700;}
+.frow label{white-space:nowrap;font-weight:700;color:#1a2744;}
+.frow input,.frow select{flex:1;min-width:40px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
+
+/* ASSET TYPE CARDS */
+.asset-types{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.at-card{border:2px solid #ede0f4;border-radius:8px;padding:10px 8px;cursor:pointer;transition:all .2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.at-card:hover{border-color:#8e44ad;background:#f8f0ff;}
+.at-card.selected{border-color:#6c3fa0;background:#f0e8fb;}
+.at-card input[type="radio"]{display:none;}
+.at-card .at-icon{font-size:26px;}
+.at-card .at-name{font-size:11px;font-weight:700;color:#1a2744;}
+
+/* ITEMS TABLE */
+.items-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.items-table th{background:#6c3fa0;color:#fff;padding:8px 10px;text-align:center;font-weight:700;font-size:11px;}
+.items-table th:nth-child(1){width:38px;}
+.items-table th:nth-child(3){width:80px;}
+.items-table th:nth-child(4){width:160px;}
+.items-table td{padding:6px 8px;border-bottom:1px solid #ede0f4;vertical-align:middle;height:36px;}
+.items-table td:first-child{text-align:center;color:#888;font-weight:700;}
+.items-table td:nth-child(3){text-align:center;}
+.items-table td input,.items-table td select{width:100%;}
+
+/* APPROVAL */
+.appr-table{width:100%;border-collapse:collapse;font-size:12px;}
+.appr-table th{background:#f3eeff;color:#6c3fa0;padding:7px 10px;font-weight:700;text-align:center;border:1px solid #ded0f0;font-size:11px;}
+.appr-table td{padding:6px 10px;border:1px solid #ede0f4;vertical-align:middle;height:34px;}
+.appr-table td input,.appr-table td select{width:100%;border-bottom-color:#8e44ad;}
+.role-cell{display:flex;align-items:center;gap:7px;}
+.ava{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:#fff;}
+.ava-p{background:#8e44ad;}.ava-b{background:#3a7bd5;}.ava-r{background:#e74c3c;}
+
+/* NOTES */
+.notes-bar{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #ede0f4;}
+.nb-left{padding:14px 20px;border-right:1px solid #ede0f4;}
+.nb-right{padding:14px 20px;}
+.nb-title{font-size:12px;font-weight:800;color:#1a2744;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;}
+.note-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11px;color:#333;line-height:1.4;}
+.note-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;}
+.nd-pur{background:#f3eeff;color:#8e44ad;border:1.5px solid #8e44ad;}
+.nd-ora{background:#fff3e0;color:#e67e22;border:1.5px solid #e67e22;}
+.nd-red{background:#fde8e8;color:#e74c3c;border:1.5px solid #e74c3c;}
+.nd-grn{background:#e8f8f0;color:#27ae60;border:1.5px solid #27ae60;}
+
+/* URGENCY */
+.urgency-row{display:flex;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.urg-opt{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;border:2px solid #ede0f4;cursor:pointer;font-size:12px;font-weight:700;transition:all .2s;}
+.urg-opt:hover{border-color:#8e44ad;}
+.urg-opt input[type="radio"]{display:none;}
+.urg-opt.selected-normal{border-color:#27ae60;background:#e8f8f0;color:#27ae60;}
+.urg-opt.selected-urgent{border-color:#e67e22;background:#fff3e0;color:#e67e22;}
+.urg-opt.selected-critical{border-color:#e74c3c;background:#fde8e8;color:#e74c3c;}
+
+/* VAL MSG */
+.val-msg{display:none;background:#fff3cd;border:1px solid #ffc107;color:#856404;font-size:12px;padding:10px 16px;margin:0 20px 10px;border-radius:6px;font-weight:600;}
+
+/* ACTIONS */
+.action-bar{display:flex;justify-content:center;gap:14px;padding:14px 20px;background:#f9f6ff;border-top:2px solid #ede0f4;flex-wrap:wrap;}
+.btn{padding:10px 26px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:#6c3fa0;color:#fff;}
+.btn-primary:hover{background:#8e44ad;transform:translateY(-1px);}
+.btn-navy{background:#1a2744;color:#fff;}
+.btn-navy:hover{background:#243660;transform:translateY(-1px);}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #1a2744;}
+.btn-outline:hover{background:#f0f6fc;}
+
+.footer-banner{background:#1a2744;color:#fff;text-align:center;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.footer-banner .shield{width:34px;height:34px;background:#8e44ad;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.footer-banner .main-txt{font-size:14px;font-weight:800;letter-spacing:.5px;}
+.footer-banner .sub-txt{font-size:10px;opacity:.85;margin-top:2px;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:30px 34px;max-width:440px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.modal h2{font-size:20px;font-weight:800;color:#1a2744;margin-bottom:10px;}
+.modal p{font-size:13px;color:#555;line-height:1.6;margin-bottom:6px;}
+.modal .ref-id{font-size:22px;font-weight:800;color:#8e44ad;margin:12px 0;}
+.modal .close-btn{margin-top:18px;background:#1a2744;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
+
+@media print{body{background:#fff;padding:0;}.page{box-shadow:none;border-radius:0;}.action-bar,.back-link{display:none;}}
+</style>
+</head>
+<body>
+
+<div style="max-width:860px;margin:0 auto;">
+  <a class="back-link" href="forms_portal.html">← Back to Portal</a>
+</div>
+
+<div class="overlay" id="success_overlay">
+  <div class="modal">
+    <div style="font-size:46px;margin-bottom:8px;">✅</div>
+    <h2>Asset Request Submitted!</h2>
+    <p>Your request has been forwarded to Admin for processing.</p>
+    <div class="ref-id" id="modal_ref_id">AR-XXXXXXX</div>
+    <p>You will be contacted once the asset is ready.</p>
+    <button class="close-btn" onclick="closeModal()">OK – New Request</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-box">E</div>
+    <div class="header-text">
+      <h1>ASSET REQUEST FORM</h1>
+      <div class="sub">Administration Department · Envisage Worldwide</div>
+    </div>
+    <div class="header-meta">
+      <div class="frow"><span>📋 AR No. :</span><input type="text" id="ar_no" placeholder="AR-001"></div>
+      <div class="frow"><span>📅 Date :</span><input type="date" id="ar_date"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: REQUESTER -->
+  <div class="sec-hdr"><div class="ico">👤</div>1. REQUESTER INFORMATION</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Full Name :</label><input type="text" id="req_name" placeholder="Full name" required></div>
+      <div class="frow"><label>Employee ID :</label><input type="text" id="req_id" placeholder="e.g. ENV-0001"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Department :</label><input type="text" id="req_dept" placeholder="Your department" required></div>
+      <div class="frow"><label>Email :</label><input type="email" id="req_email" placeholder="your@envisageworldwide.com"></div>
+    </div>
+    <div class="frow"><label>Date Required By :</label><input type="date" id="required_by" style="max-width:180px;"></div>
+  </div>
+
+  <!-- SECTION 2: ASSET TYPE -->
+  <div class="sec-hdr"><div class="ico">💻</div>2. ASSET CATEGORY</div>
+  <div class="section">
+    <div class="asset-types">
+      <label class="at-card" onclick="selectAsset(this,'IT Equipment')">
+        <input type="radio" name="asset_cat" value="IT Equipment">
+        <div class="at-icon">💻</div>
+        <div class="at-name">IT Equipment</div>
+      </label>
+      <label class="at-card" onclick="selectAsset(this,'Mobile/Phone')">
+        <input type="radio" name="asset_cat" value="Mobile/Phone">
+        <div class="at-icon">📱</div>
+        <div class="at-name">Mobile / Phone</div>
+      </label>
+      <label class="at-card" onclick="selectAsset(this,'Furniture')">
+        <input type="radio" name="asset_cat" value="Furniture">
+        <div class="at-icon">🪑</div>
+        <div class="at-name">Furniture</div>
+      </label>
+      <label class="at-card" onclick="selectAsset(this,'Vehicle')">
+        <input type="radio" name="asset_cat" value="Vehicle">
+        <div class="at-icon">🚗</div>
+        <div class="at-name">Vehicle</div>
+      </label>
+      <label class="at-card" onclick="selectAsset(this,'AV/Camera')">
+        <input type="radio" name="asset_cat" value="AV/Camera">
+        <div class="at-icon">📷</div>
+        <div class="at-name">AV / Camera</div>
+      </label>
+      <label class="at-card" onclick="selectAsset(this,'Network')">
+        <input type="radio" name="asset_cat" value="Network">
+        <div class="at-icon">📡</div>
+        <div class="at-name">Network</div>
+      </label>
+      <label class="at-card" onclick="selectAsset(this,'Software/License')">
+        <input type="radio" name="asset_cat" value="Software/License">
+        <div class="at-icon">🔑</div>
+        <div class="at-name">Software / License</div>
+      </label>
+      <label class="at-card" onclick="selectAsset(this,'Other')">
+        <input type="radio" name="asset_cat" value="Other">
+        <div class="at-icon">📦</div>
+        <div class="at-name">Other</div>
+      </label>
+    </div>
+    <div class="frow" id="cat_other_row" style="display:none;">
+      <label>Specify Category :</label>
+      <input type="text" id="cat_other" placeholder="Describe the asset category…">
+    </div>
+  </div>
+
+  <!-- SECTION 3: ITEMS -->
+  <div class="sec-hdr"><div class="ico">📋</div>3. REQUESTED ITEMS</div>
+  <div class="section" style="padding:0 22px 14px;">
+    <table class="items-table" style="margin-top:14px;">
+      <thead>
+        <tr>
+          <th>No.</th>
+          <th>Item Description / Specification</th>
+          <th>Qty</th>
+          <th>Purpose / Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td><input type="text" placeholder="Item name and specs…"></td><td><input type="number" min="1" value="1" style="width:60px;"></td><td><input type="text" placeholder="Purpose…"></td></tr>
+        <tr><td>2</td><td><input type="text" placeholder="Item name and specs…"></td><td><input type="number" min="1" value="" placeholder="0"></td><td><input type="text" placeholder="Purpose…"></td></tr>
+        <tr><td>3</td><td><input type="text" placeholder="Item name and specs…"></td><td><input type="number" min="1" value="" placeholder="0"></td><td><input type="text" placeholder="Purpose…"></td></tr>
+        <tr><td>4</td><td><input type="text" placeholder="Item name and specs…"></td><td><input type="number" min="1" value="" placeholder="0"></td><td><input type="text" placeholder="Purpose…"></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SECTION 4: JUSTIFICATION & URGENCY -->
+  <div class="sec-hdr"><div class="ico">📝</div>4. JUSTIFICATION & URGENCY</div>
+  <div class="section">
+    <div class="frow" style="align-items:flex-start;flex-direction:column;gap:4px;">
+      <label style="margin-bottom:4px;">Business Justification :</label>
+      <textarea id="justification" rows="3" placeholder="Explain why this asset is needed and how it will be used…" style="width:100%;"></textarea>
+    </div>
+    <div style="margin-top:12px;">
+      <label style="font-size:12px;font-weight:700;display:block;margin-bottom:8px;">Priority Level :</label>
+      <div class="urgency-row">
+        <label class="urg-opt" id="urg_normal" onclick="selectUrgency('normal',this)">
+          <input type="radio" name="urgency" value="Normal"> 🟢 Normal (within 2 weeks)
+        </label>
+        <label class="urg-opt" id="urg_urgent" onclick="selectUrgency('urgent',this)">
+          <input type="radio" name="urgency" value="Urgent"> 🟠 Urgent (within 3 days)
+        </label>
+        <label class="urg-opt" id="urg_critical" onclick="selectUrgency('critical',this)">
+          <input type="radio" name="urgency" value="Critical"> 🔴 Critical (same day)
+        </label>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:10px;">
+      <div class="frow"><label>Replacement For :</label><input type="text" placeholder="Asset being replaced (if any)"></div>
+      <div class="frow"><label>Estimated Budget (THB) :</label><input type="number" placeholder="0.00" min="0"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: APPROVAL -->
+  <div class="sec-hdr"><div class="ico">✅</div>5. APPROVAL</div>
+  <div class="section" style="padding:0;">
+    <table class="appr-table">
+      <thead>
+        <tr><th>Role</th><th>Name</th><th>Decision</th><th>Signature</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-p">👤</div>Requester</div></td>
+          <td><input type="text" placeholder="Full name"></td>
+          <td><select><option>Requested</option></select></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><input type="date"></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-b">👤</div>Department Manager</div></td>
+          <td><input type="text" placeholder="Manager name"></td>
+          <td><select><option value="">–</option><option>Approved</option><option>Denied</option></select></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><input type="date"></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-r">👤</div>Admin / IT</div></td>
+          <td><input type="text" placeholder="Admin/IT officer"></td>
+          <td><select><option value="">–</option><option>Processed</option><option>Pending stock</option><option>Denied</option></select></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><input type="date"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- NOTES -->
+  <div class="notes-bar">
+    <div class="nb-left">
+      <div class="nb-title">📦 Asset Handover (Admin use)</div>
+      <div class="frow"><label>Asset Tag / Serial No. :</label><input type="text" placeholder="Serial or asset tag number"></div>
+      <div class="frow"><label>Issued Date :</label><input type="date"></div>
+      <div class="frow"><label>Issued By :</label><input type="text" placeholder="Admin officer name"></div>
+    </div>
+    <div class="nb-right">
+      <div class="nb-title">⚠️ Important Notes</div>
+      <div class="note-item"><div class="note-dot nd-pur">📋</div><span>All company assets remain the property of Envisage Worldwide.</span></div>
+      <div class="note-item"><div class="note-dot nd-ora">!</div><span>Report damaged or lost assets to Admin immediately.</span></div>
+      <div class="note-item"><div class="note-dot nd-red">✕</div><span>Assets may not be transferred to personal use without approval.</span></div>
+      <div class="note-item"><div class="note-dot nd-grn">✓</div><span>Return all assets upon resignation or contract completion.</span></div>
+    </div>
+  </div>
+
+  <!-- VAL MSG -->
+  <div class="val-msg" id="val_msg">⚠️ Please fill required fields: <span id="val_fields"></span></div>
+
+  <!-- ACTIONS -->
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
+    <button class="btn btn-navy" onclick="window.print()">🖨 Print / Save PDF</button>
+    <button class="btn btn-primary" id="submit_btn" onclick="submitForm()">📤 Submit Request</button>
+  </div>
+
+  <div class="footer-banner">
+    <div class="shield">🏢</div>
+    <div>
+      <div class="main-txt">MANAGING ASSETS WITH CARE.</div>
+      <div class="sub-txt">Responsible use of company resources keeps us all productive.</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── CONFIG ──
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKDBKsZHDBT94IIM4Jw3FsuVVtonrIGBjxC3--kGYZImmlCLkCFbiHXGiuyG984xZWlQ/exec';
+var CC_EMAILS  = 'mallika@envisageworldwide.com';  // PRODUCTION
+
+function generateFormNo(prefix) {
+  var d = new Date();
+  var yy = d.getFullYear().toString().slice(2);
+  var mm = String(d.getMonth()+1).padStart(2,'0');
+  var dd = String(d.getDate()).padStart(2,'0');
+  var rnd = String(Math.floor(Math.random()*9000)+1000);
+  return prefix + '-' + yy + mm + dd + '-' + rnd;
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('ar_date').value = today;
+  var f = document.getElementById('ar_no');
+  f.value = generateFormNo('AR'); f.readOnly = true;
+  f.style.cssText += ';background:#f0f4f8;color:#555;cursor:default;';
+});
+
+function selectAsset(el, val){
+  document.querySelectorAll('.at-card').forEach(function(c){c.classList.remove('selected');});
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+  document.getElementById('cat_other_row').style.display = val === 'Other' ? 'flex' : 'none';
+}
+
+function selectUrgency(level, el){
+  document.querySelectorAll('.urg-opt').forEach(function(e){e.className='urg-opt';});
+  el.classList.add('selected-'+level);
+  el.querySelector('input').checked = true;
+}
+
+function validate(){
+  var required = [{id:'req_name',label:'Full Name'},{id:'req_dept',label:'Department'}];
+  var missing = [];
+  required.forEach(function(f){
+    var el = document.getElementById(f.id);
+    if(!el.value.trim()){missing.push(f.label);el.classList.add('invalid');}
+    else el.classList.remove('invalid');
+  });
+  if(!document.querySelector('input[name="asset_cat"]:checked')) missing.push('Asset Category');
+  return missing;
+}
+
+function submitForm(){
+  var missing = validate();
+  var vm = document.getElementById('val_msg');
+  if(missing.length > 0){
+    document.getElementById('val_fields').textContent = missing.join(', ');
+    vm.style.display = 'block';
+    vm.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  vm.style.display = 'none';
+
+  var assetCatEl  = document.querySelector('input[name="asset_cat"]:checked');
+  var urgencyEl   = document.querySelector('input[name="urgency"]:checked');
+
+  // Collect items table rows
+  var itemRows = document.querySelectorAll('.items-table tbody tr');
+  var items = [];
+  itemRows.forEach(function(tr){
+    var cells = tr.querySelectorAll('input');
+    if(cells[0] && cells[0].value.trim()){
+      items.push({ item: cells[0].value, qty: cells[1] ? cells[1].value : '1', purpose: cells[2] ? cells[2].value : '' });
+    }
+  });
+
+  var payload = {
+    action:        'submit',
+    form_type:     'Asset Request',
+    pr_no:         document.getElementById('ar_no').value,
+    pr_date:       document.getElementById('ar_date').value,
+    dept:          document.getElementById('req_dept').value,
+    purpose:       document.getElementById('justification').value,
+    traveler:      document.getElementById('req_name').value,
+    position:      '',
+    emp_id:        document.getElementById('req_id').value,
+    contact:       document.getElementById('req_email').value,
+    asset_category: assetCatEl ? assetCatEl.value : '',
+    urgency:       urgencyEl ? urgencyEl.value : 'Normal',
+    required_by:   document.getElementById('required_by').value,
+    items:         JSON.stringify(items),
+    total_amount:  0,
+    cert_name:     document.getElementById('req_name').value,
+    cert_date:     document.getElementById('ar_date').value,
+    cc_emails:     CC_EMAILS
+  };
+
+  var btn = document.getElementById('submit_btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
+
+  var form = document.createElement('form');
+  form.method = 'POST'; form.action = SCRIPT_URL; form.target = 'hidden_iframe';
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+
+  setTimeout(function(){
+    document.getElementById('modal_ref_id').textContent = payload.pr_no;
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled = false; btn.innerHTML = '📤 Submit Request';
+  }, 2200);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  clearForm(true);
+}
+
+function clearForm(silent){
+  if(!silent && !confirm('Clear all entered data?')) return;
+  document.querySelectorAll('input[type="text"],input[type="date"],input[type="email"],input[type="number"]').forEach(function(i){i.value='';i.classList.remove('invalid');});
+  document.querySelectorAll('input[type="radio"]').forEach(function(i){i.checked=false;});
+  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
+  document.querySelectorAll('textarea').forEach(function(t){t.value='';});
+  document.querySelectorAll('.at-card').forEach(function(c){c.classList.remove('selected');});
+  document.querySelectorAll('.urg-opt').forEach(function(e){e.className='urg-opt';});
+  document.getElementById('cat_other_row').style.display = 'none';
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('ar_date').value = today;
+  document.getElementById('ar_no').value = generateFormNo('AR');
+  document.getElementById('val_msg').style.display = 'none';
+}
+</script>
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+</body>
+</html>

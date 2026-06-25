@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Envisage Forms Portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-height:100vh;}
+
+/* ── TOP NAV ── */
+.nav{background:#1a2744;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+.nav-brand{display:flex;align-items:center;gap:12px;}
+.nav-logo{width:36px;height:36px;background:linear-gradient(135deg,#00b8a9,#009e90);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0;}
+.nav-title{font-size:17px;font-weight:800;color:#fff;letter-spacing:.3px;}
+.nav-sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px;}
+.nav-links{display:flex;gap:8px;}
+.nav-link{color:rgba(255,255,255,.7);font-size:12px;font-weight:600;text-decoration:none;padding:6px 14px;border-radius:20px;transition:all .2s;}
+.nav-link:hover,.nav-link.active{background:rgba(0,184,169,.2);color:#00b8a9;}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(135deg,#1a2744 0%,#243660 60%,#1a4a55 100%);padding:48px 32px 42px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2300b8a9' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;}
+.hero h1{font-size:36px;font-weight:800;color:#fff;line-height:1.15;position:relative;}
+.hero h1 span{color:#00b8a9;}
+.hero p{font-size:14px;color:rgba(255,255,255,.65);margin-top:10px;position:relative;}
+.dept-pills{display:flex;gap:10px;justify-content:center;margin-top:22px;flex-wrap:wrap;position:relative;}
+.dept-pill{display:flex;align-items:center;gap:7px;padding:8px 18px;border-radius:24px;border:1.5px solid rgba(255,255,255,.2);color:#fff;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;text-decoration:none;background:rgba(255,255,255,.07);}
+.dept-pill:hover,.dept-pill.active{background:rgba(0,184,169,.25);border-color:#00b8a9;color:#00b8a9;}
+.dept-pill .dot{width:8px;height:8px;border-radius:50%;}
+
+/* ── SEARCH ── */
+.search-bar{max-width:500px;margin:-22px auto 0;position:relative;z-index:10;padding:0 20px;}
+.search-input{width:100%;background:#fff;border:none;border-radius:30px;padding:13px 20px 13px 46px;font-family:'Sarabun',sans-serif;font-size:14px;color:#1a2744;box-shadow:0 4px 20px rgba(0,0,0,.15);outline:none;}
+.search-input::placeholder{color:#999;}
+.search-icon{position:absolute;left:38px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none;}
+
+/* ── MAIN CONTENT ── */
+.main{max-width:1200px;margin:0 auto;padding:40px 24px 60px;}
+
+/* ── DEPT SECTION ── */
+.dept-section{margin-bottom:44px;}
+.dept-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.dept-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 3px 10px rgba(0,0,0,.12);}
+.dept-info h2{font-size:20px;font-weight:800;color:#1a2744;}
+.dept-info p{font-size:12px;color:#666;margin-top:2px;}
+.dept-badge{margin-left:auto;background:#f0f4f8;border:1px solid #dde6f0;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#666;}
+
+/* ── FORM CARDS GRID ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+
+/* ── FORM CARD ── */
+.form-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(26,39,68,.08);border:1.5px solid #e8eef6;transition:all .22s;text-decoration:none;display:flex;flex-direction:column;}
+.form-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(26,39,68,.14);border-color:#c5d8ec;}
+.card-top{padding:18px 18px 14px;flex:1;}
+.card-icon-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.card-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.card-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;padding:3px 8px;border-radius:10px;margin-left:auto;}
+.card-title{font-size:14px;font-weight:800;color:#1a2744;line-height:1.3;margin-bottom:6px;}
+.card-desc{font-size:12px;color:#666;line-height:1.5;}
+.card-bottom{padding:10px 18px 14px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #f0f4f8;}
+.card-meta{font-size:11px;color:#999;}
+.card-arrow{width:28px;height:28px;background:#1a2744;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;transition:background .2s;}
+.form-card:hover .card-arrow{background:#00b8a9;}
+
+/* ── DEPT COLOURS ── */
+/* Finance — blue */
+.dept-finance .dept-icon{background:linear-gradient(135deg,#1a5cb8,#2980d9);}
+.dept-finance .card-ico{background:#e8f0fb;}
+.dept-finance .card-tag{background:#e8f0fb;color:#1a5cb8;}
+.dept-finance .card-arrow{background:#1a5cb8;}
+.dept-finance .form-card:hover .card-arrow{background:#00b8a9;}
+
+/* HR — teal */
+.dept-hr .dept-icon{background:linear-gradient(135deg,#00b8a9,#009e90);}
+.dept-hr .card-ico{background:#e0f7f5;}
+.dept-hr .card-tag{background:#e0f7f5;color:#008b7e;}
+.dept-hr .card-arrow{background:#00b8a9;}
+.dept-hr .form-card:hover .card-arrow{background:#1a2744;}
+
+/* Admin — purple */
+.dept-admin .dept-icon{background:linear-gradient(135deg,#6c3fa0,#8e44ad);}
+.dept-admin .card-ico{background:#f0e8fb;}
+.dept-admin .card-tag{background:#f0e8fb;color:#6c3fa0;}
+.dept-admin .card-arrow{background:#6c3fa0;}
+.dept-admin .form-card:hover .card-arrow{background:#00b8a9;}
+
+/* ── COMING SOON ── */
+.card-coming{opacity:.6;cursor:default;pointer-events:none;}
+.card-coming .card-arrow{background:#ccc;}
+
+/* ── DIVIDER ── */
+.divider{border:none;border-top:1.5px solid #e0eaf4;margin:8px 0 36px;}
+
+/* ── FOOTER ── */
+.footer{background:#1a2744;color:rgba(255,255,255,.6);text-align:center;padding:22px;font-size:12px;}
+.footer strong{color:#00b8a9;}
+
+/* ── POLICY TOGGLE ── */
+.policy-toggle{display:inline-flex;align-items:center;gap:6px;margin-top:14px;padding:7px 16px;border-radius:20px;border:1.5px dashed #b0c8e8;background:#f7fbff;color:#1a5cb8;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;user-select:none;}
+.policy-toggle:hover{background:#e8f0fb;border-color:#3a7bd5;}
+.dept-hr-toggle{border-color:#a0d8d5;color:#00857a;}
+.dept-hr-toggle:hover{background:#e0faf8;border-color:#00b8a9;}
+.dept-admin-toggle{border-color:#c8a8e8;color:#6c3fa0;}
+.dept-admin-toggle:hover{background:#f3eeff;border-color:#8e44ad;}
+.policy-toggle .pt-arrow{font-size:10px;transition:transform .25s;}
+.policy-toggle.open .pt-arrow{transform:rotate(180deg);}
+
+/* ── POLICY PANEL ── */
+.policy-panel{display:none;margin-top:14px;background:#f7fbff;border:1.5px solid #d0e4f4;border-radius:10px;overflow:hidden;}
+.policy-panel.open{display:block;}
+.pp-header{background:#1a2744;color:#fff;padding:12px 18px;display:flex;align-items:center;gap:10px;}
+.pp-header-ico{font-size:18px;}
+.pp-header-title{font-size:14px;font-weight:800;letter-spacing:.3px;}
+.pp-header-sub{font-size:11px;opacity:.65;margin-top:2px;}
+.pp-tabs{display:flex;gap:0;border-bottom:2px solid #d0e4f4;background:#fff;overflow-x:auto;}
+.pp-tab{padding:10px 18px;font-size:12px;font-weight:700;color:#666;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all .2s;}
+.pp-tab:hover{color:#1a5cb8;background:#f0f6fc;}
+.pp-tab.active{color:#1a5cb8;border-bottom-color:#1a5cb8;background:#f0f6fc;}
+.pp-body{padding:18px 20px;}
+.pp-section{display:none;}
+.pp-section.active{display:block;}
+
+/* Policy content */
+.policy-rule{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:1px solid #e8eef6;font-size:12px;line-height:1.5;}
+.policy-rule:last-child{border-bottom:none;}
+.pr-badge{min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;font-weight:700;}
+.pr-red{background:#fde8e8;color:#e74c3c;border:1.5px solid #e74c3c;}
+.pr-ora{background:#fff3e0;color:#e67e22;border:1.5px solid #e67e22;}
+.pr-grn{background:#e8f8f0;color:#27ae60;border:1.5px solid #27ae60;}
+.pr-blu{background:#e8f0fb;color:#1a5cb8;border:1.5px solid #1a5cb8;}
+.pr-yel{background:#fff8e1;color:#f39c12;border:1.5px solid #f39c12;}
+.policy-rule .pr-text strong{color:#1a2744;display:block;font-weight:700;margin-bottom:2px;}
+.policy-rule .pr-text span{color:#555;}
+
+.approval-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:6px;}
+.appr-limit{background:#fff;border:1.5px solid #c5d8ec;border-radius:8px;padding:10px 12px;text-align:center;}
+.appr-limit .al-amt{font-size:16px;font-weight:800;color:#1a2744;}
+.appr-limit .al-role{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;margin-top:2px;}
+.appr-limit .al-note{font-size:10px;color:#aaa;margin-top:3px;}
+
+.process-steps{display:flex;flex-direction:column;gap:0;}
+.ps-step{display:flex;align-items:flex-start;gap:12px;padding:10px 0;position:relative;}
+.ps-step:not(:last-child)::after{content:'';position:absolute;left:14px;top:36px;bottom:0;width:2px;background:#e0eaf4;}
+.ps-num{width:28px;height:28px;border-radius:50%;background:#1a2744;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;position:relative;z-index:1;}
+.ps-content strong{font-size:12px;font-weight:700;color:#1a2744;display:block;}
+.ps-content span{font-size:11px;color:#666;}
+
+/* ── HIDDEN class ── */
+.hidden{display:none!important;}
+
+@media(max-width:600px){
+  .hero h1{font-size:24px;}
+  .nav-links{display:none;}
+  .dept-badge{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">E</div>
+    <div>
+      <div class="nav-title">Envisage Forms Portal</div>
+      <div class="nav-sub">Internal Operations Hub</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="#finance">💰 Finance</a>
+    <a class="nav-link" href="#hr">👥 HR</a>
+    <a class="nav-link" href="#admin">🏢 Admin</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <h1>Envisage <span>Forms Portal</span></h1>
+  <p>All internal request forms — Finance, HR & Admin — in one place.</p>
+  <div class="dept-pills">
+    <a class="dept-pill" href="#finance"><span class="dot" style="background:#2980d9;"></span> Finance Department</a>
+    <a class="dept-pill" href="#hr"><span class="dot" style="background:#00b8a9;"></span> HR Department</a>
+    <a class="dept-pill" href="#admin"><span class="dot" style="background:#8e44ad;"></span> Admin Department</a>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-bar">
+  <span class="search-icon">🔍</span>
+  <input class="search-input" type="text" id="searchInput" placeholder="Search forms… e.g. Leave, Purchase, Asset" oninput="filterForms(this.value)">
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ──────────────────────── FINANCE ──────────────────────── -->
+  <div class="dept-section dept-finance" id="finance">
+    <div class="dept-header">
+      <div class="dept-icon">💰</div>
+      <div class="dept-info">
+        <h2>Finance Department</h2>
+        <p>Purchase requests, expense claims, payments & travel forms</p>
+      </div>
+      <div class="dept-badge">4 forms</div>
+      <div class="policy-toggle" id="policy-toggle-finance" onclick="togglePolicy('finance')">
+        📜 Finance &amp; Payment Policies <span class="pt-arrow">▼</span>
+      </div>
+    </div>
+    <div class="cards-grid">
+
+      <a class="form-card" href="files/purchase_request_general.html" data-keywords="purchase request pr general goods services">
+        <div class="card-top">
+          <div class="card-icon-row">
+            <div class="card-ico">🛒</div>
+            <span class="card-tag">Finance</span>
+          </div>
+          <div class="card-title">Purchase Request (General)</div>
+          <div class="card-desc">For all goods, services, or reimbursements of 10,000 THB and above requiring prior approval.</div>
+        </div>
+        <div class="card-bottom">
+          <span class="card-meta">Approval required</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a class="form-card" href="files/purchase_request_pr_connected.html" data-keywords="purchase request travel pr travelling trip">
+        <div class="card-top">
+          <div class="card-icon-row">
+            <div class="card-ico">✈️</div>
+            <span class="card-tag">Finance</span>
+          </div>
+          <div class="card-title">Purchase Request (Travel)</div>
+          <div class="card-desc">For business travel, accommodation, per diem and travel-related expenses.</div>
+        </div>
+        <div class="card-bottom">
+          <span class="card-meta">Approval required</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a class="form-card" href="files/finance_expense_claim.html" data-keywords="expense claim reimbursement receipt">
+        <div class="card-top">
+          <div class="card-icon-row">
+            <div class="card-ico">🧾</div>
+            <span class="card-tag">Finance</span>
+          </div>
+          <div class="card-title">Expense Claim</div>
+          <div class="card-desc">Submit reimbursement claims for out-of-pocket business expenses with receipts.</div>
+        </div>
+        <div class="card-bottom">
+          <span class="card-meta">With receipts</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a class="form-card" href="files/finance_cash_advance.html" data-keywords="cash advance advance payment trip travel funds">
+        <div class="card-top">
+          <div class="card-icon-row">
+            <div class="card-ico">💵</div>
+            <span class="card-tag">Finance</span>
+          </div>
+          <div class="card-title">Cash Advance</div>
+          <div class="card-desc">Request advance funds for upcoming business trips, events, or purchases. Settle within 15 days.</div>
+        </div>
+        <div class="card-bottom">
+          <span class="card-meta">Settle in 15 days</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+      <a class="form-card" href="files/finance_payment_voucher.html" data-keywords="payment request vendor invoice pay supplier bank transfer">
+        <div class="card-top">
+          <div class="card-icon-row">
+            <div class="card-ico">💳</div>
+            <span class="card-tag">Finance</span>
+          </div>
+          <div class="card-title">Payment Request</div>
+          <div class="card-desc">Request payment to vendors or suppliers with invoice and supporting documents.</div>
+        </div>
+        <div class="card-bottom">
+          <span class="card-meta">Invoice required</span>
+          <div class="card-arrow">→</div>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- ── POLICY PANEL ── -->
+    <div class="policy-panel" id="policy-panel-finance">
+      <div class="pp-header">
+        <div class="pp-header-ico">📜</div>
+        <div>
+          <div class="pp-header-title">Finance &amp; Payment Policies</div>
+          <div class="pp-header-sub">Internal reference — Envisage Worldwide · Last updated 2026</div>
+        </div>
+      </div>
+      <div class="pp-tabs">
+        <div class="pp-tab active" onclick="showPolicy('finance','general')">📋 General Rules</div>
+        <div class="pp-tab" onclick="showPolicy('finance','travel')">✈️ Travel &amp; Per Diem</div>
+        <div class="pp-tab" onclick="showPolicy('finance','accommodation')" style="display:none;">🏠 Accommodation</div>
+        <div class="pp-tab" onclick="showPolicy('finance','expense')">🧾 Expense Claims</div>
+        <div class="pp-tab" onclick="showPolicy('finance','payment')">💳 Payment Process</div>
+      </div>
+      <div class="pp-body">
+
+        <!-- GENERAL RULES — from 2025 HR Policy Handbook -->
+        <div class="pp-section active" id="pol-finance-general">
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>No Prior Approval = No Purchase</strong><span>All work-related travel and purchases must be approved in advance by the staff's supervisor before any commitments or bookings are made. Retroactive approvals are not accepted except in genuine emergencies.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>Outstanding Advances Block New Advances</strong><span>No new travel advances may be issued to employees who have a previous outstanding advance that has not yet been cleared.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Clear Advances Within 5 Working Days</strong><span>Cash advances must be cleared within five working days of the end of a trip. Failure to clear advances before month-end may result in delayed salary payment.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Original Documents Required</strong><span>Original tickets (air, bus, train, boat) and original hotel tax invoices must be attached. Where no receipt is available, an "Expense Without Receipt" form must be used, checked, and approved by the Finance officer.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Most Economical Mode of Travel</strong><span>Staff are encouraged to travel by the most reasonable and economical method. In genuine emergencies or for safety/security reasons, other reasonable modes of travel may be used with justification.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Brief Trip Report Required</strong><span>A brief trip report and all relevant supporting documents must be attached to the Travelling Expense Report upon return.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Reimbursement Basis Only</strong><span>All finance support (travel, accommodation, utilities) is provided strictly on a reimbursement basis upon submission of valid supporting documents. No pre-payment or forward reimbursement without receipts.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-yel">!</div><div class="pr-text"><strong>Right to Reject Unsupported Claims</strong><span>The organisation reserves the right to reject or partially reimburse expenses deemed unreasonable, unsupported, or outside policy limits. (Mallika's recommendation — adopted.)</span></div></div>
+        </div>
+
+        <!-- TRAVEL & PER DIEM — from Foreign Staff Traveling Budget Policy + Mallika's comments -->
+        <div class="pp-section" id="pol-finance-travel">
+          <p style="font-size:12px;color:#555;margin-bottom:14px;font-weight:600;">Rates apply to foreign staff on full-time contract. Supervisor approval via Travel Request Form required at least <strong>1 week before departure</strong>. Submit expense report within <strong>7 days of return</strong>.</p>
+
+          <div style="overflow-x:auto;margin-bottom:14px;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead>
+                <tr style="background:#1a2744;color:#fff;">
+                  <th style="padding:9px 12px;text-align:left;font-weight:700;">Staff Category</th>
+                  <th style="padding:9px 12px;text-align:center;font-weight:700;">Lodging Ceiling / Night</th>
+                  <th style="padding:9px 12px;text-align:center;font-weight:700;">Daily Per Diem</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background:#f7fbff;">
+                  <td style="padding:9px 12px;font-weight:700;">Interns &amp; Junior Staff</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">700 THB</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">500 THB</td>
+                </tr>
+                <tr>
+                  <td style="padding:9px 12px;font-weight:700;">Researchers</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">1,000 THB</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">700 THB</td>
+                </tr>
+                <tr style="background:#f7fbff;">
+                  <td style="padding:9px 12px;font-weight:700;">Senior Staff / Managers</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">1,200 THB</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">900 THB</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Shared Accommodation on Trips (75–80% of combined ceiling)</p>
+          <div style="overflow-x:auto;margin-bottom:14px;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead>
+                <tr style="background:#e8eef6;color:#1a2744;">
+                  <th style="padding:7px 12px;text-align:left;font-weight:700;">Combination</th>
+                  <th style="padding:7px 12px;text-align:center;font-weight:700;">Calculation</th>
+                  <th style="padding:7px 12px;text-align:center;font-weight:700;">Combined Ceiling / Night</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background:#f7fbff;">
+                  <td style="padding:7px 12px;">Junior + Junior</td>
+                  <td style="padding:7px 12px;text-align:center;color:#666;">(700 + 700) × 75%</td>
+                  <td style="padding:7px 12px;text-align:center;font-weight:800;">1,050 THB</td>
+                </tr>
+                <tr>
+                  <td style="padding:7px 12px;">Researcher + Junior</td>
+                  <td style="padding:7px 12px;text-align:center;color:#666;">(1,000 + 700) × 75%</td>
+                  <td style="padding:7px 12px;text-align:center;font-weight:800;">1,275 THB</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Per Diem Reduction When Meals Provided</strong><span>Per diem may be adjusted where meals are already provided by the hotel, conference organiser, or external host. Guideline: breakfast −20%, lunch −30%, dinner −50%. If breakfast is included in the hotel rate, lodging ceiling may exceed the standard by up to the per-diem breakfast equivalent, subject to management discretion.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Client / Partner Hospitality Meals</strong><span>Business meals for clients require <strong>prior approval</strong> from a Department Head or Director. Maximum <strong>2,000 THB per person</strong> (employee + client). Original itemised receipts required with names of guests and business purpose stated. Employees may not also claim personal per diem for the same meal.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Flights</strong><span>Economy class for all flights. The organisation reimburses the cost of economy tickets. Employees should book in advance to secure reasonable rates.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>High-Cost Destination Flexibility</strong><span>Standard lodging ceilings may be insufficient for high-cost destinations (e.g., Bangkok, Phuket, international travel) depending on season. Higher rate tiers may be granted on a case-by-case basis with <strong>prior written management approval before booking</strong>.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>Non-Reimbursable Travel Expenses</strong><span>Alcohol (unless specifically approved for client hospitality), minibar, room service, personal entertainment, shopping, traffic fines, and any non-business expenses will not be reimbursed.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Minor Local Transport Without Receipt</strong><span>For minor local transport where receipts are unavailable, employees should provide reasonable supporting details (destination, date, estimated cost) within the expense report.</span></div></div>
+        </div>
+
+        <!-- ACCOMMODATION — from Accommodation Budget Policy + Mallika's comments -->
+        <div class="pp-section" id="pol-finance-accommodation">
+          <p style="font-size:12px;color:#555;margin-bottom:14px;font-weight:600;">Applies to foreign staff on full-time contract. All amounts are <strong>total monthly ceilings</strong> covering rent, electricity, water, internet, and other associated fees. Submit monthly claims within <strong>15 days after month-end</strong>.</p>
+
+          <div style="overflow-x:auto;margin-bottom:14px;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead>
+                <tr style="background:#1a2744;color:#fff;">
+                  <th style="padding:9px 12px;text-align:left;font-weight:700;">Staff Category</th>
+                  <th style="padding:9px 12px;text-align:center;font-weight:700;">Monthly Ceiling (All-Inclusive)</th>
+                  <th style="padding:9px 12px;text-align:left;font-weight:700;">Covers</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background:#f7fbff;">
+                  <td style="padding:9px 12px;font-weight:700;">Interns &amp; Junior Staff</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">5,000 THB</td>
+                  <td style="padding:9px 12px;color:#555;">Rent + electricity + water + internet</td>
+                </tr>
+                <tr>
+                  <td style="padding:9px 12px;font-weight:700;">Researchers</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">6,000 THB</td>
+                  <td style="padding:9px 12px;color:#555;">Rent + electricity + water + internet</td>
+                </tr>
+                <tr style="background:#f7fbff;">
+                  <td style="padding:9px 12px;font-weight:700;">Senior Staff / Managers</td>
+                  <td style="padding:9px 12px;text-align:center;font-weight:800;color:#1a5cb8;">7,000 THB</td>
+                  <td style="padding:9px 12px;color:#555;">Rent + electricity + water + internet</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:8px;">Shared Accommodation (80% of combined individual ceilings)</p>
+          <div style="overflow-x:auto;margin-bottom:14px;">
+            <table style="width:100%;border-collapse:collapse;font-size:12px;">
+              <thead>
+                <tr style="background:#e8eef6;color:#1a2744;">
+                  <th style="padding:7px 12px;text-align:left;font-weight:700;">Combination</th>
+                  <th style="padding:7px 12px;text-align:center;font-weight:700;">Calculation</th>
+                  <th style="padding:7px 12px;text-align:center;font-weight:700;">Combined Ceiling / Month</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background:#f7fbff;">
+                  <td style="padding:7px 12px;">Junior + Junior</td>
+                  <td style="padding:7px 12px;text-align:center;color:#666;">(5,000 + 5,000) × 80%</td>
+                  <td style="padding:7px 12px;text-align:center;font-weight:800;">8,000 THB</td>
+                </tr>
+                <tr>
+                  <td style="padding:7px 12px;">Researcher + Junior</td>
+                  <td style="padding:7px 12px;text-align:center;color:#666;">(6,000 + 5,000) × 80%</td>
+                  <td style="padding:7px 12px;text-align:center;font-weight:800;">8,800 THB</td>
+                </tr>
+                <tr style="background:#f7fbff;">
+                  <td style="padding:7px 12px;">Senior + Researcher</td>
+                  <td style="padding:7px 12px;text-align:center;color:#666;">(7,000 + 6,000) × 80%</td>
+                  <td style="padding:7px 12px;text-align:center;font-weight:800;">10,400 THB</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Employee's Responsibility to Find Accommodation</strong><span>The employee is responsible for finding their own accommodation. The organisation may provide support or a list of potential properties, but the final decision and rental agreement is the employee's responsibility. If costs exceed the ceiling, the employee pays the difference.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Required Documents for Reimbursement</strong><span>Submit a copy of the signed rental agreement plus original or scanned monthly utility bills (electricity, water, internet). Claims are processed on a reimbursement basis only. Accommodation must be a long-term residential property with proper rental documentation acceptable for accounting and audit.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>Non-Reimbursable Items</strong><span>Security deposits, advance rental payments, agency fees, furniture purchases, and personal expenses are not reimbursable unless specifically approved by management in advance.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-yel">!</div><div class="pr-text"><strong>Tax Responsibility</strong><span>Any personal income tax arising from accommodation benefits is the responsibility of the employee unless otherwise approved by management. Employees are advised to consult HR or a tax professional regarding personal tax obligations.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Change of Accommodation</strong><span>Employees wishing to change accommodation must notify HR in advance and follow the same submission process for the new rental agreement.</span></div></div>
+        </div>
+
+        <!-- EXPENSE CLAIMS -->
+        <div class="pp-section" id="pol-finance-expense">
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Reimbursable Expenses</strong><span>Actual transport costs, actual accommodation, and reasonable meal costs are reimbursable. All claims must reflect actual costs with proper documentation.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Transport</strong><span>Domestic: most economical mode. International: economy class. Local transport documented with receipts where possible.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Submit Within 7 Days of Return</strong><span>Expense claims must be submitted within 7 working days after the end of a trip or event. Late submissions may be rejected.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>No Receipt = No Reimbursement</strong><span>Original receipts required. Where unavailable, complete the "Expense Without Receipt" form with full justification — subject to Finance approval.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Settle Outstanding Advance</strong><span>If a cash advance was taken, deduct it from the claim. Any surplus must be returned to Finance at submission.</span></div></div>
+        </div>
+
+        <!-- PAYMENT PROCESS -->
+        <div class="pp-section" id="pol-finance-payment">
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Processing Time</strong><span>Approved payments processed within 3–5 business days after full sign-off. Urgent payments must be flagged to Finance in advance.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Original Invoice Required</strong><span>All vendor payments require an original tax invoice. Photocopies or screenshots are not accepted without prior Finance approval.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Bank Transfer for Amounts ≥ 5,000 THB</strong><span>Payments of 5,000 THB or more must be via bank transfer. Cash is limited to petty cash items below this threshold.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Withholding Tax (WHT)</strong><span>Finance will issue a WHT certificate for applicable vendor payments. Vendors should confirm their WHT rate when submitting invoices.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>No Splitting to Avoid Thresholds</strong><span>Splitting a purchase into smaller transactions to avoid the CFO approval threshold is strictly prohibited.</span></div></div>
+        </div>
+
+      </div>
+    </div><!-- end policy-panel-finance -->
+  </div><!-- end dept-finance -->
+
+  <!-- HR DEPARTMENT -->
+  <div class="dept-section dept-hr" id="hr">
+    <div class="dept-header">
+      <div class="dept-header-icon">👥</div>
+      <div>
+        <div class="dept-header-title">HR Department</div>
+        <div class="dept-header-sub">Leave, WFH, Resignation &amp; Staff Requests</div>
+      </div>
+      <div class="policy-toggle" id="policy-toggle-hr" onclick="togglePolicy('hr')">
+        📜 HR Policies <span class="pt-arrow">▼</span>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <a class="form-card" href="hr_leave_request.html" data-keywords="leave request annual sick vacation holiday absence">
+        <div class="card-top">
+          <div class="card-icon-row"><div class="card-ico">🏖</div><span class="card-tag">HR</span></div>
+          <div class="card-title">Leave Request</div>
+          <div class="card-desc">Submit annual, sick, personal or other leave requests for manager approval.</div>
+        </div>
+        <div class="card-bottom"><span class="card-meta">Manager approval</span><div class="card-arrow">→</div></div>
+      </a>
+
+      <a class="form-card" href="hr_wfh_request.html" data-keywords="work from home wfh remote flexible telework">
+        <div class="card-top">
+          <div class="card-icon-row"><div class="card-ico">🏠</div><span class="card-tag">HR</span></div>
+          <div class="card-title">Work From Home Request</div>
+          <div class="card-desc">Request approval to work remotely on specific dates with reason and deliverables.</div>
+        </div>
+        <div class="card-bottom"><span class="card-meta">Manager approval</span><div class="card-arrow">→</div></div>
+      </a>
+
+      <a class="form-card" href="hr_resignation_request.html" data-keywords="resignation resign quit leave notice exit departure">
+        <div class="card-top">
+          <div class="card-icon-row"><div class="card-ico">📤</div><span class="card-tag">HR</span></div>
+          <div class="card-title">Resignation Request</div>
+          <div class="card-desc">Submit a formal resignation with last working day and handover plan.</div>
+        </div>
+        <div class="card-bottom"><span class="card-meta">HR &amp; Management</span><div class="card-arrow">→</div></div>
+      </a>
+
+      <div class="form-card coming-soon-card" style="opacity:.55;cursor:not-allowed;pointer-events:none;position:relative;" data-keywords="onboarding new hire employee joining checklist">
+        <div style="position:absolute;top:10px;right:10px;background:#f39c12;color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:10px;letter-spacing:.5px;z-index:1;">COMING SOON</div>
+        <div class="card-top">
+          <div class="card-icon-row"><div class="card-ico">🧾</div><span class="card-tag">HR</span></div>
+          <div class="card-title">Employee Onboarding</div>
+          <div class="card-desc">New hire onboarding checklist and documentation — digital submission coming soon.</div>
+        </div>
+        <div class="card-bottom"><span class="card-meta">Under development</span><div class="card-arrow" style="background:#ccc;">→</div></div>
+      </div>
+    </div>
+
+    <div class="policy-panel" id="policy-panel-hr" style="display:none;">
+      <div class="pp-header">
+        <div class="pp-header-ico">📜</div>
+        <div>
+          <div class="pp-header-title">HR Policies</div>
+          <div class="pp-header-sub">Internal reference — Envisage Worldwide · Last updated 2026</div>
+        </div>
+      </div>
+      <div class="pp-tabs">
+        <div class="pp-tab active" onclick="showPolicy('hr','leave')">🏖 Leave Policy</div>
+        <div class="pp-tab" onclick="showPolicy('hr','wfh')">🏠 WFH Policy</div>
+        <div class="pp-tab" onclick="showPolicy('hr','conduct')">📋 General Conduct</div>
+      </div>
+      <div class="pp-body">
+        <div class="pp-section active" id="pol-hr-leave">
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Annual Leave Entitlement</strong><span>Staff are entitled to annual leave as per their contract. Leave must be requested in advance and approved by the line manager before being taken.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Minimum Notice Period</strong><span>Annual leave requires at least 3 working days' notice. Sick leave must be reported to the manager by 9:00 AM on the day, with a medical certificate for 3+ consecutive days.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>No Carry-Over Without Approval</strong><span>Unused annual leave does not automatically carry over unless approved in writing by management before year-end.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Leave During Probation</strong><span>Staff on probation may take leave only with manager approval. Emergency or medical leave is assessed case by case.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-yel">!</div><div class="pr-text"><strong>Public Holidays</strong><span>The organisation observes Thai public holidays as announced each year. Staff required to work on public holidays should confirm arrangements with HR in advance.</span></div></div>
+        </div>
+        <div class="pp-section" id="pol-hr-wfh">
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>WFH Eligibility</strong><span>Work from home is subject to manager approval and role suitability. Approval is granted per request, not as a standing arrangement.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Submit in Advance</strong><span>WFH requests must be submitted and approved before the working day. Same-day requests are only considered in exceptional circumstances.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Full Availability Required</strong><span>Staff working from home must be fully available during core hours, respond promptly, and meet all deliverables as if in the office.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>Not a Substitute for Leave</strong><span>WFH may not be used in place of sick leave or annual leave. If unwell, apply for sick leave.</span></div></div>
+        </div>
+        <div class="pp-section" id="pol-hr-conduct">
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Professional Standards</strong><span>All staff must maintain professional conduct, punctuality, and respect for colleagues at all times — in the office or remotely.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Confidentiality</strong><span>Staff must not share or disclose any confidential company, client, or project information without explicit written authorisation from management.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>Conflicts of Interest</strong><span>Staff may not engage in outside employment or business that conflicts with the organisation's interests without prior written approval from the Director.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Grievances &amp; Feedback</strong><span>Staff with workplace concerns should raise them with their line manager or HR. The organisation is committed to addressing concerns fairly and confidentially.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end dept-hr -->
+
+  <!-- ADMIN DEPARTMENT -->
+  <div class="dept-section dept-admin" id="admin">
+    <div class="dept-header">
+      <div class="dept-header-icon">🏢</div>
+      <div>
+        <div class="dept-header-title">Admin Department</div>
+        <div class="dept-header-sub">Assets, Facilities &amp; Office Administration</div>
+      </div>
+      <div class="policy-toggle" id="policy-toggle-admin" onclick="togglePolicy('admin')">
+        📜 Admin Policies <span class="pt-arrow">▼</span>
+      </div>
+    </div>
+
+    <div class="cards-grid">
+      <a class="form-card" href="admin_asset_request.html" data-keywords="asset request equipment laptop phone device it">
+        <div class="card-top">
+          <div class="card-icon-row"><div class="card-ico">💻</div><span class="card-tag">Admin</span></div>
+          <div class="card-title">Asset Request</div>
+          <div class="card-desc">Request company equipment, devices, or office assets with justification and approvals.</div>
+        </div>
+        <div class="card-bottom"><span class="card-meta">Manager approval</span><div class="card-arrow">→</div></div>
+      </a>
+
+      <div class="form-card coming-soon-card" style="opacity:.55;cursor:not-allowed;pointer-events:none;position:relative;" data-keywords="visitor log guest register entry access">
+        <div style="position:absolute;top:10px;right:10px;background:#f39c12;color:#fff;font-size:10px;font-weight:800;padding:3px 10px;border-radius:10px;letter-spacing:.5px;z-index:1;">COMING SOON</div>
+        <div class="card-top">
+          <div class="card-icon-row"><div class="card-ico">🪪</div><span class="card-tag">Admin</span></div>
+          <div class="card-title">Visitor Log</div>
+          <div class="card-desc">Digital guest registration and visitor management — coming soon.</div>
+        </div>
+        <div class="card-bottom"><span class="card-meta">Under development</span><div class="card-arrow" style="background:#ccc;">→</div></div>
+      </div>
+    </div>
+
+    <div class="policy-panel" id="policy-panel-admin" style="display:none;">
+      <div class="pp-header">
+        <div class="pp-header-ico">📜</div>
+        <div>
+          <div class="pp-header-title">Admin &amp; Office Policies</div>
+          <div class="pp-header-sub">Internal reference — Envisage Worldwide · Last updated 2026</div>
+        </div>
+      </div>
+      <div class="pp-tabs">
+        <div class="pp-tab active" onclick="showPolicy('admin','assets')">💻 Asset Management</div>
+        <div class="pp-tab" onclick="showPolicy('admin','office')">🏢 Office Rules</div>
+      </div>
+      <div class="pp-body">
+        <div class="pp-section active" id="pol-admin-assets">
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Company Asset Responsibility</strong><span>All company equipment issued to staff remains the property of Envisage Worldwide. Staff are responsible for the safekeeping and proper use of all assigned assets.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Report Damage or Loss Immediately</strong><span>Any damage, loss, or theft must be reported to Admin and the line manager within 24 hours. Delayed reporting may result in the cost being charged to the staff member.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>No Personal Use of Company Assets</strong><span>Company equipment must not be used for personal purposes, loaned to third parties, or removed from the office without prior approval.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Return on Separation</strong><span>All company assets must be returned in good condition on or before the last working day. Outstanding assets will be recovered from the final salary.</span></div></div>
+        </div>
+        <div class="pp-section" id="pol-admin-office">
+          <div class="policy-rule"><div class="pr-badge pr-blu">i</div><div class="pr-text"><strong>Office Hours</strong><span>Core office hours are defined in the employment contract. Staff are expected to be present and available unless on approved leave or WFH.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-ora">!</div><div class="pr-text"><strong>Visitors &amp; Guests</strong><span>All external visitors must be registered. Staff hosting guests are responsible for accompanying them throughout their visit.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-red">✕</div><div class="pr-text"><strong>Clean Desk Policy</strong><span>Confidential documents must not be left unattended. Lock your screen when away. Sensitive materials should be secured at end of day.</span></div></div>
+          <div class="policy-rule"><div class="pr-badge pr-grn">✓</div><div class="pr-text"><strong>Common Areas</strong><span>All staff share responsibility for a clean, orderly office. Kitchen and meeting rooms should be left tidy after use. Report maintenance issues to Admin promptly.</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end dept-admin -->
+
+</div><!-- end main container -->
+
+<script>
+function togglePolicy(dept){
+  var panel = document.getElementById('policy-panel-'+dept);
+  if(!panel) return;
+  var isHidden = (panel.style.display === 'none' || panel.style.display === '');
+  ['finance','hr','admin'].forEach(function(d){
+    var p = document.getElementById('policy-panel-'+d);
+    if(p) p.style.display = 'none';
+  });
+  if(isHidden) panel.style.display = 'block';
+}
+function showPolicy(dept, tab){
+  document.querySelectorAll('#policy-panel-'+dept+' .pp-section').forEach(function(s){ s.classList.remove('active'); });
+  document.querySelectorAll('#policy-panel-'+dept+' .pp-tab').forEach(function(t){ t.classList.remove('active'); });
+  var sec = document.getElementById('pol-'+dept+'-'+tab);
+  if(sec) sec.classList.add('active');
+  event.target.classList.add('active');
+}
+var searchInput = document.getElementById('search_input');
+if(searchInput){
+  searchInput.addEventListener('input', function(){
+    var q = this.value.toLowerCase().trim();
+    document.querySelectorAll('.form-card[data-keywords],.coming-soon-card[data-keywords]').forEach(function(card){
+      var kw = (card.getAttribute('data-keywords')||'').toLowerCase();
+      var title = card.querySelector('.card-title');
+      var text = title ? title.textContent.toLowerCase() : '';
+      card.style.display = (!q || kw.includes(q) || text.includes(q)) ? '' : 'none';
+    });
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visitor Log | Envisage Admin</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#f0e8fb 0%,#f8f4ff 100%);padding:20px;color:#1a2744;min-height:100vh;}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#6c3fa0;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:14px;padding:6px 12px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.back-link:hover{color:#8e44ad;}
+.page{background:#fff;max-width:940px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+input[type="text"],input[type="date"],input[type="time"],input[type="email"],input[type="tel"],select{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #8e44ad;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input:focus,select:focus{border-bottom-color:#6c3fa0;background:rgba(108,63,160,.05);}
+input.invalid{border-bottom-color:#e74c3c!important;}
+input[type="checkbox"]{width:14px;height:14px;accent-color:#8e44ad;cursor:pointer;}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:center;gap:16px;border-bottom:2px solid #ede0f4;}
+.logo-box{width:60px;height:60px;background:linear-gradient(135deg,#6c3fa0,#8e44ad);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;flex-shrink:0;}
+.header-text h1{font-size:24px;font-weight:800;color:#1a2744;}
+.header-text .sub{font-size:12px;color:#555;margin-top:3px;font-weight:600;}
+.header-meta{margin-left:auto;text-align:right;}
+.date-display{font-size:22px;font-weight:800;color:#6c3fa0;}
+.date-sub{font-size:11px;color:#888;}
+
+/* QUICK ENTRY */
+.quick-entry{background:linear-gradient(135deg,#f3eeff,#faf6ff);padding:18px 22px;border-bottom:2px solid #ede0f4;}
+.quick-title{font-size:14px;font-weight:800;color:#1a2744;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.qe-grid{display:grid;grid-template-columns:repeat(6,1fr) auto;gap:8px;align-items:end;}
+.qe-field label{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:#888;margin-bottom:3px;}
+.qe-field input,.qe-field select{width:100%;}
+.qe-btn{background:#6c3fa0;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background .2s;}
+.qe-btn:hover{background:#8e44ad;}
+
+/* VAL MSG */
+.val-msg{display:none;background:#fff3cd;border:1px solid #ffc107;color:#856404;font-size:12px;padding:8px 16px;margin:8px 22px 0;border-radius:6px;font-weight:600;}
+
+/* LOG TABLE */
+.log-section{padding:14px 22px;}
+.log-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.log-title{font-size:14px;font-weight:800;color:#1a2744;}
+.log-stats{display:flex;gap:12px;}
+.stat-pill{background:#f3eeff;border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:#6c3fa0;}
+.stat-pill.in{background:#e8f8f0;color:#27ae60;}
+.stat-pill.out{background:#fde8e8;color:#e74c3c;}
+
+.log-table{width:100%;border-collapse:collapse;font-size:12px;}
+.log-table thead tr{background:#6c3fa0;}
+.log-table th{color:#fff;padding:9px 10px;text-align:left;font-weight:700;font-size:11px;}
+.log-table th:nth-child(1){width:40px;text-align:center;}
+.log-table th:nth-child(7){width:90px;text-align:center;}
+.log-table th:nth-child(8){width:80px;text-align:center;}
+.log-table th:nth-child(9){width:60px;text-align:center;}
+.log-table tbody tr:nth-child(even){background:#faf7ff;}
+.log-table tbody tr:hover{background:#f3eeff;}
+.log-table td{padding:8px 10px;border-bottom:1px solid #ede0f4;vertical-align:middle;}
+.log-table td:nth-child(1){text-align:center;color:#888;font-weight:700;}
+.log-table td:nth-child(7),.log-table td:nth-child(8),.log-table td:nth-child(9){text-align:center;}
+.status-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:12px;font-size:10px;font-weight:700;}
+.status-in{background:#e8f8f0;color:#27ae60;}
+.status-out{background:#fde8e8;color:#e74c3c;}
+.checkout-btn{background:#e74c3c;color:#fff;border:none;border-radius:4px;padding:3px 10px;font-size:11px;font-weight:700;cursor:pointer;transition:background .2s;}
+.checkout-btn:hover{background:#c0392b;}
+.del-btn{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;}
+.del-btn:hover{color:#e74c3c;}
+
+/* NO VISITORS */
+.no-visitors{text-align:center;padding:32px;color:#aaa;font-size:13px;font-weight:600;}
+.no-visitors .icon{font-size:36px;margin-bottom:8px;}
+
+/* PURPOSE TAGS */
+.purpose-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;}
+.pt-meeting{background:#e8f0fb;color:#1a5cb8;}
+.pt-delivery{background:#fff3e0;color:#e67e22;}
+.pt-interview{background:#e8f8f0;color:#27ae60;}
+.pt-vendor{background:#f3eeff;color:#8e44ad;}
+.pt-other{background:#f0f4f8;color:#666;}
+
+/* ACTIONS */
+.action-bar{display:flex;justify-content:center;gap:14px;padding:14px 20px;background:#f9f6ff;border-top:2px solid #ede0f4;flex-wrap:wrap;}
+.btn{padding:10px 22px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #1a2744;}
+.btn-outline:hover{background:#f0f6fc;}
+.btn-navy{background:#1a2744;color:#fff;}
+.btn-navy:hover{background:#243660;}
+
+.footer-banner{background:#1a2744;color:#fff;text-align:center;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.footer-banner .shield{width:34px;height:34px;background:#8e44ad;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.footer-banner .main-txt{font-size:14px;font-weight:800;letter-spacing:.5px;}
+.footer-banner .sub-txt{font-size:10px;opacity:.85;margin-top:2px;}
+
+.sec-hdr{background:#6c3fa0;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:rgba(255,255,255,.2);border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+@media print{body{background:#fff;padding:0;}.page{box-shadow:none;border-radius:0;}.quick-entry,.action-bar,.back-link,.del-btn,.checkout-btn{display:none;}}
+</style>
+</head>
+<body>
+
+<div style="max-width:940px;margin:0 auto;">
+  <a class="back-link" href="forms_portal.html">← Back to Portal</a>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-box">E</div>
+    <div class="header-text">
+      <h1>VISITOR LOG</h1>
+      <div class="sub">Administration Department · Envisage Worldwide</div>
+    </div>
+    <div class="header-meta">
+      <div class="date-display" id="today-display"></div>
+      <div class="date-sub" id="time-display"></div>
+    </div>
+  </div>
+
+  <!-- QUICK ENTRY FORM -->
+  <div class="quick-entry">
+    <div class="quick-title">🪪 Register New Visitor</div>
+    <div class="qe-grid">
+      <div class="qe-field">
+        <label>Visitor Name *</label>
+        <input type="text" id="q_name" placeholder="Full name">
+      </div>
+      <div class="qe-field">
+        <label>Company / Organisation</label>
+        <input type="text" id="q_company" placeholder="Company name">
+      </div>
+      <div class="qe-field">
+        <label>Phone</label>
+        <input type="tel" id="q_phone" placeholder="Mobile number">
+      </div>
+      <div class="qe-field">
+        <label>Host (Person Visiting) *</label>
+        <input type="text" id="q_host" placeholder="Employee name">
+      </div>
+      <div class="qe-field">
+        <label>Purpose *</label>
+        <select id="q_purpose">
+          <option value="">Select…</option>
+          <option value="Meeting">Meeting</option>
+          <option value="Delivery">Delivery</option>
+          <option value="Interview">Interview</option>
+          <option value="Vendor">Vendor / Supplier</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="qe-field">
+        <label>Badge / ID Shown</label>
+        <select id="q_badge">
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+          <option value="N/A">N/A</option>
+        </select>
+      </div>
+      <button class="qe-btn" onclick="addVisitor()">✚ Check In</button>
+    </div>
+    <div class="val-msg" id="val_msg">⚠️ Please fill in: <span id="val_fields"></span></div>
+  </div>
+
+  <!-- LOG TABLE -->
+  <div class="log-section">
+    <div class="log-header">
+      <div class="log-title">📋 Today's Visitor Log</div>
+      <div class="log-stats">
+        <div class="stat-pill in" id="stat_in">✅ 0 In</div>
+        <div class="stat-pill out" id="stat_out">🚪 0 Out</div>
+        <div class="stat-pill" id="stat_total">Total: 0</div>
+      </div>
+    </div>
+    <table class="log-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Visitor Name</th>
+          <th>Company</th>
+          <th>Phone</th>
+          <th>Visiting</th>
+          <th>Purpose</th>
+          <th>Check-In</th>
+          <th>Check-Out</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="log-body">
+        <tr id="empty-row">
+          <td colspan="9">
+            <div class="no-visitors">
+              <div class="icon">🚶</div>
+              No visitors registered today. Use the form above to check in a visitor.
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="clearAll()">🗑 Clear All Today</button>
+    <button class="btn btn-navy" onclick="window.print()">🖨 Print Today's Log</button>
+  </div>
+
+  <div class="footer-banner">
+    <div class="shield">🪪</div>
+    <div>
+      <div class="main-txt">SECURE ACCESS, PROFESSIONAL WELCOME.</div>
+      <div class="sub-txt">All visitors must be registered and escorted by their host.</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+var visitors = [];
+var counter = 0;
+
+var purposeClass = {
+  'Meeting':'pt-meeting','Delivery':'pt-delivery',
+  'Interview':'pt-interview','Vendor':'pt-vendor','Other':'pt-other'
+};
+
+window.addEventListener('DOMContentLoaded', function(){
+  updateClock();
+  setInterval(updateClock, 1000);
+});
+
+function updateClock(){
+  var now = new Date();
+  document.getElementById('today-display').textContent = now.toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('time-display').textContent = now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+
+function timeStr(){
+  var now = new Date();
+  return now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+
+function addVisitor(){
+  var name    = document.getElementById('q_name').value.trim();
+  var host    = document.getElementById('q_host').value.trim();
+  var purpose = document.getElementById('q_purpose').value;
+  var missing = [];
+  if(!name)    missing.push('Visitor Name');
+  if(!host)    missing.push('Host');
+  if(!purpose) missing.push('Purpose');
+  var vm = document.getElementById('val_msg');
+  if(missing.length > 0){
+    document.getElementById('val_fields').textContent = missing.join(', ');
+    vm.style.display = 'block';
+    return;
+  }
+  vm.style.display = 'none';
+  counter++;
+  var v = {
+    id:      counter,
+    name:    name,
+    company: document.getElementById('q_company').value.trim() || '–',
+    phone:   document.getElementById('q_phone').value.trim()   || '–',
+    host:    host,
+    purpose: purpose,
+    badge:   document.getElementById('q_badge').value,
+    checkin: timeStr(),
+    checkout: null,
+    status:  'in'
+  };
+  visitors.push(v);
+  renderLog();
+  // clear quick entry
+  ['q_name','q_company','q_phone','q_host'].forEach(function(id){ document.getElementById(id).value=''; });
+  document.getElementById('q_purpose').selectedIndex = 0;
+  document.getElementById('q_badge').selectedIndex = 0;
+}
+
+function checkOut(id){
+  var v = visitors.find(function(x){return x.id===id;});
+  if(v){ v.checkout = timeStr(); v.status='out'; renderLog(); }
+}
+
+function removeVisitor(id){
+  if(!confirm('Remove this visitor entry?')) return;
+  visitors = visitors.filter(function(x){return x.id!==id;});
+  renderLog();
+}
+
+function renderLog(){
+  var tbody = document.getElementById('log-body');
+  var inCount  = visitors.filter(function(v){return v.status==='in';}).length;
+  var outCount = visitors.filter(function(v){return v.status==='out';}).length;
+  document.getElementById('stat_in').textContent   = '✅ ' + inCount  + ' In';
+  document.getElementById('stat_out').textContent  = '🚪 ' + outCount + ' Out';
+  document.getElementById('stat_total').textContent = 'Total: ' + visitors.length;
+
+  if(visitors.length === 0){
+    tbody.innerHTML = '<tr id="empty-row"><td colspan="9"><div class="no-visitors"><div class="icon">🚶</div>No visitors registered today.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = visitors.map(function(v, i){
+    var pc = purposeClass[v.purpose] || 'pt-other';
+    var statusBadge = v.status === 'in'
+      ? '<span class="status-badge status-in">✅ In</span>'
+      : '<span class="status-badge status-out">🚪 Out</span>';
+    var action = v.status === 'in'
+      ? '<button class="checkout-btn" onclick="checkOut('+v.id+')">Check Out</button>'
+      : '<span style="font-size:11px;color:#27ae60;font-weight:700;">✓ Done</span>';
+    return '<tr>' +
+      '<td>' + (i+1) + '</td>' +
+      '<td><strong>' + v.name + '</strong><br><span style="font-size:10px;color:#888;">Badge: ' + v.badge + '</span></td>' +
+      '<td>' + v.company + '</td>' +
+      '<td>' + v.phone + '</td>' +
+      '<td>' + v.host + '</td>' +
+      '<td><span class="purpose-tag '+pc+'">' + v.purpose + '</span></td>' +
+      '<td>' + v.checkin + '</td>' +
+      '<td>' + (v.checkout || '–') + '</td>' +
+      '<td>' + action + ' <button class="del-btn" onclick="removeVisitor('+v.id+')" title="Remove">✕</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function clearAll(){
+  if(!confirm('Clear all visitor entries for today?')) return;
+  visitors = [];
+  counter = 0;
+  renderLog();
+}
+</script>
+</body>
+</html>
