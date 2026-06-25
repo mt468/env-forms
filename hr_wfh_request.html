@@ -384,7 +384,7 @@ textarea:focus{border-color:#00b8a9;}
 
 <script>
 // ── CONFIG ──
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKDBKsZHDBT94IIM4Jw3FsuVVtonrIGBjxC3--kGYZImmlCLkCFbiHXGiuyG984xZWlQ/exec';
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
 var CC_EMAILS  = 'admin@envisageworldwide.com, gift@envisageworldwide.com';  // PRODUCTION
 
 function generateFormNo(prefix) {
@@ -477,68 +477,4 @@ function submitForm(){
     pr_no:         document.getElementById('wfh_no').value,
     pr_date:       document.getElementById('submit_date').value,
     dept:          document.getElementById('emp_dept').value,
-    purpose:       (wfhTypeEl ? wfhTypeEl.value : '') + ' — ' + (document.getElementById('tasks').value || ''),
-    traveler:      document.getElementById('emp_name').value,
-    position:      document.getElementById('emp_position').value,
-    emp_id:        document.getElementById('emp_id').value,
-    contact:       document.getElementById('emp_email').value,
-    travel_from:   document.getElementById('date_from').value,
-    travel_to:     document.getElementById('date_to').value,
-    wfh_type:      wfhTypeEl ? wfhTypeEl.value : '',
-    days_count:    document.getElementById('ds_days') ? document.getElementById('ds_days').textContent : '',
-    manager:       document.getElementById('emp_manager').value,
-    phone:         document.getElementById('emp_phone').value,
-    tasks:         document.getElementById('tasks').value,
-    avail_hours:   document.getElementById('avail_hours').value,
-    response_time: document.getElementById('response_time').value,
-    tools:         connCards,
-    notes:         document.getElementById('notes').value,
-    total_amount:  0,
-    cert_name:     document.getElementById('emp_name').value,
-    cert_date:     document.getElementById('submit_date').value,
-    cc_emails:     CC_EMAILS
-  };
-
-  var btn = document.getElementById('submit_btn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
-
-  var form = document.createElement('form');
-  form.method = 'POST'; form.action = SCRIPT_URL; form.target = 'hidden_iframe';
-  var inp = document.createElement('input');
-  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
-  form.appendChild(inp); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
-
-  setTimeout(function(){
-    document.getElementById('modal_ref_id').textContent = payload.pr_no;
-    document.getElementById('success_overlay').classList.add('show');
-    btn.disabled = false; btn.innerHTML = '🏠 Submit WFH Request';
-  }, 2200);
-}
-
-function closeModal(){
-  document.getElementById('success_overlay').classList.remove('show');
-  clearForm(true);
-}
-
-function clearForm(silent){
-  if(!silent && !confirm('Clear all entered data?')) return;
-  document.querySelectorAll('input[type="text"],input[type="date"],input[type="email"],input[type="tel"]').forEach(function(i){i.value='';i.classList.remove('invalid');});
-  document.querySelectorAll('input[type="radio"]').forEach(function(i){i.checked=false;});
-  document.querySelectorAll('input[type="checkbox"]').forEach(function(i){i.checked=false;});
-  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
-  document.querySelectorAll('textarea').forEach(function(t){t.value='';});
-  document.querySelectorAll('.wt-card').forEach(function(c){c.classList.remove('selected');});
-  document.querySelectorAll('.conn-card').forEach(function(c){c.classList.remove('selected');});
-  document.getElementById('recurring_days').style.display = 'none';
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('submit_date').value = today;
-  document.getElementById('date_from').value   = today;
-  document.getElementById('date_to').value     = today;
-  document.getElementById('wfh_no').value = generateFormNo('WFH');
-  calcDays();
-  document.getElementById('val_msg').style.display = 'none';
-}
-</script>
-<iframe name="hidden_iframe" style="display:none;"></iframe>
-</body>
-</html>
+    purpose:       (wfhT

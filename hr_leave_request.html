@@ -360,7 +360,7 @@ textarea:focus{border-color:#00b8a9;}
 
 <script>
 // ── CONFIG ──
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKDBKsZHDBT94IIM4Jw3FsuVVtonrIGBjxC3--kGYZImmlCLkCFbiHXGiuyG984xZWlQ/exec';
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
 var CC_EMAILS  = 'admin@envisageworldwide.com, gift@envisageworldwide.com';  // PRODUCTION
 
 function generateFormNo(prefix) {
@@ -445,75 +445,4 @@ function submitForm(){
     vm.scrollIntoView({behavior:'smooth', block:'center'});
     return;
   }
-  vm.style.display = 'none';
-
-  var leaveTypeEl = document.querySelector('input[name="leave_type"]:checked');
-  var sessionEl   = document.getElementById('session');
-
-  var payload = {
-    action:       'submit',
-    form_type:    'Leave Request',
-    pr_no:        document.getElementById('lr_no').value,
-    pr_date:      document.getElementById('submit_date').value,
-    dept:         document.getElementById('emp_dept').value,
-    purpose:      (leaveTypeEl ? leaveTypeEl.value : '') + ' — ' + (document.getElementById('reason').value || ''),
-    traveler:     document.getElementById('emp_name').value,
-    position:     document.getElementById('emp_position').value,
-    emp_id:       document.getElementById('emp_id').value,
-    contact:      document.getElementById('emp_email').value,
-    travel_from:  document.getElementById('date_from').value,
-    travel_to:    document.getElementById('date_to').value,
-    leave_type:   leaveTypeEl ? leaveTypeEl.value : '',
-    session:      sessionEl ? sessionEl.value : 'full',
-    days_count:   document.getElementById('ds_days').textContent,
-    manager:      document.getElementById('emp_manager').value,
-    phone:        document.getElementById('emp_phone').value,
-    contact_leave: document.getElementById('contact_leave').value,
-    reason:       document.getElementById('reason').value,
-    total_amount: 0,
-    cert_name:    document.getElementById('emp_name').value,
-    cert_date:    document.getElementById('submit_date').value,
-    cc_emails:    CC_EMAILS
-  };
-
-  var btn = document.getElementById('submit_btn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
-
-  var form = document.createElement('form');
-  form.method = 'POST'; form.action = SCRIPT_URL; form.target = 'hidden_iframe';
-  var inp = document.createElement('input');
-  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
-  form.appendChild(inp); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
-
-  setTimeout(function(){
-    document.getElementById('modal_ref_id').textContent = payload.pr_no;
-    document.getElementById('success_overlay').classList.add('show');
-    btn.disabled = false; btn.innerHTML = '✅ Submit Request';
-  }, 2200);
-}
-
-function closeModal(){
-  document.getElementById('success_overlay').classList.remove('show');
-  clearForm(true);
-}
-
-function clearForm(silent){
-  if(!silent && !confirm('Clear all entered data?')) return;
-  document.querySelectorAll('input[type="text"],input[type="date"],input[type="email"],input[type="tel"],input[type="number"]').forEach(function(i){i.value='';i.classList.remove('invalid');});
-  document.querySelectorAll('input[type="radio"]').forEach(function(i){i.checked=false;});
-  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
-  document.querySelectorAll('textarea').forEach(function(t){t.value='';});
-  document.querySelectorAll('.leave-type-card').forEach(function(c){c.classList.remove('selected');});
-  document.getElementById('other_specify_row').style.display = 'none';
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('submit_date').value = today;
-  document.getElementById('date_from').value = today;
-  document.getElementById('date_to').value = today;
-  document.getElementById('lr_no').value = generateFormNo('LR');
-  calcDays();
-  document.getElementById('val_msg').style.display = 'none';
-}
-</script>
-<iframe name="hidden_iframe" style="display:none;"></iframe>
-</body>
-</html>
+  vm.styl

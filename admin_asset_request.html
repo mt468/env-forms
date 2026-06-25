@@ -338,7 +338,7 @@ textarea{resize:vertical;border:1.5px solid #8e44ad;border-radius:4px;padding:6p
 
 <script>
 // ── CONFIG ──
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwKDBKsZHDBT94IIM4Jw3FsuVVtonrIGBjxC3--kGYZImmlCLkCFbiHXGiuyG984xZWlQ/exec';
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
 var CC_EMAILS  = 'mallika@envisageworldwide.com';  // PRODUCTION
 
 function generateFormNo(prefix) {
@@ -409,61 +409,3 @@ function submitForm(){
 
   var payload = {
     action:        'submit',
-    form_type:     'Asset Request',
-    pr_no:         document.getElementById('ar_no').value,
-    pr_date:       document.getElementById('ar_date').value,
-    dept:          document.getElementById('req_dept').value,
-    purpose:       document.getElementById('justification').value,
-    traveler:      document.getElementById('req_name').value,
-    position:      '',
-    emp_id:        document.getElementById('req_id').value,
-    contact:       document.getElementById('req_email').value,
-    asset_category: assetCatEl ? assetCatEl.value : '',
-    urgency:       urgencyEl ? urgencyEl.value : 'Normal',
-    required_by:   document.getElementById('required_by').value,
-    items:         JSON.stringify(items),
-    total_amount:  0,
-    cert_name:     document.getElementById('req_name').value,
-    cert_date:     document.getElementById('ar_date').value,
-    cc_emails:     CC_EMAILS
-  };
-
-  var btn = document.getElementById('submit_btn');
-  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…';
-
-  var form = document.createElement('form');
-  form.method = 'POST'; form.action = SCRIPT_URL; form.target = 'hidden_iframe';
-  var inp = document.createElement('input');
-  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
-  form.appendChild(inp); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
-
-  setTimeout(function(){
-    document.getElementById('modal_ref_id').textContent = payload.pr_no;
-    document.getElementById('success_overlay').classList.add('show');
-    btn.disabled = false; btn.innerHTML = '📤 Submit Request';
-  }, 2200);
-}
-
-function closeModal(){
-  document.getElementById('success_overlay').classList.remove('show');
-  clearForm(true);
-}
-
-function clearForm(silent){
-  if(!silent && !confirm('Clear all entered data?')) return;
-  document.querySelectorAll('input[type="text"],input[type="date"],input[type="email"],input[type="number"]').forEach(function(i){i.value='';i.classList.remove('invalid');});
-  document.querySelectorAll('input[type="radio"]').forEach(function(i){i.checked=false;});
-  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
-  document.querySelectorAll('textarea').forEach(function(t){t.value='';});
-  document.querySelectorAll('.at-card').forEach(function(c){c.classList.remove('selected');});
-  document.querySelectorAll('.urg-opt').forEach(function(e){e.className='urg-opt';});
-  document.getElementById('cat_other_row').style.display = 'none';
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('ar_date').value = today;
-  document.getElementById('ar_no').value = generateFormNo('AR');
-  document.getElementById('val_msg').style.display = 'none';
-}
-</script>
-<iframe name="hidden_iframe" style="display:none;"></iframe>
-</body>
-</html>
