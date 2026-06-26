@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Leave Dashboard 2026 — Envisage</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:Arial,sans-serif;background:#f0f4f8;color:#1a2744;}
+
+.header{background:#1a2744;padding:20px 32px;display:flex;align-items:center;justify-content:space-between;}
+.header-title{color:#fff;font-size:20px;font-weight:800;}
+.header-sub{color:#00b8a9;font-size:12px;font-weight:600;margin-top:3px;}
+.header-badge{background:#00b8a9;color:#fff;padding:6px 16px;border-radius:20px;font-size:12px;font-weight:700;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:20px 32px 0;}
+.kpi{background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 10px rgba(0,0,0,.07);border-top:4px solid #00b8a9;position:relative;overflow:hidden;}
+.kpi.v{border-top-color:#6c3fa0;}
+.kpi.n{border-top-color:#1a2744;}
+.kpi.o{border-top-color:#f39c12;}
+.kpi-label{font-size:10px;font-weight:700;color:#7a8ca0;text-transform:uppercase;letter-spacing:.8px;}
+.kpi-value{font-size:34px;font-weight:800;color:#1a2744;margin:5px 0 2px;line-height:1;}
+.kpi-sub{font-size:11px;color:#7a8ca0;}
+.kpi-icon{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:32px;opacity:.1;}
+
+.row{display:grid;gap:14px;padding:14px 32px 0;}
+.row2{grid-template-columns:1fr 1fr;}
+.row1{grid-template-columns:1fr;}
+
+.card{background:#fff;border-radius:12px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,.07);}
+.card-title{font-size:11px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+.card-title::before{content:'';width:3px;height:13px;background:#00b8a9;border-radius:2px;}
+
+.hbar-row{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.hbar-label{font-size:11px;font-weight:600;color:#1a2744;width:120px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.hbar-track{flex:1;background:#f0f4f8;border-radius:20px;height:16px;overflow:hidden;}
+.hbar-fill{height:100%;border-radius:20px;}
+.hbar-val{font-size:11px;font-weight:700;width:36px;text-align:right;flex-shrink:0;color:#1a2744;}
+
+.vbar-chart{display:flex;align-items:flex-end;gap:8px;height:160px;padding-top:10px;}
+.vbar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px;}
+.vbar-fill{width:100%;border-radius:5px 5px 0 0;min-height:4px;}
+.vbar-label{font-size:10px;font-weight:600;color:#555;text-align:center;}
+.vbar-val{font-size:10px;font-weight:700;color:#1a2744;}
+
+.donut-wrap{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap;}
+.legend-list{display:flex;flex-direction:column;gap:7px;}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:#444;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+
+.people-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px;}
+
+footer{text-align:center;padding:18px 0 24px;font-size:11px;color:#aaa;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">&#x1F4CB; Leave Dashboard 2026</div>
+    <div class="header-sub">Envisage Worldwide &middot; Jan&ndash;Jul 2026 &middot; Chiang Rai &amp; Remote</div>
+  </div>
+  <div class="header-badge">67 Requests</div>
+</div>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">Total Leave Days</div>
+    <div class="kpi-value">108</div>
+    <div class="kpi-sub">Jan &ndash; Jul 2026</div>
+    <div class="kpi-icon">&#x1F4C5;</div>
+  </div>
+  <div class="kpi v">
+    <div class="kpi-label">Total Requests</div>
+    <div class="kpi-value">67</div>
+    <div class="kpi-sub">Avg 1.6 days / request</div>
+    <div class="kpi-icon">&#x1F4DD;</div>
+  </div>
+  <div class="kpi n">
+    <div class="kpi-label">Paid Leave Days</div>
+    <div class="kpi-value">93.5</div>
+    <div class="kpi-sub">86.6% of total</div>
+    <div class="kpi-icon">&#x2705;</div>
+  </div>
+  <div class="kpi o">
+    <div class="kpi-label">Unpaid Leave Days</div>
+    <div class="kpi-value">14.5</div>
+    <div class="kpi-sub">13.4% of total</div>
+    <div class="kpi-icon">&#x26A0;&#xFE0F;</div>
+  </div>
+</div>
+
+<div class="row row2">
+  <div class="card">
+    <div class="card-title">Days Taken by Month</div>
+    <div class="vbar-chart" id="monthChart"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Days by Leave Type</div>
+    <div class="donut-wrap">
+      <svg id="donutType" width="150" height="150" viewBox="0 0 150 150"></svg>
+      <div class="legend-list" id="typeLegend"></div>
+    </div>
+  </div>
+</div>
+
+<div class="row row2">
+  <div class="card">
+    <div class="card-title">Request Count by Leave Type</div>
+    <div id="typeCountBars"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Paid vs Unpaid Leave</div>
+    <div class="donut-wrap">
+      <svg id="donutPaid" width="150" height="150" viewBox="0 0 150 150"></svg>
+      <div class="legend-list">
+        <div class="legend-item"><div class="legend-dot" style="background:#00b8a9"></div>Paid &mdash; 93.5 days (86.6%)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#e74c3c"></div>Unpaid &mdash; 14.5 days (13.4%)</div>
+        <div style="margin-top:10px;padding:10px;background:#f0f4f8;border-radius:8px;font-size:11px;line-height:1.7;color:#555;">
+          Unpaid includes Tania&rsquo;s UK trip (10d) and Visa Run (4d)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row row1" style="padding-bottom:20px;">
+  <div class="card">
+    <div class="card-title">Leave Days per Employee</div>
+    <div class="people-grid" id="peopleBars"></div>
+  </div>
+</div>
+
+<footer>Generated June 2026 &middot; Envisage HR &middot; Source: Leave Approval Form Responses (67 records)</footer>
+
+<script>
+var months = [
+  {l:'Jan',d:15},{l:'Feb',d:14.5},{l:'Mar',d:19},
+  {l:'Apr',d:29.5},{l:'May',d:9.5},{l:'Jun',d:4.5},{l:'Jul',d:16}
+];
+var typeColors = {
+  'Vacation':'#00b8a9','Personal':'#6c3fa0','Sick':'#e74c3c',
+  'School':'#f39c12','Visa Run':'#3498db','Hospital':'#95a5a6'
+};
+var typeData = [
+  {l:'Vacation',d:48,c:12},{l:'Personal',d:30.5,c:28},
+  {l:'Sick',d:19.5,c:24},{l:'School',d:5,c:1},
+  {l:'Visa Run',d:4,c:1},{l:'Hospital',d:1,c:1}
+];
+var people = [
+  ['Tania Jordan',23],['Apue',8.5],['Sai Hsai Hein',8.5],
+  ['TK',7.5],['We Z',7],['Gift TB',7],['MT',6.5],
+  ['Zahkung Roi Ja',6.5],['Tu Mai',6],['May Hsu Tint Lwin',5.5],
+  ['Yu Mon Thin',5.5],['Ying Punyano',4],['Thamita Bosang',3.5],
+  ['June Pyae Sone',2],['ThawThaw',1.5],['Nay Myo Linn',1.5],['Pin Tip',1]
+];
+var barColors = ['#00b8a9','#6c3fa0','#e74c3c','#f39c12','#3498db','#27ae60',
+                 '#00b8a9','#6c3fa0','#e74c3c','#f39c12','#3498db','#27ae60',
+                 '#00b8a9','#6c3fa0','#e74c3c','#f39c12','#3498db'];
+
+// Monthly vertical bars
+var maxDay = 29.5;
+var mc = document.getElementById('monthChart');
+months.forEach(function(m){
+  var pct = (m.d/maxDay*100).toFixed(0);
+  var isMax = m.d===maxDay;
+  var col = document.createElement('div');
+  col.className='vbar-col';
+  col.innerHTML='<div class="vbar-val">'+m.d+'</div>'+
+    '<div class="vbar-fill" style="height:'+pct+'%;background:'+(isMax?'#6c3fa0':'#00b8a9')+'"></div>'+
+    '<div class="vbar-label">'+m.l+'</div>';
+  mc.appendChild(col);
+});
+
+// Donut SVG
+function drawDonut(id,segs,total,label){
+  var svg=document.getElementById(id);
+  var cx=75,cy=75,r=55,sw=28,cum=0;
+  segs.forEach(function(s){
+    var frac=s.v/total;
+    var a1=cum*2*Math.PI-Math.PI/2;
+    var a2=(cum+frac)*2*Math.PI-Math.PI/2;
+    var x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
+    var x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+    var lg=frac>0.5?1:0;
+    var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('fill','none');
+    p.setAttribute('stroke',s.color);
+    p.setAttribute('stroke-width',sw);
+    p.setAttribute('d','M '+x1+' '+y1+' A '+r+' '+r+' 0 '+lg+' 1 '+x2+' '+y2);
+    svg.appendChild(p);
+    cum+=frac;
+  });
+  var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',cx);t.setAttribute('y',cy+4);
+  t.setAttribute('text-anchor','middle');
+  t.setAttribute('font-size','13');t.setAttribute('font-weight','800');
+  t.setAttribute('fill','#1a2744');t.textContent=label||total+'d';
+  svg.appendChild(t);
+}
+
+drawDonut('donutType',
+  typeData.map(function(t){return{v:t.d,color:typeColors[t.l]};}),
+  108,'108d');
+var tl=document.getElementById('typeLegend');
+typeData.forEach(function(t){
+  tl.innerHTML+='<div class="legend-item"><div class="legend-dot" style="background:'+typeColors[t.l]+'"></div>'+t.l+' ('+t.d+'d)</div>';
+});
+
+drawDonut('donutPaid',
+  [{v:93.5,color:'#00b8a9'},{v:14.5,color:'#e74c3c'}],
+  108,'108d');
+
+// Count bars
+var maxC=28;
+var cd=document.getElementById('typeCountBars');
+var sorted=[{l:'Personal',d:30.5,c:28},{l:'Sick',d:19.5,c:24},{l:'Vacation',d:48,c:12},
+            {l:'School',d:5,c:1},{l:'Visa Run',d:4,c:1},{l:'Hospital',d:1,c:1}];
+sorted.forEach(function(t){
+  var pct=(t.c/maxC*100).toFixed(0);
+  cd.innerHTML+='<div class="hbar-row">'+
+    '<div class="hbar-label">'+t.l+' Leave</div>'+
+    '<div class="hbar-track"><div class="hbar-fill" style="width:'+pct+'%;background:'+typeColors[t.l]+'"></div></div>'+
+    '<div class="hbar-val">'+t.c+'</div></div>';
+});
+
+// People bars
+var maxP=23;
+var pd=document.getElementById('peopleBars');
+people.forEach(function(p,i){
+  var pct=(p[1]/maxP*100).toFixed(0);
+  pd.innerHTML+='<div class="hbar-row">'+
+    '<div class="hbar-label" style="width:110px;" title="'+p[0]+'">'+p[0]+'</div>'+
+    '<div class="hbar-track"><div class="hbar-fill" style="width:'+pct+'%;background:'+barColors[i]+'"></div></div>'+
+    '<div class="hbar-val">'+p[1]+'d</div></div>';
+});
+</script>
+</body>
+</html>
