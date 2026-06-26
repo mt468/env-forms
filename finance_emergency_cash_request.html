@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Emergency Cash Request – Envisage</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#fce8e8 0%,#fdf4f4 100%);padding:20px;color:#1a2744;min-height:100vh;}
+
+.page{background:#fff;max-width:920px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+
+input[type="text"],input[type="number"],input[type="date"],input[type="email"],input[type="tel"],select,textarea{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #3a7bd5;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input[type="text"]:focus,input[type="number"]:focus,input[type="date"]:focus,
+input[type="email"]:focus,input[type="tel"]:focus,select:focus,textarea:focus{
+  border-bottom-color:#00b8a9;background:rgba(0,184,169,.05);
+}
+input[type="number"]{text-align:right;}
+input.invalid,select.invalid{border-bottom-color:#e74c3c!important;background:rgba(231,76,60,.05);}
+input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-color:#1a2744;}
+
+/* ── EMERGENCY ALERT BANNER ── */
+.emergency-banner{background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:12px;font-size:13px;font-weight:700;letter-spacing:.3px;}
+.emergency-banner .pulse{width:12px;height:12px;border-radius:50%;background:#fff;animation:pulse 1.2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(1.3);}}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:2px solid #fce8e8;}
+.header-logo{width:80px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.header-logo svg{width:72px;height:72px;}
+.header-center{flex:1;padding:0 12px;}
+.header-center h1{font-size:22px;font-weight:800;color:#1a2744;line-height:1.1;letter-spacing:.5px;}
+.header-center .note{font-size:12px;color:#444;font-weight:600;line-height:1.6;margin-top:4px;}
+.header-right{width:200px;flex-shrink:0;border:2px solid #f5c6c6;border-radius:8px;padding:10px 12px;font-size:12px;background:#fff8f8;}
+.pr-box-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-weight:700;}
+.pr-box-row .lbl{white-space:nowrap;}
+.pr-box-row input,.pr-box-row select{flex:1;min-width:0;}
+.date-hint{font-size:9px;color:#888;margin-top:3px;text-align:right;}
+
+/* DIRECTOR REQUIRED BADGE */
+.director-badge{display:inline-flex;align-items:center;gap:6px;background:#fff0f0;border:1.5px solid #e74c3c;border-radius:20px;padding:5px 14px;font-size:11.5px;font-weight:700;color:#c0392b;margin-top:6px;}
+
+/* SECTION HEADERS */
+.sec-hdr{background:#1a2744;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:#e74c3c;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.sec-hdr .ico-teal{background:#00b8a9;}
+
+/* SECTIONS */
+.section{padding:14px 20px;border-bottom:1px solid #f5e8e8;}
+.frow{display:flex;align-items:flex-end;gap:6px;margin-bottom:10px;font-size:12px;font-weight:700;}
+.frow label{white-space:nowrap;font-weight:700;color:#1a2744;}
+.frow input,.frow select,.frow textarea{flex:1;min-width:40px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
+
+/* URGENCY SELECTOR */
+.urgency-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.urgency-opt{border:2px solid #e0eaf4;border-radius:8px;padding:12px 10px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.urgency-opt input[type="radio"]{position:absolute;opacity:0;width:0;height:0;}
+.urgency-opt .urg-icon{font-size:22px;display:block;margin-bottom:4px;}
+.urgency-opt .urg-label{font-size:11.5px;font-weight:700;color:#1a2744;display:block;}
+.urgency-opt .urg-sub{font-size:10px;color:#888;display:block;margin-top:2px;}
+.urgency-opt.selected-critical{border-color:#e74c3c;background:#fff0f0;}
+.urgency-opt.selected-critical .urg-label{color:#c0392b;}
+.urgency-opt.selected-urgent{border-color:#e67e22;background:#fff5ea;}
+.urgency-opt.selected-urgent .urg-label{color:#b86800;}
+.urgency-opt.selected-high{border-color:#f39c12;background:#fff8e1;}
+.urgency-opt.selected-high .urg-label{color:#c07a00;}
+
+/* AMOUNT HIGHLIGHT */
+.amount-highlight{background:linear-gradient(135deg,#7d1a1a 0%,#c0392b 100%);border-radius:10px;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.amount-highlight .lbl{color:rgba(255,255,255,.8);font-size:13px;font-weight:700;}
+.amount-highlight .val{color:#ffd6d6;font-size:26px;font-weight:800;letter-spacing:.5px;}
+.amount-highlight .currency{color:rgba(255,255,255,.6);font-size:13px;margin-left:6px;}
+
+/* ITEMS TABLE */
+.est-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;margin-bottom:10px;}
+.est-table th{background:#1a2744;color:#fff;padding:8px 6px;text-align:center;font-weight:700;font-size:11px;}
+.est-table th:nth-child(1){width:34px;}
+.est-table th:nth-child(2){width:130px;}
+.est-table th:nth-child(3){width:auto;}
+.est-table th:nth-child(4){width:110px;}
+.est-table th:nth-child(5){width:34px;}
+.est-table td{padding:4px 6px;border-bottom:1px solid #f5e8e8;vertical-align:middle;height:36px;}
+.est-table td:first-child,.est-table td:last-child{text-align:center;}
+.est-table td:nth-child(4){text-align:right;}
+.est-table td input,.est-table td select{width:100%;min-width:0;}
+.est-table td input[type="number"]{text-align:right;}
+.est-total-row td{background:#fff0f0;font-weight:800;border-top:2px solid #c0392b;padding:8px 6px;}
+.est-total-label{text-align:right!important;padding-right:8px!important;font-size:12px;color:#1a2744;}
+.est-total-amt{color:#c0392b;font-size:15px;font-weight:800;text-align:right!important;}
+.del-btn{background:none;border:none;cursor:pointer;color:#e74c3c;font-size:15px;line-height:1;padding:2px 4px;}
+.del-btn:hover{color:#c0392b;}
+.add-row-btn{background:#fff0f0;border:1.5px dashed #e74c3c;color:#c0392b;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;padding:7px 18px;border-radius:6px;cursor:pointer;transition:all .2s;}
+.add-row-btn:hover{background:#fde8e8;border-color:#c0392b;}
+
+/* DIRECTOR APPROVAL TABLE */
+.appr-section{padding:0;border-bottom:1px solid #f5e8e8;}
+.appr-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.appr-table th{background:#f8e8e8;color:#1a2744;padding:7px 10px;font-weight:700;text-align:center;border:1px solid #f0c8c8;font-size:11px;}
+.appr-table th:nth-child(1){width:30%;}
+.appr-table th:nth-child(2){width:22%;}
+.appr-table th:nth-child(3){width:22%;}
+.appr-table th:nth-child(4){width:14%;}
+.appr-table th:nth-child(5){width:12%;}
+.appr-table td{padding:5px 8px;border:1px solid #f5e8e8;vertical-align:middle;height:38px;}
+.appr-table td input{width:100%;min-width:0;font-size:12px;}
+.role-cell{display:flex;align-items:center;gap:7px;white-space:normal;}
+.ava{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:#fff;}
+.ava-b{background:#3a7bd5;}.ava-g{background:#27ae60;}.ava-p{background:#8e44ad;}
+.ava-t{background:#00b8a9;}.ava-r{background:#e74c3c;}.ava-d{background:#7d1a1a;}
+
+/* DIRECTOR HIGHLIGHT ROW */
+.director-row td{background:#fff0f0;}
+.director-row td:first-child{font-weight:800;color:#c0392b;}
+
+/* NOTIFICATION PANEL */
+.notify-panel{background:#f0f6ff;border:1.5px solid #3a7bd5;border-radius:8px;padding:14px 16px;margin-bottom:10px;}
+.notify-title{font-size:12px;font-weight:800;color:#1a2744;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;display:flex;align-items:center;gap:7px;}
+.notify-row{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;margin-bottom:7px;}
+.notify-row input[type="checkbox"]{width:15px;height:15px;}
+.notify-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;}
+.nt-required{background:#fde8e8;color:#c0392b;border:1px solid #f5c0c0;}
+.nt-auto{background:#e8f8f0;color:#1a7a40;border:1px solid #b0e8c8;}
+
+/* BOTTOM GRID */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #f5e8e8;}
+.bottom-left{padding:14px 20px;border-right:1px solid #f5e8e8;}
+.bottom-right{padding:14px 20px;}
+
+/* DOCS / NOTES */
+.info-bar{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #f5e8e8;}
+.docs-box{padding:14px 20px;border-right:1px solid #f5e8e8;}
+.notes-box{padding:14px 20px;}
+.docs-title{font-size:12px;font-weight:800;color:#1a2744;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;}
+.checklist-item{display:flex;align-items:flex-start;gap:8px;font-size:11px;color:#333;line-height:1.4;margin-bottom:7px;}
+.note-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11px;color:#333;line-height:1.4;}
+.note-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;}
+.nd-red{background:#fde8e8;color:#e74c3c;border:1.5px solid #e74c3c;}
+.nd-ora{background:#fff3e0;color:#e67e22;border:1.5px solid #e67e22;}
+.nd-yel{background:#fff8e1;color:#f39c12;border:1.5px solid #f39c12;}
+.nd-grn{background:#e8f8f0;color:#27ae60;border:1.5px solid #27ae60;}
+
+/* FOOTER */
+.footer-banner{background:#1a2744;color:#fff;text-align:center;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.footer-banner .shield{width:34px;height:34px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.footer-banner .main-txt{font-size:14px;font-weight:800;letter-spacing:.5px;}
+.footer-banner .sub-txt{font-size:10px;opacity:.85;margin-top:2px;}
+.footer-note{background:#fff;text-align:center;font-size:12px;padding:9px;color:#333;}
+.footer-note strong{color:#e74c3c;}
+
+/* ACTION BAR */
+.action-bar{display:flex;justify-content:center;gap:14px;padding:14px 20px;background:#fff8f8;border-top:2px solid #f5e8e8;flex-wrap:wrap;}
+.btn{padding:10px 26px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-danger{background:#c0392b;color:#fff;}
+.btn-danger:hover{background:#a93226;transform:translateY(-1px);box-shadow:0 3px 10px rgba(192,57,43,.35);}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #1a2744;}
+.btn-outline:hover{background:#f0f6fc;}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:30px 34px;max-width:460px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.modal h2{font-size:20px;font-weight:800;color:#1a2744;margin-bottom:10px;}
+.modal p{font-size:13px;color:#555;line-height:1.6;margin-bottom:6px;}
+.modal .ref-id{font-size:22px;font-weight:800;color:#e74c3c;margin:12px 0;}
+.modal .close-btn{margin-top:18px;background:#1a2744;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
+
+.val-msg{display:none;background:#fff3cd;border:1px solid #ffc107;color:#856404;font-size:12px;padding:10px 16px;margin:0 20px 10px;border-radius:6px;font-weight:600;}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.connection-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
+.connection-dot.ok{background:#27ae60;}.connection-dot.err{background:#e74c3c;}
+
+/* ATTACHMENTS */
+.attach-sec{padding:14px 20px;border-bottom:1px solid #f5e8e8;}
+.attach-hint{font-size:11.5px;color:#6b7c93;margin-bottom:10px;line-height:1.5;}
+.attach-upload-btn{display:inline-flex;align-items:center;gap:7px;background:#fff0f0;border:1.5px dashed #e74c3c;color:#c0392b;font-size:12px;font-weight:700;padding:8px 16px;border-radius:6px;cursor:pointer;transition:background .2s;}
+.attach-upload-btn:hover{background:#fde8e8;}
+.attach-upload-btn input[type="file"]{display:none;}
+.attach-list{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
+.attach-item{display:flex;align-items:center;gap:8px;background:#fff8f8;border:1px solid #f0c8c8;border-radius:6px;padding:6px 10px;font-size:11.5px;}
+.attach-item-name{flex:1;font-weight:600;color:#1a2744;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.attach-item-size{color:#6b7c93;flex-shrink:0;font-size:11px;}
+.attach-remove{background:none;border:none;color:#e74c3c;cursor:pointer;font-size:14px;padding:0 4px;line-height:1;}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;border-radius:0;}
+  .action-bar{display:none;}
+  .emergency-banner{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+}
+
+@media(max-width:680px){
+  body{padding:10px;}
+  .header{flex-direction:column;align-items:flex-start;padding:14px 14px 10px;gap:10px;}
+  .header-right{width:100%;}
+  .header-logo{display:none;}
+  .header-center h1{font-size:17px;}
+  .two-col,.three-col{grid-template-columns:1fr!important;gap:0;}
+  .urgency-grid{grid-template-columns:1fr 1fr!important;}
+  .frow{gap:4px;margin-bottom:10px;}
+  input[type="text"],input[type="number"],input[type="date"],
+  input[type="email"],input[type="tel"],select,textarea{font-size:16px!important;}
+  .appr-section{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .appr-table{min-width:500px;}
+  .est-table{min-width:480px;font-size:11px;}
+  .amount-highlight .val{font-size:18px;}
+  .action-bar{flex-direction:column;gap:10px;padding:12px 14px;}
+  .action-bar .btn{width:100%;padding:13px;font-size:14px;}
+  .info-bar,.bottom-grid{grid-template-columns:1fr!important;}
+  .docs-box{border-right:none;border-bottom:1px solid #f5e8e8;}
+  .footer-banner{flex-direction:column;gap:8px;padding:14px;}
+  .footer-banner .main-txt{font-size:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ ENVISAGE ACCESS GATE ══ -->
+<div id="env_gate" style="position:fixed;inset:0;background:#0d1a35;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:36px 40px;max-width:400px;width:100%;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.4);">
+    <div style="width:56px;height:56px;background:#c0392b;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;">🚨</div>
+    <div style="font-size:20px;font-weight:800;color:#1a2744;margin-bottom:4px;">Emergency Form Access</div>
+    <div style="font-size:12px;color:#6b7c93;margin-bottom:20px;line-height:1.6;">This form is restricted to Envisage staff.<br>Enter your company email to continue.</div>
+    <input type="email" id="gate_email" placeholder="Enter your company email"
+      style="width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;margin-bottom:6px;box-sizing:border-box;"
+      onkeydown="if(event.key==='Enter')_checkGate()">
+    <div id="gate_err" style="color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;">❌ Access restricted to @envisageworldwide.com only.</div>
+    <button onclick="_checkGate()"
+      style="width:100%;background:#c0392b;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:background .2s;"
+      onmouseover="this.style.background='#a93226'" onmouseout="this.style.background='#c0392b'">
+      Continue →
+    </button>
+    <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE &nbsp;·&nbsp; Internal Use Only</div>
+  </div>
+</div>
+<script>
+(function(){
+  if(sessionStorage.getItem('env_auth')==='ok'){
+    var g=document.getElementById('env_gate');
+    if(g) g.style.display='none';
+  }
+})();
+function _checkGate(){
+  var email=(document.getElementById('gate_email').value||'').trim().toLowerCase();
+  var err=document.getElementById('gate_err');
+  if(email.endsWith('@envisageworldwide.com')){
+    sessionStorage.setItem('env_auth','ok');
+    document.getElementById('env_gate').style.display='none';
+    err.style.display='none';
+    document.getElementById('emp_email').value=email;
+  } else {
+    err.style.display='block';
+    document.getElementById('gate_email').style.borderColor='#e74c3c';
+    setTimeout(function(){document.getElementById('gate_email').style.borderColor='#c0d0e4';},2000);
+  }
+}
+</script>
+<!-- ══ END ACCESS GATE ══ -->
+
+<div style="max-width:920px;margin:0 auto;padding:14px 20px 0;">
+  <a href="../forms_portal.html" style="display:inline-flex;align-items:center;gap:6px;color:#1a2744;font-size:13px;font-weight:700;text-decoration:none;padding:6px 14px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.12);font-family:'Sarabun',sans-serif;">← Back to Portal</a>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="overlay" id="success_overlay">
+  <div class="modal">
+    <div style="font-size:46px;margin-bottom:8px;">🚨</div>
+    <h2>Emergency Request Submitted!</h2>
+    <p>Your Emergency Cash Request has been submitted.</p>
+    <div class="ref-id" id="modal_ecr_id">ECR-XXXXXXX</div>
+    <p>The <strong>Director</strong> has been notified immediately by email.<br>Finance team is also copied for processing.</p>
+    <p style="margin-top:8px;font-size:12px;color:#888;">Please follow up with your Director directly if urgent action is needed.</p>
+    <button class="close-btn" onclick="closeModal()">OK – New Request</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- EMERGENCY BANNER -->
+  <div class="emergency-banner">
+    <div class="pulse"></div>
+    🚨 EMERGENCY CASH REQUEST — DIRECTOR APPROVAL REQUIRED — This form is for urgent, unplanned cash needs only
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="32" fill="#fde8e8" stroke="#c0392b" stroke-width="2.5"/>
+        <text x="40" y="30" text-anchor="middle" font-size="20" fill="#c0392b" font-weight="bold" font-family="Arial">!</text>
+        <text x="40" y="54" text-anchor="middle" font-size="11" fill="#1a2744" font-weight="bold" font-family="Arial">CASH</text>
+        <circle cx="40" cy="36" r="2" fill="#c0392b"/>
+      </svg>
+    </div>
+    <div class="header-center">
+      <h1>EMERGENCY CASH REQUEST (ECR)</h1>
+      <div class="note">For urgent, unplanned cash requirements that cannot follow the standard purchase request process.<br>Requires <strong>Director approval</strong> before funds can be released.</div>
+      <div class="director-badge">🔐 Director Approval Mandatory &nbsp;·&nbsp; Finance Notified Automatically</div>
+    </div>
+    <div class="header-right">
+      <div class="pr-box-row">
+        <span style="font-size:14px;">🚨</span>
+        <span class="lbl" style="font-weight:700;">ECR No. :</span>
+        <input type="text" id="ecr_no" placeholder="Auto-generated" readonly style="background:#f8f0f0;">
+      </div>
+      <div class="pr-box-row">
+        <span style="font-size:13px;">📅</span>
+        <span class="lbl">Date :</span>
+        <input type="date" id="submit_date">
+      </div>
+      <div class="date-hint">(DD / MM / YYYY)</div>
+      <div style="margin-top:8px;font-size:11px;font-weight:700;">
+        <span class="connection-dot" id="conn_dot"></span>
+        <span id="conn_label">Checking…</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 1: EMPLOYEE INFO -->
+  <div class="sec-hdr"><div class="ico ico-teal">👤</div>Requester Information</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Full Name :</label><input type="text" id="emp_name" placeholder="As per company records"></div>
+      <div class="frow"><label>Employee ID :</label><input type="text" id="emp_id" placeholder="EMP-XXXX"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Position / Title :</label><input type="text" id="position" placeholder="Job title"></div>
+      <div class="frow"><label>Department :</label>
+        <select id="dept">
+          <option value="">— Select —</option>
+          <option>Finance</option>
+          <option>HR &amp; Admin</option>
+          <option>Operations</option>
+          <option>Sales &amp; Marketing</option>
+          <option>Technology</option>
+          <option>Management</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Email :</label><input type="email" id="emp_email" placeholder="Company email address"></div>
+      <div class="frow"><label>Contact No. :</label><input type="tel" id="emp_contact" placeholder="Phone number"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: EMERGENCY DETAILS -->
+  <div class="sec-hdr"><div class="ico">🚨</div>Emergency Details &amp; Urgency Level</div>
+  <div class="section">
+
+    <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:8px;">Urgency Level <span style="color:#e74c3c;">*</span></div>
+    <div class="urgency-grid">
+      <label class="urgency-opt" id="urg_critical" onclick="selectUrgency('critical')">
+        <input type="radio" name="urgency" value="Critical">
+        <span class="urg-icon">🔴</span>
+        <span class="urg-label">Critical</span>
+        <span class="urg-sub">Needs cash today / within hours</span>
+      </label>
+      <label class="urgency-opt" id="urg_urgent" onclick="selectUrgency('urgent')">
+        <input type="radio" name="urgency" value="Urgent">
+        <span class="urg-icon">🟠</span>
+        <span class="urg-label">Urgent</span>
+        <span class="urg-sub">Needs cash within 24 hours</span>
+      </label>
+      <label class="urgency-opt" id="urg_high" onclick="selectUrgency('high')">
+        <input type="radio" name="urgency" value="High Priority">
+        <span class="urg-icon">🟡</span>
+        <span class="urg-label">High Priority</span>
+        <span class="urg-sub">Needs cash within 2–3 days</span>
+      </label>
+    </div>
+
+    <div class="frow">
+      <label>Emergency Type :</label>
+      <select id="emerg_type">
+        <option value="">— Select type —</option>
+        <option>Operational Emergency (equipment failure, urgent repair)</option>
+        <option>Staff Emergency (medical, welfare, safety)</option>
+        <option>Client / Project Emergency (client-facing deadline)</option>
+        <option>Supply / Logistics Emergency (urgent procurement)</option>
+        <option>Travel Emergency (stranded staff, urgent travel)</option>
+        <option>Event Emergency (on-site event issue)</option>
+        <option>Other Emergency</option>
+      </select>
+    </div>
+    <div class="frow">
+      <label>Emergency Description :</label>
+      <textarea id="emerg_desc" rows="3" placeholder="Describe the emergency situation in detail — what happened, why it is urgent, and what will happen if cash is not provided immediately."></textarea>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Cash Required By :</label><input type="date" id="cash_by"></div>
+      <div class="frow"><label>Cash Required By (Time) :</label><input type="time" id="cash_by_time"></div>
+    </div>
+    <div class="frow">
+      <label>Location / Site of Emergency :</label>
+      <input type="text" id="emerg_location" placeholder="Where is the emergency occurring? (City / Office / Site)">
+    </div>
+  </div>
+
+  <!-- SECTION 3: CASH BREAKDOWN -->
+  <div class="sec-hdr"><div class="ico">💵</div>Cash Breakdown</div>
+  <div class="section" style="padding-bottom:6px;">
+    <table class="est-table" id="est_table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Category</th>
+          <th>Description / Justification</th>
+          <th>Amount (THB)</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="est_body"></tbody>
+      <tfoot>
+        <tr class="est-total-row">
+          <td colspan="3" class="est-total-label">TOTAL CASH REQUESTED</td>
+          <td class="est-total-amt" id="grand_total">0.00</td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+    <button class="add-row-btn" onclick="addRow()">＋ Add Row</button>
+
+    <div style="margin-top:16px;">
+      <div class="amount-highlight">
+        <span class="lbl">Total Emergency Cash Requested</span>
+        <div style="display:flex;align-items:baseline;gap:6px;">
+          <span class="val" id="total_display">0.00</span>
+          <span class="currency">THB</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: PAYMENT METHOD -->
+  <div class="sec-hdr"><div class="ico ico-teal">💳</div>Preferred Payment Method</div>
+  <div class="section">
+    <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:10px;">
+      <label style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;cursor:pointer;">
+        <input type="radio" name="pay_method" value="Cash in Hand"> Cash in Hand (direct pickup)
+      </label>
+      <label style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;cursor:pointer;">
+        <input type="radio" name="pay_method" value="Bank Transfer"> Bank Transfer (same-day / urgent)
+      </label>
+      <label style="display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;cursor:pointer;">
+        <input type="radio" name="pay_method" value="Company Card"> Company Card / Prepaid
+      </label>
+    </div>
+    <div class="frow" id="bank_row" style="display:none;">
+      <label>Bank / Account No. :</label>
+      <input type="text" id="bank_info" placeholder="Bank name — Account number — Account name">
+    </div>
+    <div class="frow">
+      <label>Additional Payment Notes :</label>
+      <input type="text" id="pay_notes" placeholder="e.g. Must be received before 3pm today">
+    </div>
+  </div>
+
+  <!-- SECTION 5: SETTLEMENT COMMITMENT -->
+  <div class="sec-hdr"><div class="ico ico-teal">📋</div>Settlement Commitment</div>
+  <div class="section">
+    <div style="background:#fff8e1;border:1.5px solid #ffc107;border-radius:8px;padding:14px 16px;margin-bottom:12px;">
+      <div style="font-size:12px;font-weight:800;color:#7a5c00;margin-bottom:8px;">⚠️ Settlement Terms for Emergency Cash</div>
+      <div style="font-size:11.5px;color:#333;line-height:1.7;">
+        Emergency cash must be settled with <strong>original supporting documents</strong> (receipts, invoices, or payment proof) within <strong>5 working days</strong> of the emergency resolution.<br>
+        Unsettled emergency advances may result in payroll deduction and restricted access to future advances.
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;font-weight:700;cursor:pointer;">
+        <input type="checkbox" id="settle_agree" style="width:15px;height:15px;margin-top:1px;"> I commit to settling this emergency advance with original receipts/invoices within 5 working days of resolution.
+      </label>
+      <label style="display:flex;align-items:flex-start;gap:8px;font-size:12px;font-weight:700;cursor:pointer;">
+        <input type="checkbox" id="policy_agree" style="width:15px;height:15px;margin-top:1px;"> I confirm this request is a genuine emergency that could not follow the standard purchase request process.
+      </label>
+    </div>
+    <div class="two-col" style="margin-top:12px;">
+      <div class="frow"><label>Expected Settlement Date :</label><input type="date" id="settle_date"></div>
+      <div class="frow"><label>Estimated Receipt/Invoice No. :</label><input type="text" id="est_receipt" placeholder="If known (optional)"></div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: ATTACHMENTS -->
+  <div class="sec-hdr"><div class="ico ico-teal">📎</div>Supporting Documents</div>
+  <div class="attach-sec">
+    <div class="attach-hint">Attach any available evidence of the emergency (photos, messages, quotes, invoices). Documents help accelerate Director approval.</div>
+    <label class="attach-upload-btn">
+      <input type="file" id="file_input" multiple accept="image/*,.pdf,.doc,.docx,.xlsx,.jpg,.jpeg,.png" onchange="handleFiles(this)">
+      📎 Attach Documents
+    </label>
+    <div class="attach-list" id="attach_list"></div>
+  </div>
+
+  <!-- SECTION 7: NOTIFICATION SETTINGS -->
+  <div class="sec-hdr"><div class="ico ico-teal">🔔</div>Notification &amp; Approval Routing</div>
+  <div class="section">
+    <div class="notify-panel">
+      <div class="notify-title">📧 Automatic Email Notifications</div>
+      <div class="notify-row">
+        <input type="checkbox" id="notify_director" checked disabled>
+        <label>Director <span class="notify-tag nt-required">Required</span></label>
+        <span style="font-size:11px;color:#555;margin-left:4px;">— Notified immediately upon submission for approval</span>
+      </div>
+      <div class="notify-row">
+        <input type="checkbox" id="notify_finance" checked disabled>
+        <label>Finance Team <span class="notify-tag nt-required">Required</span></label>
+        <span style="font-size:11px;color:#555;margin-left:4px;">— Copied on all emergency cash requests</span>
+      </div>
+      <div class="notify-row">
+        <input type="checkbox" id="notify_self" checked>
+        <label>Requester (Me) <span class="notify-tag nt-auto">Auto</span></label>
+        <span style="font-size:11px;color:#555;margin-left:4px;">— Confirmation copy to your email</span>
+      </div>
+      <div class="notify-row">
+        <input type="checkbox" id="notify_manager">
+        <label>Immediate Manager / Supervisor</label>
+        <span style="font-size:11px;color:#555;margin-left:4px;">— Optional copy to line manager</span>
+      </div>
+      <div class="frow" id="manager_email_row" style="display:none;margin-top:8px;">
+        <label>Manager Email :</label>
+        <input type="email" id="manager_email" placeholder="Manager's company email address">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 8: DIRECTOR APPROVAL (MANDATORY) -->
+  <div class="sec-hdr" style="background:#7d1a1a;"><div class="ico">🔐</div>Director Approval (Mandatory)</div>
+  <div class="appr-section">
+    <div style="background:#fff0f0;padding:8px 14px;font-size:11.5px;color:#7d1a1a;font-weight:700;border-bottom:1px solid #f0c8c8;">
+      🚨 Emergency Cash Requests MUST be approved by the Director before funds can be released. No exceptions.
+    </div>
+    <table class="appr-table">
+      <thead>
+        <tr>
+          <th>Role</th>
+          <th>Name &amp; Signature</th>
+          <th>Date &amp; Time</th>
+          <th>Decision</th>
+          <th>Comments</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="director-row">
+          <td>
+            <div class="role-cell">
+              <div class="ava ava-d">D</div>
+              <div>
+                <div style="font-weight:800;color:#c0392b;font-size:12px;">🔐 DIRECTOR</div>
+                <div style="font-size:10px;color:#888;">Primary Approver — Required</div>
+              </div>
+            </div>
+          </td>
+          <td><input type="text" id="dir_name" placeholder="Director name / signature"></td>
+          <td><input type="datetime-local" id="dir_datetime"></td>
+          <td>
+            <select id="dir_decision" onchange="handleApprovalChange()">
+              <option value="">— Pending —</option>
+              <option value="Approved">✅ Approved</option>
+              <option value="Approved with Conditions">⚠️ Approved with Conditions</option>
+              <option value="Rejected">❌ Rejected</option>
+            </select>
+          </td>
+          <td><input type="text" id="dir_comments" placeholder="Director comments"></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="role-cell">
+              <div class="ava ava-b">F</div>
+              <div>
+                <div style="font-weight:700;font-size:12px;">Finance Officer</div>
+                <div style="font-size:10px;color:#888;">Fund Release — After Director approval</div>
+              </div>
+            </div>
+          </td>
+          <td><input type="text" id="fin_name" placeholder="Finance officer name"></td>
+          <td><input type="date" id="fin_date"></td>
+          <td>
+            <select id="fin_decision">
+              <option value="">— Pending —</option>
+              <option value="Funds Released">✅ Funds Released</option>
+              <option value="On Hold">⏸️ On Hold</option>
+              <option value="Rejected">❌ Rejected</option>
+            </select>
+          </td>
+          <td><input type="text" id="fin_comments" placeholder="Finance comments"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- REJECTION REASON (shown if rejected) -->
+  <div id="rejection_panel" style="display:none;padding:12px 20px;background:#fff0f0;border-bottom:1px solid #f0c8c8;">
+    <div style="font-size:12px;font-weight:800;color:#c0392b;margin-bottom:8px;">❌ Rejection Reason</div>
+    <div class="frow">
+      <label>Reason for Rejection :</label>
+      <textarea id="rejection_reason" rows="2" placeholder="State the reason for rejection so the requester can resubmit with corrections."></textarea>
+    </div>
+  </div>
+
+  <!-- DOCS & NOTES -->
+  <div class="info-bar">
+    <div class="docs-box">
+      <div class="docs-title">📎 Documents to Attach</div>
+      <div class="checklist-item"><input type="checkbox"> Evidence of emergency (photo, message, quote)</div>
+      <div class="checklist-item"><input type="checkbox"> Vendor quote / cost estimate (if available)</div>
+      <div class="checklist-item"><input type="checkbox"> Director approval email / message (if verbal approval given)</div>
+      <div class="checklist-item"><input type="checkbox"> Previous related invoices / context documents</div>
+    </div>
+    <div class="notes-box">
+      <div class="docs-title">⚠️ Important Reminders</div>
+      <div class="note-item"><div class="note-dot nd-red">!</div><div>Director must approve before any funds are released — no exceptions.</div></div>
+      <div class="note-item"><div class="note-dot nd-red">!</div><div>Misuse of the emergency form for non-emergency requests may result in disciplinary action.</div></div>
+      <div class="note-item"><div class="note-dot nd-ora">!</div><div>Settle with original receipts within 5 working days of resolution.</div></div>
+      <div class="note-item"><div class="note-dot nd-yel">i</div><div>Contact Finance directly if you need same-day processing: finance@envisageworldwide.com</div></div>
+    </div>
+  </div>
+
+  <!-- REQUESTER DECLARATION -->
+  <div class="section">
+    <div style="font-size:12px;font-weight:800;color:#1a2744;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;">✍️ Requester Declaration</div>
+    <div class="bottom-grid" style="border:none;">
+      <div style="padding-right:20px;">
+        <div class="frow"><label>Requester Signature :</label><input type="text" id="req_sig" placeholder="Type full name as signature"></div>
+        <div class="frow"><label>Date :</label><input type="date" id="req_date"></div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#555;line-height:1.7;padding-top:4px;">
+          By signing, I confirm that the information provided is accurate and this request constitutes a genuine emergency requiring urgent cash funding outside the standard approval process.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="val-msg" id="val_msg">⚠️ Please complete all required fields before submitting.</div>
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="window.print()">🖨️ Print Form</button>
+    <button class="btn btn-outline" onclick="clearForm()">🗑️ Clear</button>
+    <button class="btn btn-danger" onclick="submitForm()" id="submit_btn">🚨 Submit Emergency Request</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-banner">
+    <div class="shield">🔐</div>
+    <div>
+      <div class="main-txt">DIRECTOR APPROVAL REQUIRED</div>
+      <div class="sub-txt">Emergency Cash Requests are escalated immediately · Finance notified automatically · Settle within 5 working days</div>
+    </div>
+  </div>
+  <div class="footer-note">
+    <strong>Emergency Cash Requests are for genuine unplanned urgencies only.</strong> Standard purchases must use the Purchase Request form. For queries: <strong>finance@envisageworldwide.com</strong>
+  </div>
+
+</div><!-- end .page -->
+
+<script>
+// ── INIT ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  // Set today's date
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2,'0');
+  var mm = String(today.getMonth()+1).padStart(2,'0');
+  var yyyy = today.getFullYear();
+  document.getElementById('submit_date').value = yyyy+'-'+mm+'-'+dd;
+  document.getElementById('req_date').value = yyyy+'-'+mm+'-'+dd;
+
+  // Generate ECR number
+  var ts = Date.now().toString().slice(-6);
+  document.getElementById('ecr_no').value = 'ECR-' + yyyy + '-' + ts;
+  document.getElementById('modal_ecr_id').textContent = 'ECR-' + yyyy + '-' + ts;
+
+  // Add initial rows
+  addRow(); addRow(); addRow();
+
+  // Connection status (simulate)
+  setTimeout(function(){
+    document.getElementById('conn_dot').className = 'connection-dot ok';
+    document.getElementById('conn_label').textContent = 'Connected';
+  }, 1200);
+
+  // Payment method toggle
+  document.querySelectorAll('input[name="pay_method"]').forEach(function(r){
+    r.addEventListener('change', function(){
+      document.getElementById('bank_row').style.display = this.value === 'Bank Transfer' ? 'flex' : 'none';
+    });
+  });
+
+  // Manager email toggle
+  document.getElementById('notify_manager').addEventListener('change', function(){
+    document.getElementById('manager_email_row').style.display = this.checked ? 'flex' : 'none';
+  });
+});
+
+// ── URGENCY SELECTOR ──────────────────────────────────
+function selectUrgency(level) {
+  ['critical','urgent','high'].forEach(function(l){
+    var el = document.getElementById('urg_'+l);
+    el.className = 'urgency-opt';
+    el.querySelector('input[type="radio"]').checked = false;
+  });
+  var sel = document.getElementById('urg_'+level);
+  sel.classList.add('selected-'+level);
+  sel.querySelector('input[type="radio"]').checked = true;
+}
+
+// ── ITEMS TABLE ──────────────────────────────────────
+var rowCount = 0;
+var categories = ['Medical / First Aid','Equipment Repair','Urgent Procurement','Emergency Transport','Client-Related','Event On-site','Staff Welfare','Security / Safety','Utilities / Services','Other'];
+
+function addRow() {
+  rowCount++;
+  var idx = rowCount;
+  var tr = document.createElement('tr');
+  tr.id = 'row_'+idx;
+  tr.innerHTML =
+    '<td>'+idx+'</td>'+
+    '<td><select onchange="calcTotal()"><option value="">— Category —</option>'+
+      categories.map(function(c){return '<option>'+c+'</option>';}).join('')+
+    '</select></td>'+
+    '<td><input type="text" placeholder="Brief description / justification"></td>'+
+    '<td><input type="number" id="amt_'+idx+'" min="0" step="0.01" placeholder="0.00" oninput="calcTotal()"></td>'+
+    '<td><button class="del-btn" onclick="delRow('+idx+')" title="Remove">✕</button></td>';
+  document.getElementById('est_body').appendChild(tr);
+}
+
+function delRow(idx) {
+  var row = document.getElementById('row_'+idx);
+  if(row) row.remove();
+  calcTotal();
+}
+
+function calcTotal() {
+  var total = 0;
+  document.querySelectorAll('[id^="amt_"]').forEach(function(el){
+    var v = parseFloat(el.value) || 0;
+    total += v;
+  });
+  var fmt = total.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
+  document.getElementById('grand_total').textContent = fmt;
+  document.getElementById('total_display').textContent = fmt;
+}
+
+// ── APPROVAL CHANGE ───────────────────────────────────
+function handleApprovalChange() {
+  var dec = document.getElementById('dir_decision').value;
+  document.getElementById('rejection_panel').style.display = dec === 'Rejected' ? 'block' : 'none';
+}
+
+// ── ATTACHMENTS ───────────────────────────────────────
+function handleFiles(input) {
+  var list = document.getElementById('attach_list');
+  Array.from(input.files).forEach(function(file) {
+    var item = document.createElement('div');
+    item.className = 'attach-item';
+    var sizeKB = (file.size/1024).toFixed(0);
+    item.innerHTML =
+      '<span style="font-size:16px;">📄</span>'+
+      '<span class="attach-item-name">'+file.name+'</span>'+
+      '<span class="attach-item-size">'+sizeKB+' KB</span>'+
+      '<button class="attach-remove" onclick="this.parentElement.remove()" title="Remove">✕</button>';
+    list.appendChild(item);
+  });
+  input.value = '';
+}
+
+// ── SUBMIT ────────────────────────────────────────────
+function submitForm() {
+  var urgency = document.querySelector('input[name="urgency"]:checked');
+  var desc = document.getElementById('emerg_desc').value.trim();
+  var name = document.getElementById('emp_name').value.trim();
+  var email = document.getElementById('emp_email').value.trim();
+  var cashBy = document.getElementById('cash_by').value;
+  var settle = document.getElementById('settle_agree').checked;
+  var policy = document.getElementById('policy_agree').checked;
+  var sig = document.getElementById('req_sig').value.trim();
+
+  var msg = document.getElementById('val_msg');
+  var missing = [];
+
+  if(!name) missing.push('Full Name');
+  if(!email) missing.push('Email');
+  if(!urgency) missing.push('Urgency Level');
+  if(!desc) missing.push('Emergency Description');
+  if(!cashBy) missing.push('Cash Required By (date)');
+  if(!settle) missing.push('Settlement Commitment');
+  if(!policy) missing.push('Emergency Confirmation');
+  if(!sig) missing.push('Requester Signature');
+
+  if(missing.length > 0) {
+    msg.style.display = 'block';
+    msg.textContent = '⚠️ Please complete: ' + missing.join(', ');
+    msg.scrollIntoView({behavior:'smooth', block:'nearest'});
+    return;
+  }
+
+  msg.style.display = 'none';
+  var btn = document.getElementById('submit_btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Submitting…';
+
+  setTimeout(function(){
+    btn.disabled = false;
+    btn.innerHTML = '🚨 Submit Emergency Request';
+    document.getElementById('success_overlay').classList.add('show');
+  }, 1800);
+}
+
+function closeModal() {
+  document.getElementById('success_overlay').classList.remove('show');
+  clearForm();
+}
+
+// ── CLEAR ─────────────────────────────────────────────
+function clearForm() {
+  ['emp_name','emp_id','position','emp_email','emp_contact','emerg_desc',
+   'emerg_location','cash_by','cash_by_time','pay_notes','bank_info',
+   'settle_date','est_receipt','req_sig','dir_name','dir_comments',
+   'fin_name','fin_comments','rejection_reason','manager_email'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = '';
+  });
+  ['dept','emerg_type','dir_decision','fin_decision'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.selectedIndex = 0;
+  });
+  document.querySelectorAll('input[type="checkbox"]').forEach(function(cb){
+    cb.checked = (cb.id === 'notify_director' || cb.id === 'notify_finance' || cb.id === 'notify_self');
+  });
+  document.querySelectorAll('input[name="urgency"]').forEach(function(r){ r.checked = false; });
+  ['critical','urgent','high'].forEach(function(l){
+    document.getElementById('urg_'+l).className = 'urgency-opt';
+  });
+  document.getElementById('est_body').innerHTML = '';
+  document.getElementById('attach_list').innerHTML = '';
+  rowCount = 0;
+  addRow(); addRow(); addRow();
+  calcTotal();
+  document.getElementById('rejection_panel').style.display = 'none';
+  document.getElementById('bank_row').style.display = 'none';
+  document.getElementById('manager_email_row').style.display = 'none';
+  document.getElementById('val_msg').style.display = 'none';
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2,'0');
+  var mm = String(today.getMonth()+1).padStart(2,'0');
+  var yyyy = today.getFullYear();
+  document.getElementById('submit_date').value = yyyy+'-'+mm+'-'+dd;
+  document.getElementById('req_date').value = yyyy+'-'+mm+'-'+dd;
+}
+</script>
+</body>
+</html>
