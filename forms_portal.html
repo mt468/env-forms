@@ -241,17 +241,11 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
   </div>
 </div>
 <script>
-(function(){
-  if(sessionStorage.getItem('env_auth')==='ok'){
-    var g=document.getElementById('env_gate');
-    if(g) g.style.display='none';
-  }
-})();
+// Gate asks every page load — no sessionStorage persistence
 function _checkGate(){
   var email=(document.getElementById('gate_email').value||'').trim().toLowerCase();
   var err=document.getElementById('gate_err');
   if(email.endsWith('@envisageworldwide.com')){
-    sessionStorage.setItem('env_auth','ok');
     document.getElementById('env_gate').style.display='none';
     err.style.display='none';
   } else {

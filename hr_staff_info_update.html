@@ -184,17 +184,11 @@ textarea:focus{border-color:#00b8a9;}
   </div>
 </div>
 <script>
-(function(){
-  if(sessionStorage.getItem('env_auth')==='ok'){
-    var g=document.getElementById('env_gate');
-    if(g) g.style.display='none';
-  }
-})();
+// Gate asks every page load — no sessionStorage persistence
 function _checkGate(){
   var email=(document.getElementById('gate_email').value||'').trim().toLowerCase();
   var err=document.getElementById('gate_err');
   if(email.endsWith('@envisageworldwide.com')){
-    sessionStorage.setItem('env_auth','ok');
     document.getElementById('env_gate').style.display='none';
     err.style.display='none';
     document.getElementById('emp_email').value=email;
