@@ -1068,7 +1068,7 @@ function submitForm(){
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
-  // iframe POST (CORS-safe, same pattern as other Envisage forms)
+  // iframe POST (CORS-safe)
   var form = document.createElement('form');
   form.method = 'POST';
   form.action = SCRIPT_URL;
@@ -1080,7 +1080,6 @@ function submitForm(){
   form.submit();
   document.body.removeChild(form);
 
-  // Show success after GAS processes (5s buffer)
   setTimeout(function(){
     document.getElementById('modal_ref_id').textContent = refNo;
     document.getElementById('success_overlay').classList.add('show');
@@ -1102,7 +1101,6 @@ function clearForm(){
   document.querySelectorAll('[id^="attach_list_"]').forEach(function(el){ el.innerHTML=''; });
   document.querySelectorAll('.update-chip').forEach(function(c){ c.classList.remove('checked'); });
   document.getElementById('val_msg').style.display='none';
-  // Reset nationality default
   document.getElementById('nationality').value='Myanmar';
 }
 </script>

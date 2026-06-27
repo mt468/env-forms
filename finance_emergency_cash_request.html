@@ -807,15 +807,72 @@ function submitForm() {
   }
 
   msg.style.display = 'none';
+
+  // Collect line items
+  var items = [];
+  var totalAmt = 0;
+  document.querySelectorAll('#est_body tr').forEach(function(tr) {
+    var desc = tr.querySelector('input[type="text"]');
+    var cat  = tr.querySelector('select');
+    var amt  = tr.querySelector('input[type="number"]');
+    if(desc && desc.value.trim()) {
+      var a = parseFloat((amt && amt.value) || 0);
+      totalAmt += a;
+      items.push({ category: (cat && cat.value)||'', desc: desc.value, amount: a });
+    }
+  });
+
+  var ecrNo = document.getElementById('ecr_no').value;
+  var payload = {
+    form_type      : 'Emergency Cash Request',
+    ref_no         : ecrNo,
+    req_date       : document.getElementById('submit_date').value,
+    dept           : document.getElementById('dept').value,
+    emp_name       : name,
+    emp_id         : document.getElementById('emp_id').value,
+    position       : document.getElementById('position').value,
+    emp_email      : email,
+    emp_contact    : document.getElementById('emp_contact').value,
+    urgency        : urgency ? urgency.value : '',
+    emerg_type     : document.getElementById('emerg_type').value,
+    purpose        : document.getElementById('emerg_desc').value,
+    emerg_location : document.getElementById('emerg_location').value,
+    cash_by        : cashBy,
+    cash_by_time   : document.getElementById('cash_by_time').value,
+    items          : JSON.stringify(items),
+    total_amount   : totalAmt,
+    bank_info      : document.getElementById('bank_info').value,
+    pay_notes      : document.getElementById('pay_notes').value,
+    settle_date    : document.getElementById('settle_date').value,
+    est_receipt    : document.getElementById('est_receipt').value,
+    req_sig        : sig,
+    cert_name      : name,
+    cert_date      : document.getElementById('req_date') ? document.getElementById('req_date').value : document.getElementById('submit_date').value,
+    description    : document.getElementById('emerg_desc').value
+  };
+
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
   var btn = document.getElementById('submit_btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Submitting…';
 
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SCRIPT_URL;
+  form.target = 'hidden_iframe';
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+
   setTimeout(function(){
-    btn.disabled = false;
-    btn.innerHTML = '🚨 Submit Emergency Request';
+    document.getElementById('modal_ecr_id').textContent = ecrNo;
     document.getElementById('success_overlay').classList.add('show');
-  }, 1800);
+    btn.disabled = false;
+    btn.innerHTML = '\U0001f6a8 Submit Emergency Request';
+  }, 5000);
 }
 
 function closeModal() {
@@ -823,7 +880,6 @@ function closeModal() {
   clearForm();
 }
 
-// ── CLEAR ─────────────────────────────────────────────
 function clearForm() {
   ['emp_name','emp_id','position','emp_email','emp_contact','emerg_desc',
    'emerg_location','cash_by','cash_by_time','pay_notes','bank_info',
@@ -841,7 +897,8 @@ function clearForm() {
   });
   document.querySelectorAll('input[name="urgency"]').forEach(function(r){ r.checked = false; });
   ['critical','urgent','high'].forEach(function(l){
-    document.getElementById('urg_'+l).className = 'urgency-opt';
+    var el = document.getElementById('urg_'+l);
+    if(el) el.className = 'urgency-opt';
   });
   document.getElementById('est_body').innerHTML = '';
   document.getElementById('attach_list').innerHTML = '';
@@ -857,9 +914,10 @@ function clearForm() {
   var mm = String(today.getMonth()+1).padStart(2,'0');
   var yyyy = today.getFullYear();
   document.getElementById('submit_date').value = yyyy+'-'+mm+'-'+dd;
-  document.getElementById('req_date').value = yyyy+'-'+mm+'-'+dd;
+  if(document.getElementById('req_date')) document.getElementById('req_date').value = yyyy+'-'+mm+'-'+dd;
 }
-
 </script>
+<!-- Hidden iframe for CORS-safe GAS POST -->
+<iframe name="hidden_iframe" style="display:none;"></iframe>
 </body>
 </html>
