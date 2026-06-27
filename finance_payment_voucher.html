@@ -233,17 +233,11 @@ input[readonly]{background:#f0f4f8;color:#555;cursor:default;}
 <script>
 // ── Change PASSCODE here to update access code ──────────────────────
 var _PASSCODE = 'Accountingonly';
-(function(){
-  if(sessionStorage.getItem('pv_auth')==='ok'){
-    var g=document.getElementById('env_gate');
-    if(g) g.style.display='none';
-  }
-})();
+// Gate shows on every page load — no session storage
 function _checkGate(){
   var pass=document.getElementById('gate_pass').value;
   var err=document.getElementById('gate_err');
   if(pass === _PASSCODE){
-    sessionStorage.setItem('pv_auth','ok');
     document.getElementById('env_gate').style.display='none';
     err.style.display='none';
   } else {
