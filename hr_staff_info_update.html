@@ -862,6 +862,9 @@ function _checkGate(){
 
 </div><!-- end .page -->
 
+<!-- Hidden iframe for CORS-safe GAS POST -->
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+
 <script>
 // ── INIT ──────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function(){
@@ -948,10 +951,12 @@ function handleFiles(input, listId){
 }
 
 // ── SUBMIT ────────────────────────────────────────────
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
+
 function submitForm(){
-  var name = document.getElementById('emp_name').value.trim();
+  var name  = document.getElementById('emp_name').value.trim();
   var email = document.getElementById('emp_email').value.trim();
-  var msg = document.getElementById('val_msg');
+  var msg   = document.getElementById('val_msg');
   if(!name || !email){
     msg.style.display='block';
     msg.textContent='⚠️ Please fill in your Full Name and Email before submitting.';
@@ -959,14 +964,129 @@ function submitForm(){
     return;
   }
   msg.style.display='none';
+
+  // Which sections selected
+  var sections = [];
+  ['address','passport','visa','90day','tm30','other'].forEach(function(s){
+    var cb = document.querySelector('#chip_'+s+' input[type="checkbox"]');
+    if(cb && cb.checked) sections.push(s);
+  });
+
+  var refNo = document.getElementById('ref_no').value;
+
+  var payload = {
+    form_type      : 'Staff Info Update',
+    ref_no         : refNo,
+    req_date       : document.getElementById('submit_date').value,
+    // Personal
+    emp_name       : name,
+    emp_name_mm    : document.getElementById('emp_name_mm').value,
+    emp_id         : document.getElementById('emp_id').value,
+    dob            : document.getElementById('dob').value,
+    position       : document.getElementById('position').value,
+    dept           : document.getElementById('dept').value,
+    emp_email      : email,
+    emp_contact    : document.getElementById('emp_contact').value,
+    nationality    : document.getElementById('nationality').value,
+    nrc_no         : document.getElementById('nrc_no').value,
+    emergency_contact : document.getElementById('emergency_contact').value,
+    sections_to_update: sections.join(', '),
+    reason         : document.getElementById('update_reason').value,
+    // Address – Thailand
+    addr1_th       : document.getElementById('addr1_th').value,
+    addr2_th       : document.getElementById('addr2_th').value,
+    tambon         : document.getElementById('tambon').value,
+    amphoe         : document.getElementById('amphoe').value,
+    province       : document.getElementById('province').value,
+    postcode       : document.getElementById('postcode').value,
+    addr_moved_in  : document.getElementById('addr_moved_in').value,
+    landlord_name  : document.getElementById('landlord_name').value,
+    landlord_phone : document.getElementById('landlord_phone').value,
+    // Address – Myanmar
+    mm_addr1       : document.getElementById('mm_addr1').value,
+    mm_addr2       : document.getElementById('mm_addr2').value,
+    mm_township    : document.getElementById('mm_township').value,
+    mm_city        : document.getElementById('mm_city').value,
+    mm_emergency   : document.getElementById('mm_emergency').value,
+    // Passport
+    pp_status      : (document.querySelector('input[name="pp_status"]:checked') || {}).value || '',
+    pp_no          : document.getElementById('pp_no').value,
+    pp_type        : document.getElementById('pp_type').value,
+    pp_issue       : document.getElementById('pp_issue').value,
+    pp_expiry      : document.getElementById('pp_expiry').value,
+    pp_country     : document.getElementById('pp_country').value,
+    pp_place       : document.getElementById('pp_place').value,
+    pp_authority   : document.getElementById('pp_authority').value,
+    pp_old_no      : document.getElementById('pp_old_no').value,
+    pp_notes       : document.getElementById('pp_notes').value,
+    // Visa
+    visa_status    : (document.querySelector('input[name="visa_status"]:checked') || {}).value || '',
+    visa_type      : document.getElementById('visa_type').value,
+    visa_entry     : document.getElementById('visa_entry').value,
+    visa_issue     : document.getElementById('visa_issue').value,
+    visa_expiry    : document.getElementById('visa_expiry').value,
+    visa_stay_until: document.getElementById('visa_stay_until').value,
+    visa_stamp_no  : document.getElementById('visa_stamp_no').value,
+    visa_issued_at : document.getElementById('visa_issued_at').value,
+    visa_notes     : document.getElementById('visa_notes').value,
+    wp_no          : document.getElementById('wp_no').value,
+    wp_expiry      : document.getElementById('wp_expiry').value,
+    wp_office      : document.getElementById('wp_office').value,
+    wp_occupation  : document.getElementById('wp_occupation').value,
+    // 90-Day Report
+    r90_last_date  : document.getElementById('r90_last_date').value,
+    r90_next_due   : document.getElementById('r90_next_due').value,
+    r90_method     : (document.querySelector('input[name="r90_method"]:checked') || {}).value || '',
+    r90_receipt_no : document.getElementById('r90_receipt_no').value,
+    r90_office     : document.getElementById('r90_office').value,
+    r90_notes      : document.getElementById('r90_notes').value,
+    // TM30
+    tm30_type      : (document.querySelector('input[name="tm30_type"]:checked') || {}).value || '',
+    tm30_arrival   : document.getElementById('tm30_arrival').value,
+    tm30_deadline  : document.getElementById('tm30_deadline').value,
+    tm30_addr      : document.getElementById('tm30_addr').value,
+    tm30_province  : document.getElementById('tm30_province').value,
+    tm30_jurisdiction: document.getElementById('tm30_jurisdiction').value,
+    tm30_ref_no    : document.getElementById('tm30_ref_no').value,
+    tm30_filer     : (document.querySelector('input[name="tm30_filer"]:checked') || {}).value || '',
+    tm30_notes     : document.getElementById('tm30_notes').value,
+    // Other
+    other_doc_type : document.getElementById('other_doc_type').value,
+    other_desc     : document.getElementById('other_desc').value,
+    other_doc_date : document.getElementById('other_doc_date').value,
+    other_expiry   : document.getElementById('other_expiry').value,
+    other_ref_no   : document.getElementById('other_ref_no').value,
+    other_action   : document.getElementById('other_action').value,
+    // For email / tracker
+    purpose        : sections.length ? 'Update: ' + sections.join(', ') : 'Staff information update',
+    description    : document.getElementById('update_reason').value,
+    cert_name      : name,
+    cert_date      : document.getElementById('submit_date').value
+  };
+
   var btn = document.getElementById('submit_btn');
-  btn.disabled=true;
-  btn.innerHTML='<span class="spinner"></span>Submitting…';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Submitting…';
+
+  // iframe POST (CORS-safe, same pattern as other Envisage forms)
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SCRIPT_URL;
+  form.target = 'hidden_iframe';
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp);
+  document.body.appendChild(form);
+  form.submit();
+  document.body.removeChild(form);
+
+  // Show success after GAS processes (5s buffer)
   setTimeout(function(){
-    btn.disabled=false;
-    btn.innerHTML='✅ Submit Update to HR';
+    document.getElementById('modal_ref_id').textContent = refNo;
     document.getElementById('success_overlay').classList.add('show');
-  },1800);
+    btn.disabled = false;
+    btn.innerHTML = '✅ Submit Update to HR';
+  }, 5000);
 }
 
 function closeModal(){
