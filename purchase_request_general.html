@@ -310,6 +310,11 @@ function _checkGate(){
   <div class="sec-hdr"><div class="ico">🛒</div>1. PURCHASE REQUEST INFORMATION</div>
   <div class="section">
     <div class="two-col">
+      <div class="frow"><label>Requested By :</label><input type="text" id="req_name" placeholder="Full name" required></div>
+      <div class="frow"><label>Email :</label><input type="email" id="req_email" placeholder="Company email address" required></div>
+    </div>
+    <div style="height:4px;"></div>
+    <div class="two-col">
       <div class="frow"><label>Requesting Department / Project :</label><input type="text" id="dept" placeholder="Department or project" required></div>
       <div class="frow"><label>Purpose / Description :</label><input type="text" id="purpose" placeholder="Brief purpose" required></div>
     </div>
@@ -626,6 +631,8 @@ function collectItems(){
 // ── VALIDATE ──
 function validate(){
   var required = [
+    {id:'req_name',  label:'Requested By'},
+    {id:'req_email', label:'Email'},
     {id:'dept',      label:'Requesting Department'},
     {id:'purpose',   label:'Purpose / Description'},
     {id:'vendor',    label:'Payee / Vendor'},
@@ -664,8 +671,10 @@ function collectData(){
     reference:    document.getElementById('reference').value,
     cert_name:     document.getElementById('cert_name').value,
     cert_date:     document.getElementById('cert_date').value,
-    traveler:      document.getElementById('cert_name').value,
-    contact:       '',
+    emp_name:      document.getElementById('req_name').value,
+    traveler:      document.getElementById('req_name').value,
+    emp_email:     document.getElementById('req_email').value,
+    contact:       document.getElementById('req_email').value,
     destination:   '',
     approval_tier: getEmailConfig(calcTotal()).label,
     approvers:     getEmailConfig(calcTotal()).approvers.join(', '),

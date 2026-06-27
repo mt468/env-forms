@@ -383,7 +383,8 @@ function _checkGate(){
         <div style="height:4px;"></div>
         <div class="frow"><label>Position :</label><input type="text" id="position" placeholder="Job title"></div>
         <div class="frow"><label>Employee ID :</label><input type="text" id="emp_id" placeholder="Employee ID"></div>
-        <div class="frow"><label>Contact (Phone / Email) :</label><input type="text" id="contact" placeholder="Email for notifications"></div>
+        <div class="frow"><label>Email :</label><input type="email" id="contact" placeholder="Company email address" required></div>
+        <div class="frow"><label>Phone :</label><input type="tel" id="phone" placeholder="Phone number"></div>
       </div>
     </div>
   </div>
@@ -661,6 +662,7 @@ function collectData(){
     traveler:       [document.getElementById('traveler').value, document.getElementById('traveler2').value].filter(Boolean).join(', '),
     position:       document.getElementById('position').value,
     emp_id:         document.getElementById('emp_id').value,
+    emp_email:      document.getElementById('contact').value,
     contact:        document.getElementById('contact').value,
     airfare_desc:   document.getElementById('airfare_desc').value,
     airfare_amt:    parseFloat(document.getElementById('airfare_amt').value)||0,

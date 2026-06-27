@@ -484,6 +484,10 @@ function _checkGate(){
             <input type="text" id="cert_name" placeholder="Auto-filled or type full name">
             <span style="font-size:9px;color:#888;margin-top:2px;">(Name)</span>
           </div>
+          <div class="cert-field">
+            <label>Email</label>
+            <input type="email" id="req_email" placeholder="Company email address">
+          </div>
           <div class="cert-field" style="max-width:160px;">
             <label>Date</label>
             <input type="date" id="cert_date">
@@ -663,4 +667,301 @@ function _checkGate(){
         <div class="fuo-row"><label style="min-width:40px;">Date :</label><input type="date" id="fuo_posted_date" style="max-width:130px;"></div>
       </div>
 
-    </div><!
+    </div><!-- end right-col -->
+  </div><!-- end body-wrap -->
+
+  <!-- FOOTER -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;border-top:2px solid #e0eaf4;">
+    <div style="padding:14px 18px;border-right:1px solid #e0eaf4;">
+      <div style="font-size:11px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">📎 Required Documents (Examples)</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div style="text-align:center;font-size:10px;"><div style="font-size:22px;">🧾</div>Original Invoice / Receipt</div>
+        <div style="text-align:center;font-size:10px;"><div style="font-size:22px;">📋</div>Quotation / Proposal</div>
+        <div style="text-align:center;font-size:10px;"><div style="font-size:22px;">📄</div>Contract / Agreement</div>
+        <div style="text-align:center;font-size:10px;"><div style="font-size:22px;">📁</div>Other Supporting Docs</div>
+      </div>
+    </div>
+    <div style="padding:14px 18px;">
+      <div style="font-size:11px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">⚠️ Important Notes</div>
+      <div style="font-size:11px;color:#555;line-height:1.8;">
+        <div>✕ <strong>No voucher, no approval, no payment.</strong></div>
+        <div>! Splitting payments to avoid approval limits is strictly prohibited.</div>
+        <div>! All fields and supporting documents must be complete before submission.</div>
+        <div>✓ Finance will process within 3 business days upon full approval.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATTACHMENT UPLOAD -->
+  <div class="attach-sec" style="padding:14px 18px;border-top:2px solid #e0eaf4;">
+    <div style="font-size:12px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;display:flex;align-items:center;gap:7px;">
+      <span style="background:#00b8a9;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex-shrink:0;">📎</span>
+      Supporting Documents
+    </div>
+    <label class="attach-upload-btn">
+      Choose Files
+      <input type="file" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" onchange="onAttachChange()" style="display:none;">
+    </label>
+    <div class="attach-list" id="attach_list"></div>
+    <div class="attach-size-warn" id="attach_size_warn" style="display:none;">⚠️ One or more files exceed 4 MB and will be skipped.</div>
+  </div>
+
+  <!-- SUBMIT BUTTON -->
+  <div style="padding:16px 18px;text-align:center;background:#f7fbff;border-top:2px solid #e0eaf4;">
+    <button onclick="submitForm()" style="background:#1a2744;color:#fff;border:none;border-radius:8px;padding:13px 48px;font-size:15px;font-weight:800;font-family:'Sarabun',sans-serif;cursor:pointer;letter-spacing:.5px;">
+      Submit Payment Voucher →
+    </button>
+  </div>
+
+  <!-- REMINDER BANNER -->
+  <div style="background:#1a2744;color:#00b8a9;text-align:center;padding:10px;font-size:13px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">
+    DISCIPLINE TODAY, STRENGTH TOMORROW
+  </div>
+
+</div><!-- end .page -->
+
+<script>
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
+
+// ── AUTO-FILL FROM STAFF SELECTOR ────────────────────────────────
+function onStaffSelect(){
+  var sel = document.getElementById('staff_email');
+  var opt = sel.options[sel.selectedIndex];
+  var email   = sel.value;
+  var name    = opt.getAttribute('data-name') || '';
+  var company = opt.getAttribute('data-company') || '';
+  var dept    = opt.getAttribute('data-dept') || '';
+
+  if(email){
+    document.getElementById('cert_name').value = name;
+    document.getElementById('req_email').value  = email;
+    document.getElementById('dept').value        = dept;
+    document.getElementById('company').value     = company;
+    // Company pill
+    var pill = document.getElementById('company_pill');
+    pill.textContent = company;
+    pill.className   = 'company-pill ' + (company === 'Elite Tech' ? 'pill-elite' : 'pill-env');
+    pill.style.display = 'inline-block';
+    // Auto-set PV No. + date
+    if(!document.getElementById('pv_no').value){
+      var d = new Date();
+      var stamp = 'PV-' + d.getFullYear().toString().slice(2) +
+        String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') +
+        '-' + Math.floor(1000+Math.random()*9000);
+      document.getElementById('pv_no').value = stamp;
+    }
+    if(!document.getElementById('pv_date').value){
+      document.getElementById('pv_date').value = new Date().toISOString().slice(0,10);
+    }
+    if(!document.getElementById('cert_date').value){
+      document.getElementById('cert_date').value = new Date().toISOString().slice(0,10);
+    }
+  }
+}
+
+// ── ITEMS TABLE ───────────────────────────────────────────────────
+var _rowCount = 0;
+function addItemRow(){
+  _rowCount++;
+  var tbody = document.getElementById('items_body');
+  var tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td>' + _rowCount + '</td>' +
+    '<td><input type="text" placeholder="Description"></td>' +
+    '<td><input type="number" min="0" step="1" placeholder="0" oninput="recalc()"></td>' +
+    '<td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()"></td>' +
+    '<td><input type="number" readonly placeholder="0.00"></td>' +
+    '<td><button class="del-btn" onclick="delRow(this)">✕</button></td>';
+  tbody.appendChild(tr);
+}
+function delRow(btn){ btn.closest('tr').remove(); recalc(); }
+
+function recalc(){
+  var subtotal = 0;
+  document.querySelectorAll('#items_body tr').forEach(function(tr){
+    var inputs = tr.querySelectorAll('input[type="number"]');
+    var qty   = parseFloat(inputs[0].value) || 0;
+    var price = parseFloat(inputs[1].value) || 0;
+    var amt   = qty * price;
+    inputs[2].value = amt.toFixed(2);
+    subtotal += amt;
+  });
+  var vat = document.getElementById('vat_toggle').checked ? subtotal * 0.07 : 0;
+  var whtOn = document.getElementById('wht_toggle').checked;
+  var whtRate = parseFloat(document.getElementById('wht_rate').value) || 3;
+  var wht = whtOn ? subtotal * (whtRate / 100) : 0;
+  var total = subtotal + vat;
+  var net   = total - wht;
+
+  document.getElementById('display_total').textContent = total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById('vat_display').style.display = vat > 0 ? 'inline' : 'none';
+  document.getElementById('vat_amt').textContent = vat.toLocaleString('en-US',{minimumFractionDigits:2});
+  document.getElementById('wht_display').style.display = wht > 0 ? 'inline' : 'none';
+  document.getElementById('wht_amt').textContent = wht.toLocaleString('en-US',{minimumFractionDigits:2});
+  document.getElementById('display_net').textContent = net.toLocaleString('en-US',{minimumFractionDigits:2}) + ' THB';
+  _totalAmt = total;
+  _netAmt   = net;
+}
+function toggleWHT(){
+  document.getElementById('wht_rate').disabled = !document.getElementById('wht_toggle').checked;
+  recalc();
+}
+var _totalAmt = 0, _netAmt = 0;
+
+// ── ATTACHMENT HELPERS ────────────────────────────────────────────
+var _selFiles = [];
+function onAttachChange(){
+  var inp = event.target;
+  var MAX = 4 * 1024 * 1024;
+  Array.from(inp.files).forEach(function(f){
+    if(_selFiles.find(function(x){return x.name===f.name;})) return;
+    _selFiles.push(f);
+  });
+  inp.value = '';
+  _renderAttachList();
+}
+function _removeAttach(i){ _selFiles.splice(i,1); _renderAttachList(); }
+function _renderAttachList(){
+  var MAX = 4*1024*1024;
+  var warn = false;
+  var html = _selFiles.map(function(f,i){
+    var over = f.size > MAX;
+    if(over) warn = true;
+    var kb = (f.size/1024).toFixed(0);
+    return '<div class="attach-item' + (over?' over':'') + '">' +
+      '<span>' + f.name + ' <span class="attach-size">(' + kb + ' KB)</span></span>' +
+      '<button class="attach-remove" onclick="_removeAttach('+i+')">✕</button></div>';
+  }).join('');
+  document.getElementById('attach_list').innerHTML = html;
+  document.getElementById('attach_size_warn').style.display = warn ? 'block' : 'none';
+}
+function _readFilesB64(){
+  var MAX = 4*1024*1024;
+  return Promise.all(_selFiles.filter(function(f){return f.size<=MAX;}).map(function(f){
+    return new Promise(function(res){
+      var r = new FileReader();
+      r.onload = function(e){ res({name:f.name,type:f.type,size:f.size,b64:e.target.result.split(',')[1]}); };
+      r.readAsDataURL(f);
+    });
+  }));
+}
+
+// ── COLLECT ITEMS ─────────────────────────────────────────────────
+function collectItems(){
+  var items = [];
+  document.querySelectorAll('#items_body tr').forEach(function(tr,i){
+    var inputs = tr.querySelectorAll('input[type="number"]');
+    var desc  = tr.querySelectorAll('input[type="text"]')[0].value.trim();
+    var qty   = parseFloat(inputs[0].value)||0;
+    var price = parseFloat(inputs[1].value)||0;
+    if(desc || qty || price) items.push({no:i+1,desc:desc,qty:qty,price:price,amount:qty*price});
+  });
+  return items;
+}
+
+// ── VALIDATE ─────────────────────────────────────────────────────
+function validate(){
+  var required = [
+    {id:'cert_name', label:'Requested By (Name)'},
+    {id:'req_email', label:'Email'},
+    {id:'purpose',   label:'Purpose of Payment'},
+    {id:'payee_name',label:'Payee / Vendor'},
+  ];
+  var missing = [];
+  required.forEach(function(f){
+    var el = document.getElementById(f.id);
+    if(!el || !el.value.trim()){ missing.push(f.label); if(el) el.classList.add('invalid'); }
+    else el.classList.remove('invalid');
+  });
+  if(_totalAmt <= 0) missing.push('At least one line item with amount');
+  return missing;
+}
+
+// ── SUBMIT ───────────────────────────────────────────────────────
+var _submitting = false;
+function closeModal(){
+  document.getElementById('success_overlay').style.display='none';
+  location.reload();
+}
+
+async function submitForm(){
+  if(_submitting) return;
+  var errors = validate();
+  if(errors.length > 0){ alert('Please complete:\n• ' + errors.join('\n• ')); return; }
+  _submitting = true;
+  var btn = document.querySelector('button[onclick="submitForm()"]');
+  btn.disabled = true; btn.textContent = 'Submitting…';
+
+  var docs_attached = '';
+  document.querySelectorAll('input[name="docs_attached"]').forEach(function(r){ if(r.checked) docs_attached = r.value; });
+  var attachments = [];
+  if(document.getElementById('att_inv').checked) attachments.push('Invoice/Receipt');
+  if(document.getElementById('att_contract').checked) attachments.push('Contract');
+  if(document.getElementById('att_other').checked) attachments.push(document.getElementById('att_other_txt').value||'Other');
+
+  var payload = {
+    action:          'submit',
+    form_type:       'Payment Voucher',
+    pv_no:           document.getElementById('pv_no').value,
+    pv_date:         document.getElementById('pv_date').value,
+    emp_name:        document.getElementById('cert_name').value,
+    emp_email:       document.getElementById('req_email').value,
+    contact:         document.getElementById('req_email').value,
+    dept:            document.getElementById('dept').value,
+    company:         document.getElementById('company').value,
+    purpose:         document.getElementById('purpose').value,
+    payee_name:      document.getElementById('payee_name').value,
+    tax_id:          document.getElementById('tax_id').value,
+    payment_type:    (document.getElementById('pt_petty').checked?'Petty Cash ':'')+
+                     (document.getElementById('pt_bank').checked?'Bank Transfer':''),
+    payment_for:     (document.getElementById('pf_goods').checked?'Goods ':'')+
+                     (document.getElementById('pf_services').checked?'Services ':'')+
+                     (document.getElementById('pf_reimb').checked?'Reimbursement ':'')+
+                     (document.getElementById('pf_other').checked?document.getElementById('pf_other_txt').value:''),
+    description:     document.getElementById('desc_details').value,
+    items:           JSON.stringify(collectItems()),
+    total_amount:    _totalAmt,
+    net_amount:      _netAmt,
+    gl_account:      document.getElementById('gl_account').value,
+    cost_center:     document.getElementById('cost_center').value,
+    project_code:    document.getElementById('project_code').value,
+    reference:       document.getElementById('reference').value,
+    pay_from:        document.getElementById('pay_from').value,
+    cash_box:        document.getElementById('cash_box').value,
+    pay_date:        document.getElementById('pay_date').value,
+    attachments:     attachments.join(', '),
+    docs_attached:   docs_attached,
+    cert_name:       document.getElementById('cert_name').value,
+    cert_date:       document.getElementById('cert_date').value,
+  };
+
+  payload.attachments_files = _selFiles.length > 0 ? await _readFilesB64() : [];
+
+  var iframe = document.createElement('iframe');
+  iframe.name = '_gas_' + Date.now();
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SCRIPT_URL;
+  form.target = iframe.name;
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp);
+  document.body.appendChild(form);
+  form.submit();
+
+  setTimeout(function(){
+    document.getElementById('modal_pv_id').textContent = payload.pv_no || 'PV-SUBMITTED';
+    document.getElementById('success_overlay').style.display = 'flex';
+    _submitting = false;
+    btn.disabled = false; btn.textContent = 'Submit Payment Voucher →';
+  }, 2000);
+}
+
+// Add first row on load
+window.onload = function(){ addItemRow(); };
+</script>
+
+</body>
+</html>
