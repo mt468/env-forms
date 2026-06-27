@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Check Request Status — Envisage</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-height:100vh;}
+
+/* ── Gate ── */
+#gate{position:fixed;inset:0;background:#0d1a35;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.gate-box{background:#fff;border-radius:16px;padding:36px 40px;max-width:420px;width:100%;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.4);}
+.gate-icon{width:60px;height:60px;background:linear-gradient(135deg,#00b8a9,#009e90);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px;}
+.gate-title{font-size:22px;font-weight:800;color:#1a2744;margin-bottom:4px;}
+.gate-sub{font-size:12px;color:#6b7c93;margin-bottom:22px;line-height:1.6;}
+.gate-input{width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;margin-bottom:8px;}
+.gate-err{color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;}
+.gate-btn{width:100%;background:#00b8a9;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:background .2s;}
+.gate-btn:hover{background:#009e90;}
+
+/* ── Header ── */
+.header{background:#1a2744;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+.header-left{display:flex;align-items:center;gap:14px;}
+.logo{width:42px;height:42px;background:linear-gradient(135deg,#00b8a9,#009e90);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.header h1{font-size:18px;font-weight:800;color:#fff;}
+.header .sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;}
+.back-link{color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px;}
+.back-link:hover{color:#00b8a9;}
+
+/* ── Search bar ── */
+.search-section{max-width:700px;margin:30px auto;padding:0 20px;}
+.search-box{background:#fff;border-radius:14px;padding:28px 30px;box-shadow:0 4px 20px rgba(0,0,0,.08);}
+.search-title{font-size:17px;font-weight:800;color:#1a2744;margin-bottom:6px;}
+.search-sub{font-size:12px;color:#888;margin-bottom:20px;}
+.search-tabs{display:flex;gap:8px;margin-bottom:18px;}
+.stab{flex:1;padding:9px 12px;border:2px solid #dde6f0;border-radius:8px;font-size:12px;font-weight:700;font-family:'Sarabun',sans-serif;color:#888;cursor:pointer;background:#fff;text-align:center;transition:all .2s;}
+.stab.active{border-color:#00b8a9;color:#00b8a9;background:#f0fdfb;}
+.search-row{display:flex;gap:10px;align-items:stretch;}
+.search-input{flex:1;padding:11px 16px;border:2px solid #c0d0e4;border-radius:9px;font-size:14px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;}
+.search-input:focus{border-color:#00b8a9;}
+.search-btn{background:#1a2744;color:#fff;border:none;border-radius:9px;padding:11px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;white-space:nowrap;transition:background .2s;}
+.search-btn:hover{background:#00b8a9;}
+
+/* ── Results ── */
+.results{max-width:700px;margin:0 auto 40px;padding:0 20px;}
+.result-count{font-size:12px;color:#888;margin-bottom:12px;}
+
+/* ── Status card ── */
+.status-card{background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(0,0,0,.07);margin-bottom:16px;overflow:hidden;border-left:5px solid #c0d0e4;}
+.status-card.s-pending    {border-left-color:#f0ad4e;}
+.status-card.s-inprog     {border-left-color:#0d6efd;}
+.status-card.s-completed  {border-left-color:#198754;}
+.status-card.s-cancelled  {border-left-color:#dc3545;}
+.card-header{padding:16px 20px 12px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;}
+.card-refno{font-size:13px;font-family:monospace;font-weight:700;color:#1a2744;}
+.card-badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;}
+.b-pending  {background:#fff3cd;color:#856404;}
+.b-inprog   {background:#cfe2ff;color:#084298;}
+.b-completed{background:#d1e7dd;color:#0a3622;}
+.b-cancelled{background:#f8d7da;color:#58151c;}
+.card-body{padding:0 20px 18px;}
+.card-meta{display:flex;flex-wrap:wrap;gap:8px 24px;margin-bottom:12px;}
+.meta-item{font-size:12px;color:#555;}
+.meta-item strong{color:#1a2744;}
+.card-desc{font-size:13px;color:#555;line-height:1.5;margin-bottom:12px;padding:10px 14px;background:#f7fbff;border-radius:7px;}
+
+/* ── Timeline ── */
+.timeline{display:flex;align-items:center;gap:0;margin-bottom:4px;}
+.tl-step{flex:1;text-align:center;position:relative;}
+.tl-step:not(:last-child)::after{content:'';position:absolute;top:12px;left:50%;width:100%;height:2px;background:#e0eaf4;}
+.tl-step.done::after{background:#00b8a9;}
+.tl-dot{width:24px;height:24px;border-radius:50%;margin:0 auto 4px;border:2px solid #e0eaf4;background:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;position:relative;z-index:1;}
+.tl-step.done .tl-dot{border-color:#00b8a9;background:#00b8a9;color:#fff;}
+.tl-step.current .tl-dot{border-color:#1a2744;background:#1a2744;color:#fff;}
+.tl-label{font-size:10px;font-weight:700;color:#aaa;}
+.tl-step.done .tl-label{color:#00b8a9;}
+.tl-step.current .tl-label{color:#1a2744;}
+
+/* ── HR Notes ── */
+.hr-notes{background:#f0fdfb;border-left:4px solid #00b8a9;border-radius:0 8px 8px 0;padding:10px 14px;margin-top:10px;font-size:12.5px;color:#1a2744;line-height:1.6;}
+.hr-notes .lbl{font-size:10px;font-weight:700;color:#00b8a9;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;}
+
+/* ── Empty / loading ── */
+.empty-state{text-align:center;padding:50px 20px;color:#aaa;}
+.empty-icon{font-size:50px;margin-bottom:12px;}
+.empty-title{font-size:16px;font-weight:700;color:#888;margin-bottom:6px;}
+.empty-sub{font-size:12px;}
+.spinner{display:inline-block;width:22px;height:22px;border:3px solid #dde6f0;border-top-color:#00b8a9;border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- ══ ACCESS GATE ══ -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-icon">🔍</div>
+    <div class="gate-title">Check Request Status</div>
+    <div class="gate-sub">Enter your company email to access your request status. Only @envisageworldwide.com emails are allowed.</div>
+    <input type="email" id="gate_email" class="gate-input" placeholder="Enter your company email"
+      onkeydown="if(event.key==='Enter')checkGate()">
+    <div id="gate_err" class="gate-err">❌ Access restricted to @envisageworldwide.com only.</div>
+    <button class="gate-btn" onclick="checkGate()">Continue →</button>
+    <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE · Staff Portal</div>
+  </div>
+</div>
+
+<!-- ══ HEADER ══ -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">🔍</div>
+    <div>
+      <h1>Request Status</h1>
+      <div class="sub">Track your submitted requests in real time</div>
+    </div>
+  </div>
+  <a href="../forms_portal.html" class="back-link">← Back to Portal</a>
+</div>
+
+<!-- ══ SEARCH ══ -->
+<div class="search-section">
+  <div class="search-box">
+    <div class="search-title">Find My Requests</div>
+    <div class="search-sub">Search by your email to see all requests, or enter a specific reference number.</div>
+    <div class="search-tabs">
+      <button class="stab active" id="tab_email" onclick="switchTab('email')">📧 Search by Email</button>
+      <button class="stab" id="tab_ref" onclick="switchTab('ref')">📋 Search by Ref No.</button>
+    </div>
+    <div class="search-row">
+      <input type="text" id="search_input" class="search-input"
+        placeholder="name@envisageworldwide.com"
+        onkeydown="if(event.key==='Enter')doSearch()">
+      <button class="search-btn" onclick="doSearch()">Search</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div class="results" id="results_area">
+  <div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <div class="empty-title">Enter your email or reference number above</div>
+    <div class="empty-sub">Your submitted requests and their current status will appear here.</div>
+  </div>
+</div>
+
+<script>
+var GAS_URL     = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
+var _userEmail  = '';
+var _searchMode = 'email'; // 'email' or 'ref'
+
+// ── GATE ─────────────────────────────────────────────────────────
+function checkGate() {
+  var email = (document.getElementById('gate_email').value || '').trim().toLowerCase();
+  var err   = document.getElementById('gate_err');
+  if (email.endsWith('@envisageworldwide.com')) {
+    document.getElementById('gate').style.display = 'none';
+    err.style.display = 'none';
+    _userEmail = email;
+    // Pre-fill search with their email and auto-search
+    document.getElementById('search_input').value = email;
+    doSearch();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('gate_email').style.borderColor = '#e74c3c';
+    setTimeout(function(){ document.getElementById('gate_email').style.borderColor = '#c0d0e4'; }, 2000);
+  }
+}
+
+// ── TAB SWITCH ────────────────────────────────────────────────────
+function switchTab(mode) {
+  _searchMode = mode;
+  document.getElementById('tab_email').classList.toggle('active', mode === 'email');
+  document.getElementById('tab_ref').classList.toggle('active', mode === 'ref');
+  var input = document.getElementById('search_input');
+  if (mode === 'email') {
+    input.type = 'email';
+    input.placeholder = 'name@envisageworldwide.com';
+    input.value = _userEmail;
+  } else {
+    input.type = 'text';
+    input.placeholder = 'e.g. LEREQ-260625-1234';
+    input.value = '';
+  }
+  document.getElementById('results_area').innerHTML =
+    '<div class="empty-state"><div class="empty-icon">📋</div>' +
+    '<div class="empty-title">Enter your search above</div></div>';
+}
+
+// ── SEARCH ────────────────────────────────────────────────────────
+function doSearch() {
+  var val = (document.getElementById('search_input').value || '').trim();
+  if (!val) return;
+  var area = document.getElementById('results_area');
+  area.innerHTML = '<div class="empty-state"><span class="spinner"></span></div>';
+
+  var url = GAS_URL + '?page=status&' + (_searchMode === 'email' ? 'email=' : 'id=') + encodeURIComponent(val);
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(res) {
+      if (!res.success) { showMsg('⚠️ ' + (res.message || 'Error loading data')); return; }
+      var rows = res.rows || [];
+      if (!rows.length) {
+        area.innerHTML =
+          '<div class="empty-state">' +
+          '<div class="empty-icon">📭</div>' +
+          '<div class="empty-title">No requests found</div>' +
+          '<div class="empty-sub">No submissions found for <strong>' + escHtml(val) + '</strong>.<br>Check your reference number or try a different email.</div>' +
+          '</div>';
+        return;
+      }
+      var html = '<div class="result-count">Found <strong>' + rows.length + '</strong> request' + (rows.length > 1 ? 's' : '') + '</div>';
+      rows.forEach(function(r){ html += buildCard(r); });
+      area.innerHTML = html;
+    })
+    .catch(function(err) {
+      showMsg('❌ Network error: ' + err.message);
+    });
+}
+
+function showMsg(msg) {
+  document.getElementById('results_area').innerHTML =
+    '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">' + msg + '</div></div>';
+}
+
+// ── BUILD CARD ────────────────────────────────────────────────────
+function buildCard(row) {
+  var sClass = { 'Pending':'s-pending','In Progress':'s-inprog','Completed':'s-completed','Cancelled':'s-cancelled' }[row.status] || '';
+  var bClass = { 'Pending':'b-pending','In Progress':'b-inprog','Completed':'b-completed','Cancelled':'b-cancelled' }[row.status] || '';
+  var icon   = { 'Pending':'🔵','In Progress':'🟡','Completed':'✅','Cancelled':'❌' }[row.status] || '📋';
+
+  var tl = buildTimeline(row.status);
+
+  var notesHtml = '';
+  if (row.hrNotes) {
+    notesHtml = '<div class="hr-notes"><div class="lbl">📝 Note from HR</div>' + escHtml(row.hrNotes) + '</div>';
+  }
+
+  var updatedHtml = row.lastUpdated
+    ? '<span class="meta-item">🕐 <strong>Last Updated:</strong> ' + row.lastUpdated + (row.updatedBy ? ' by ' + row.updatedBy : '') + '</span>'
+    : '';
+
+  return '<div class="status-card ' + sClass + '">' +
+    '<div class="card-header">' +
+      '<div>' +
+        '<div class="card-refno">' + escHtml(row.id) + '</div>' +
+        '<div style="font-size:11px;color:#888;margin-top:2px;">' + escHtml(row.formType) + (row.category ? ' &nbsp;·&nbsp; ' + row.category : '') + '</div>' +
+      '</div>' +
+      '<span class="card-badge ' + bClass + '">' + icon + ' &nbsp;' + escHtml(row.status) + '</span>' +
+    '</div>' +
+    '<div class="card-body">' +
+      '<div class="card-meta">' +
+        '<span class="meta-item">📅 <strong>Submitted:</strong> ' + escHtml(row.submittedAt||'–') + '</span>' +
+        '<span class="meta-item">🏢 <strong>Dept:</strong> ' + escHtml(row.dept||'–') + '</span>' +
+        updatedHtml +
+      '</div>' +
+      (row.description ? '<div class="card-desc">📄 ' + escHtml(row.description) + '</div>' : '') +
+      tl +
+      notesHtml +
+    '</div>' +
+  '</div>';
+}
+
+// ── TIMELINE ─────────────────────────────────────────────────────
+function buildTimeline(status) {
+  var steps = ['Pending', 'In Progress', 'Completed'];
+  var statusIdx = steps.indexOf(status);
+  if (status === 'Cancelled') {
+    return '<div style="text-align:center;padding:10px 0;font-size:12px;color:#dc3545;font-weight:700;">❌ This request has been cancelled.</div>';
+  }
+
+  var html = '<div class="timeline">';
+  steps.forEach(function(step, i) {
+    var cls = i < statusIdx ? 'done' : (i === statusIdx ? 'current' : '');
+    var dot = i < statusIdx ? '✓' : (i + 1).toString();
+    html += '<div class="tl-step ' + cls + '">' +
+      '<div class="tl-dot">' + dot + '</div>' +
+      '<div class="tl-label">' + step + '</div>' +
+    '</div>';
+  });
+  html += '</div>';
+  return html;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return s.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

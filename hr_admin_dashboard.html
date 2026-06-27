@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HR Admin Dashboard — Envisage</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-height:100vh;}
+
+/* ── Gate ── */
+#gate{position:fixed;inset:0;background:#0d1a35;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;}
+.gate-box{background:#fff;border-radius:16px;padding:36px 40px;max-width:400px;width:100%;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.4);}
+.gate-icon{width:60px;height:60px;background:linear-gradient(135deg,#1a2744,#00b8a9);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:26px;}
+.gate-title{font-size:22px;font-weight:800;color:#1a2744;margin-bottom:4px;}
+.gate-sub{font-size:12px;color:#6b7c93;margin-bottom:22px;line-height:1.6;}
+.gate-input{width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;margin-bottom:8px;}
+.gate-err{color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;}
+.gate-btn{width:100%;background:#1a2744;color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:background .2s;}
+.gate-btn:hover{background:#00b8a9;}
+
+/* ── Header ── */
+.header{background:#1a2744;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+.header-left{display:flex;align-items:center;gap:14px;}
+.logo{width:42px;height:42px;background:linear-gradient(135deg,#00b8a9,#009e90);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.header h1{font-size:18px;font-weight:800;color:#fff;}
+.header .sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px;}
+.back-link{color:rgba(255,255,255,.7);font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s;}
+.back-link:hover{color:#00b8a9;}
+
+/* ── Stats bar ── */
+.stats-bar{display:flex;gap:12px;padding:16px 28px;flex-wrap:wrap;}
+.stat-card{background:#fff;border-radius:10px;padding:14px 20px;flex:1;min-width:130px;box-shadow:0 2px 8px rgba(0,0,0,.06);border-left:4px solid #c0d0e4;transition:transform .15s;}
+.stat-card:hover{transform:translateY(-2px);}
+.stat-card.pending{border-left-color:#f0ad4e;}
+.stat-card.inprog{border-left-color:#0d6efd;}
+.stat-card.done{border-left-color:#198754;}
+.stat-card.cancelled{border-left-color:#dc3545;}
+.stat-num{font-size:28px;font-weight:800;color:#1a2744;}
+.stat-label{font-size:11px;color:#6b7c93;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+
+/* ── Filters ── */
+.filters{background:#fff;margin:0 28px 16px;border-radius:10px;padding:14px 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.filters select,.filters input{padding:7px 12px;border:1.5px solid #dde6f0;border-radius:7px;font-size:12px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;background:#fff;}
+.filters select:focus,.filters input:focus{border-color:#00b8a9;}
+.filter-label{font-size:11px;font-weight:700;color:#888;white-space:nowrap;}
+.btn-refresh{background:#1a2744;color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:background .2s;}
+.btn-refresh:hover{background:#00b8a9;}
+.btn-export{background:#f0f4f8;color:#1a2744;border:1.5px solid #dde6f0;border-radius:7px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;}
+.btn-export:hover{background:#e8eef6;}
+
+/* ── Table ── */
+.table-wrap{margin:0 28px 28px;background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,.07);overflow:hidden;}
+table{width:100%;border-collapse:collapse;}
+thead tr{background:#1a2744;}
+th{color:#fff;font-size:11px;font-weight:700;padding:11px 12px;text-align:left;white-space:nowrap;letter-spacing:.3px;}
+tbody tr{border-bottom:1px solid #f0f4f8;cursor:pointer;transition:background .15s;}
+tbody tr:hover{background:#f7fbff;}
+tbody tr.expanded{background:#eef6ff;}
+td{font-size:12px;padding:10px 12px;vertical-align:middle;}
+.no-data{text-align:center;padding:40px;color:#aaa;font-size:14px;}
+
+/* ── Status badge ── */
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.badge-pending{background:#fff3cd;color:#856404;}
+.badge-inprog{background:#cfe2ff;color:#084298;}
+.badge-done{background:#d1e7dd;color:#0a3622;}
+.badge-cancel{background:#f8d7da;color:#58151c;}
+
+/* ── Category tag ── */
+.cat-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:.3px;}
+.cat-finance{background:#fff3cd;color:#7d5a00;}
+.cat-hr{background:#d1e7dd;color:#0a3622;}
+.cat-admin{background:#e8d5ff;color:#4a0e8f;}
+
+/* ── Expand panel ── */
+.expand-row td{padding:0;}
+.expand-panel{padding:16px 20px;background:#f0f7ff;border-top:2px solid #00b8a9;display:flex;gap:20px;flex-wrap:wrap;}
+.expand-left{flex:1;min-width:200px;}
+.expand-right{min-width:280px;max-width:360px;}
+.expand-label{font-size:10px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;}
+.expand-value{font-size:13px;color:#1a2744;margin-bottom:12px;line-height:1.5;}
+.status-select{width:100%;padding:8px 12px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;margin-bottom:10px;}
+.status-select:focus{border-color:#00b8a9;}
+.notes-area{width:100%;padding:8px 12px;border:2px solid #c0d0e4;border-radius:8px;font-size:12px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;resize:vertical;min-height:70px;margin-bottom:10px;}
+.notes-area:focus{border-color:#00b8a9;}
+.save-btn{background:#00b8a9;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;width:100%;transition:background .2s;}
+.save-btn:hover{background:#009e90;}
+.save-btn:disabled{background:#bbb;cursor:not-allowed;}
+.save-msg{font-size:11.5px;margin-top:6px;text-align:center;font-weight:700;display:none;}
+
+/* ── Loading ── */
+#loading{display:none;text-align:center;padding:40px;color:#888;font-size:14px;}
+.spinner{display:inline-block;width:20px;height:20px;border:3px solid #dde6f0;border-top-color:#00b8a9;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── Responsive ── */
+@media(max-width:700px){
+  .stats-bar{padding:12px 16px;}
+  .filters{margin:0 16px 12px;}
+  .table-wrap{margin:0 16px 20px;}
+  .header{padding:12px 16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ ACCESS GATE ══ -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-icon">🛡️</div>
+    <div class="gate-title">HR Admin Access</div>
+    <div class="gate-sub">Enter the admin passcode to access the HR tracking dashboard.</div>
+    <input type="password" id="gate_pass" class="gate-input" placeholder="Admin passcode"
+      onkeydown="if(event.key==='Enter')checkGate()">
+    <div id="gate_err" class="gate-err">❌ Incorrect passcode.</div>
+    <button class="gate-btn" onclick="checkGate()">Enter Dashboard →</button>
+    <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE · HR Administration</div>
+  </div>
+</div>
+
+<!-- ══ HEADER ══ -->
+<div class="header">
+  <div class="header-left">
+    <div class="logo">📊</div>
+    <div>
+      <h1>HR Admin Dashboard</h1>
+      <div class="sub">Track and update all staff request statuses</div>
+    </div>
+  </div>
+  <a href="../forms_portal.html" class="back-link">← Back to Portal</a>
+</div>
+
+<!-- ══ STATS ══ -->
+<div class="stats-bar">
+  <div class="stat-card pending"><div class="stat-num" id="cnt_pending">–</div><div class="stat-label">🔵 Pending</div></div>
+  <div class="stat-card inprog"><div class="stat-num" id="cnt_inprog">–</div><div class="stat-label">🟡 In Progress</div></div>
+  <div class="stat-card done"><div class="stat-num" id="cnt_done">–</div><div class="stat-label">✅ Completed</div></div>
+  <div class="stat-card cancelled"><div class="stat-num" id="cnt_cancel">–</div><div class="stat-label">❌ Cancelled</div></div>
+  <div class="stat-card"><div class="stat-num" id="cnt_total">–</div><div class="stat-label">📋 Total</div></div>
+</div>
+
+<!-- ══ FILTERS ══ -->
+<div class="filters">
+  <span class="filter-label">Filter:</span>
+  <select id="f_status" onchange="applyFilters()">
+    <option value="">All Statuses</option>
+    <option value="Pending">🔵 Pending</option>
+    <option value="In Progress">🟡 In Progress</option>
+    <option value="Completed">✅ Completed</option>
+    <option value="Cancelled">❌ Cancelled</option>
+  </select>
+  <select id="f_category" onchange="applyFilters()">
+    <option value="">All Categories</option>
+    <option value="Finance">Finance</option>
+    <option value="HR">HR</option>
+    <option value="Admin">Admin</option>
+  </select>
+  <input type="text" id="f_search" placeholder="Search name / ref / dept…" oninput="applyFilters()" style="min-width:180px;">
+  <button class="btn-refresh" onclick="loadData()">↻ Refresh</button>
+  <button class="btn-export" onclick="exportCSV()">⬇ Export CSV</button>
+</div>
+
+<!-- ══ TABLE ══ -->
+<div id="loading"><span class="spinner"></span> Loading submissions…</div>
+<div class="table-wrap" id="table_wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Ref No.</th>
+        <th>Submitted</th>
+        <th>Form Type</th>
+        <th>Cat.</th>
+        <th>Staff Name</th>
+        <th>Department</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Last Updated</th>
+      </tr>
+    </thead>
+    <tbody id="tbl_body">
+      <tr><td colspan="9" class="no-data">Loading…</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────
+var GAS_URL    = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
+var PASSCODE   = 'HRAdmin2026';  // ← Change this to your preferred admin passcode
+var _allRows   = [];
+var _openRowId = null;
+
+// ── GATE ─────────────────────────────────────────────────────────
+function checkGate() {
+  var pass = document.getElementById('gate_pass').value;
+  var err  = document.getElementById('gate_err');
+  if (pass === PASSCODE) {
+    document.getElementById('gate').style.display = 'none';
+    err.style.display = 'none';
+    loadData();
+  } else {
+    err.style.display = 'block';
+    document.getElementById('gate_pass').style.borderColor = '#e74c3c';
+    document.getElementById('gate_pass').value = '';
+    setTimeout(function(){ document.getElementById('gate_pass').style.borderColor = '#c0d0e4'; }, 2000);
+  }
+}
+document.getElementById('gate_pass').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') checkGate();
+});
+
+// ── LOAD DATA ─────────────────────────────────────────────────────
+function loadData() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('table_wrap').style.display = 'none';
+  fetch(GAS_URL + '?page=tracker')
+    .then(function(r){ return r.json(); })
+    .then(function(res) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('table_wrap').style.display = 'block';
+      if (res.success) {
+        _allRows = res.rows || [];
+        updateStats(_allRows);
+        applyFilters();
+      } else {
+        showError(res.message || 'Failed to load data');
+      }
+    })
+    .catch(function(err) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('table_wrap').style.display = 'block';
+      showError('Network error: ' + err.message);
+    });
+}
+
+function showError(msg) {
+  document.getElementById('tbl_body').innerHTML =
+    '<tr><td colspan="9" class="no-data">⚠️ ' + msg + '</td></tr>';
+}
+
+// ── STATS ─────────────────────────────────────────────────────────
+function updateStats(rows) {
+  var counts = { 'Pending': 0, 'In Progress': 0, 'Completed': 0, 'Cancelled': 0 };
+  rows.forEach(function(r){ if(counts[r.status] !== undefined) counts[r.status]++; });
+  document.getElementById('cnt_pending').textContent = counts['Pending'];
+  document.getElementById('cnt_inprog').textContent  = counts['In Progress'];
+  document.getElementById('cnt_done').textContent    = counts['Completed'];
+  document.getElementById('cnt_cancel').textContent  = counts['Cancelled'];
+  document.getElementById('cnt_total').textContent   = rows.length;
+}
+
+// ── FILTERS ──────────────────────────────────────────────────────
+function applyFilters() {
+  var fStatus   = document.getElementById('f_status').value;
+  var fCat      = document.getElementById('f_category').value;
+  var fSearch   = document.getElementById('f_search').value.toLowerCase().trim();
+
+  var filtered = _allRows.filter(function(r) {
+    if (fStatus && r.status !== fStatus) return false;
+    if (fCat    && r.category !== fCat)  return false;
+    if (fSearch) {
+      var hay = (r.id + ' ' + r.staffName + ' ' + r.dept + ' ' + r.formType + ' ' + r.description).toLowerCase();
+      if (hay.indexOf(fSearch) === -1) return false;
+    }
+    return true;
+  });
+
+  renderTable(filtered);
+}
+
+// ── RENDER TABLE ──────────────────────────────────────────────────
+function renderTable(rows) {
+  var tbody = document.getElementById('tbl_body');
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="9" class="no-data">📭 No submissions found for the selected filters.</td></tr>';
+    return;
+  }
+
+  var html = '';
+  rows.forEach(function(row) {
+    var badge    = statusBadge(row.status);
+    var catTag   = catBadge(row.category);
+    var desc     = (row.description || '–').substring(0, 60) + ((row.description || '').length > 60 ? '…' : '');
+    var updated  = row.lastUpdated || '–';
+
+    html += '<tr onclick="toggleExpand(\'' + row.id + '\')" id="row_' + row.id + '">';
+    html += '<td style="font-family:monospace;font-size:11px;font-weight:700;color:#1a2744;">' + row.id + '</td>';
+    html += '<td style="white-space:nowrap;">' + (row.submittedAt || '–') + '</td>';
+    html += '<td style="font-weight:700;">' + (row.formType || '–') + '</td>';
+    html += '<td>' + catTag + '</td>';
+    html += '<td style="font-weight:700;">' + (row.staffName || '–') + '</td>';
+    html += '<td>' + (row.dept || '–') + '</td>';
+    html += '<td style="color:#555;">' + desc + '</td>';
+    html += '<td>' + badge + '</td>';
+    html += '<td style="color:#888;font-size:11px;">' + updated + '</td>';
+    html += '</tr>';
+
+    // Expand panel (hidden by default, shown via class)
+    html += '<tr class="expand-row" id="expand_' + row.id + '" style="display:none;"><td colspan="9">';
+    html += buildExpandPanel(row);
+    html += '</td></tr>';
+  });
+
+  tbody.innerHTML = html;
+}
+
+// ── EXPAND PANEL ─────────────────────────────────────────────────
+function buildExpandPanel(row) {
+  return '<div class="expand-panel">' +
+    '<div class="expand-left">' +
+      '<div class="expand-label">Reference No.</div>' +
+      '<div class="expand-value" style="font-family:monospace;font-size:13px;">' + row.id + '</div>' +
+      '<div class="expand-label">Staff</div>' +
+      '<div class="expand-value">' + (row.staffName || '–') + (row.staffEmail ? ' &nbsp;·&nbsp; <a href="mailto:' + row.staffEmail + '" style="color:#00b8a9;">' + row.staffEmail + '</a>' : '') + '</div>' +
+      '<div class="expand-label">Department</div>' +
+      '<div class="expand-value">' + (row.dept || '–') + '</div>' +
+      '<div class="expand-label">Description / Purpose</div>' +
+      '<div class="expand-value">' + (row.description || '–') + '</div>' +
+      (row.hrNotes ? '<div class="expand-label">Previous HR Notes</div><div class="expand-value" style="color:#00b8a9;">' + row.hrNotes + '</div>' : '') +
+    '</div>' +
+    '<div class="expand-right">' +
+      '<div class="expand-label" style="margin-bottom:6px;">Update Status</div>' +
+      '<select class="status-select" id="sel_' + row.id + '">' +
+        '<option value="Pending"'      + (row.status === 'Pending'     ? ' selected' : '') + '>🔵 Pending</option>' +
+        '<option value="In Progress"'  + (row.status === 'In Progress' ? ' selected' : '') + '>🟡 In Progress</option>' +
+        '<option value="Completed"'    + (row.status === 'Completed'   ? ' selected' : '') + '>✅ Completed</option>' +
+        '<option value="Cancelled"'    + (row.status === 'Cancelled'   ? ' selected' : '') + '>❌ Cancelled</option>' +
+      '</select>' +
+      '<div class="expand-label" style="margin-bottom:6px;">Notes for Staff</div>' +
+      '<textarea class="notes-area" id="notes_' + row.id + '" placeholder="e.g. Your 90-day report has been filed at Chaeng Watthana immigration. Receipt attached.">' + (row.hrNotes || '') + '</textarea>' +
+      '<button class="save-btn" id="savebtn_' + row.id + '" onclick="saveStatus(\'' + row.id + '\',\'' + (row.staffEmail||'') + '\')">💾 Save &amp; Notify Staff</button>' +
+      '<div class="save-msg" id="savemsg_' + row.id + '"></div>' +
+    '</div>' +
+  '</div>';
+}
+
+// ── TOGGLE EXPAND ─────────────────────────────────────────────────
+function toggleExpand(id) {
+  if (_openRowId && _openRowId !== id) {
+    var prev = document.getElementById('expand_' + _openRowId);
+    var prevRow = document.getElementById('row_' + _openRowId);
+    if (prev) prev.style.display = 'none';
+    if (prevRow) prevRow.classList.remove('expanded');
+  }
+  var panel = document.getElementById('expand_' + id);
+  var row   = document.getElementById('row_' + id);
+  if (!panel) return;
+  var isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'table-row';
+  if (row) row.classList.toggle('expanded', !isOpen);
+  _openRowId = isOpen ? null : id;
+}
+
+// ── SAVE STATUS ───────────────────────────────────────────────────
+function saveStatus(submissionId, staffEmail) {
+  var status  = document.getElementById('sel_' + submissionId).value;
+  var notes   = document.getElementById('notes_' + submissionId).value.trim();
+  var btn     = document.getElementById('savebtn_' + submissionId);
+  var msg     = document.getElementById('savemsg_' + submissionId);
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;margin-right:6px;"></span> Saving…';
+
+  var payload = {
+    action        : 'updateStatus',
+    submission_id : submissionId,
+    status        : status,
+    hr_notes      : notes,
+    updated_by    : 'HR Admin'
+  };
+
+  fetch(GAS_URL, {
+    method : 'POST',
+    body   : JSON.stringify(payload)
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    btn.disabled = false;
+    btn.innerHTML = '💾 Save & Notify Staff';
+    msg.style.display = 'block';
+    if (res.success) {
+      msg.style.color = '#198754';
+      msg.textContent = '✅ Updated! Email sent to ' + (staffEmail || 'staff') + '.';
+      // Update local data
+      var found = _allRows.find(function(r){ return r.id === submissionId; });
+      if (found) {
+        found.status      = status;
+        found.hrNotes     = notes;
+        found.lastUpdated = new Date().toLocaleDateString('en-GB');
+      }
+      updateStats(_allRows);
+      // Refresh badge in the row
+      var badge = document.querySelector('#row_' + submissionId + ' td:nth-child(8)');
+      if (badge) badge.innerHTML = statusBadge(status);
+    } else {
+      msg.style.color = '#dc3545';
+      msg.textContent = '❌ Error: ' + (res.message || 'Unknown error');
+    }
+    setTimeout(function(){ msg.style.display='none'; }, 5000);
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.innerHTML = '💾 Save & Notify Staff';
+    msg.style.display = 'block';
+    msg.style.color = '#dc3545';
+    msg.textContent = '❌ Network error: ' + err.message;
+  });
+}
+
+// ── EXPORT CSV ────────────────────────────────────────────────────
+function exportCSV() {
+  var rows = _allRows;
+  if (!rows.length) return alert('No data to export.');
+  var headers = ['Ref No','Submitted At','Form Type','Category','Staff Name','Staff Email','Department','Description','Status','HR Notes','Last Updated','Updated By'];
+  var csv = headers.join(',') + '\n';
+  rows.forEach(function(r) {
+    var vals = [r.id, r.submittedAt, r.formType, r.category, r.staffName, r.staffEmail, r.dept, r.description, r.status, r.hrNotes, r.lastUpdated, r.updatedBy];
+    csv += vals.map(function(v){ return '"' + (v||'').toString().replace(/"/g,'""') + '"'; }).join(',') + '\n';
+  });
+  var blob = new Blob([csv], {type:'text/csv'});
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href = url;
+  a.download = 'Envisage_HR_Tracker_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── BADGE HELPERS ─────────────────────────────────────────────────
+function statusBadge(s) {
+  var map = {
+    'Pending'    : '<span class="badge badge-pending">🔵 Pending</span>',
+    'In Progress': '<span class="badge badge-inprog">🟡 In Progress</span>',
+    'Completed'  : '<span class="badge badge-done">✅ Completed</span>',
+    'Cancelled'  : '<span class="badge badge-cancel">❌ Cancelled</span>'
+  };
+  return map[s] || '<span class="badge">' + (s||'–') + '</span>';
+}
+
+function catBadge(c) {
+  var map = {
+    'Finance': '<span class="cat-tag cat-finance">Finance</span>',
+    'HR'     : '<span class="cat-tag cat-hr">HR</span>',
+    'Admin'  : '<span class="cat-tag cat-admin">Admin</span>'
+  };
+  return map[c] || '<span class="cat-tag">' + (c||'–') + '</span>';
+}
+</script>
+</body>
+</html>
