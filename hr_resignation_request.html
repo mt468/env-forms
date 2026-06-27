@@ -118,7 +118,6 @@ textarea:focus{border-color:#00b8a9;}
 .modal .close-btn{margin-top:18px;background:#1a2744;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
 
 @media print{body{background:#fff;padding:0;
-  .staff-select-bar{display:none;}
 }.page{box-shadow:none;border-radius:0;}.action-bar,.back-link{display:none;}}
 
 @media(max-width:680px){
@@ -158,13 +157,6 @@ textarea:focus{border-color:#00b8a9;}
   .modal h2{font-size:17px;}
   .modal .ref-id{font-size:18px;}
 }
-/* Staff selector banner */
-.staff-select-bar{background:#eef7f6;border-bottom:2px solid #00b8a9;padding:10px 16px;display:flex;align-items:center;gap:10px;}
-.staff-select-bar label{font-size:12px;font-weight:700;color:#1a2744;white-space:nowrap;flex-shrink:0;}
-.staff-select-bar select{flex:1;border-bottom:1.5px solid #00b8a9;font-size:12px;color:#1a2744;background:transparent;border-radius:0;border-top:none;border-left:none;border-right:none;outline:none;font-family:'Sarabun',sans-serif;}
-.staff-select-bar .company-pill{font-size:11px;font-weight:800;padding:3px 10px;border-radius:12px;white-space:nowrap;display:none;}
-.pill-elite{background:#1a2744;color:#00b8a9;}
-.pill-env{background:#00b8a9;color:#fff;}
 </style>
 </head>
 <body>
@@ -243,62 +235,6 @@ function _checkGate(){
     </div>
   </div>
 
-  <!-- STAFF SELECTOR BAR -->
-  <div class="staff-select-bar">
-    <label>👤 Select Staff :</label>
-    <select id="staff_email" onchange="onStaffSelect()">
-      <option value="">— Select your email to auto-fill —</option>
-      <optgroup label="── Elite Tech ──">
-        <option value="joelh@envisageworldwide.com" data-name="JOEL" data-company="Elite Tech" data-dept="CMT – Executive" data-role="Founder &amp; Director">joelh@envisageworldwide.com — JOEL</option>
-        <option value="daniel@envisageworldwide.com" data-name="Daniel" data-company="Elite Tech" data-dept="Commercial - SAM" data-role="Designer &amp; Marketing">daniel@envisageworldwide.com — Daniel</option>
-        <option value="tania@envisageworldwide.com" data-name="Miss Tania Johndan" data-company="Elite Tech" data-dept="Commercial - SAM" data-role="Solutions Manager">tania@envisageworldwide.com — Miss Tania Johndan</option>
-        <option value="brent@envisageworldwide.com" data-name="Mr Brent Bawa Krone-Schmidt" data-company="Elite Tech" data-dept="Commercial - SAM" data-role="Full-Stack Developer">brent@envisageworldwide.com — Mr Brent Bawa Krone-Schmidt</option>
-        <option value="greg@envisageworldwide.com" data-name="GREG" data-company="Elite Tech" data-dept="Commercial - SAM" data-role="Investor &amp; Sales Relation">greg@envisageworldwide.com — GREG</option>
-        <option value="brantw@envisageworldwide.com" data-name="Brant" data-company="Elite Tech" data-dept="Commercial - SAM" data-role="Commercial Director">brantw@envisageworldwide.com — Brant</option>
-        <option value="phuirat@envisageworldwide.com" data-name="Phupirat Rammasith" data-company="Elite Tech" data-dept="Commercial - SAM" data-role="Financial Data Engineer (Part-time)">phuirat@envisageworldwide.com — Phupirat Rammasith</option>
-        <option value="apple@envisageworldwide.com" data-name="Miss Natrada Thummasook (Apple)" data-company="Elite Tech" data-dept="Finance &amp; Accounting" data-role="Senior Accountant">apple@envisageworldwide.com — Miss Natrada Thummasook (Apple)</option>
-        <option value="noi@envisageworldwide.com" data-name="Mrs Apinya Chantima (Noi)" data-company="Elite Tech" data-dept="Administration" data-role="House Keeper">noi@envisageworldwide.com — Mrs Apinya Chantima (Noi)</option>
-        <option value="ehmhu@envisageworldwide.com" data-name="El Muh" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Team Lead – Graphic Design">ehmhu@envisageworldwide.com — El Muh</option>
-        <option value="ainsley@envisageworldwide.com" data-name="Miss Ainslie Winona Cromar" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Senior English Report Editor">ainsley@envisageworldwide.com — Miss Ainslie Winona Cromar</option>
-        <option value="kiran@envisageworldwide.com" data-name="Mr. Kiran Karki" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Research Assistant">kiran@envisageworldwide.com — Mr. Kiran Karki</option>
-        <option value="ht@envisageworldwide.com" data-name="Miss Khawn Tong @ Yu Yu Aung" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Senior Political Analyst">ht@envisageworldwide.com — Miss Khawn Tong @ Yu Yu Aung</option>
-        <option value="ehwah@envisageworldwide.com" data-name="Miss Naw Eh Wah Taw" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Junior Researcher">ehwah@envisageworldwide.com — Miss Naw Eh Wah Taw</option>
-        <option value="thawthaw@envisageworldwide.com" data-name="Miss Naw Hser Moo Thaw Kyin" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Researcher">thawthaw@envisageworldwide.com — Miss Naw Hser Moo Thaw Kyin</option>
-        <option value="zja@envisageworldwide.com" data-name="Miss Roi Ja" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Senior Political Analyst">zja@envisageworldwide.com — Miss Roi Ja</option>
-        <option value="benjamin@envisageworldwide.com" data-name="Mr. Bejamin Thein Aung" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Junior Researcher">benjamin@envisageworldwide.com — Mr. Bejamin Thein Aung</option>
-        <option value="zauseng@envisageworldwide.com" data-name="Mr. June Pyae Sone" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Research Assistant">zauseng@envisageworldwide.com — Mr. June Pyae Sone</option>
-        <option value="kevin@envisageworldwide.com" data-name="Mr. Kevin Angus Mcleod" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Senior Political Analyst">kevin@envisageworldwide.com — Mr. Kevin Angus Mcleod</option>
-        <option value="aungdee@envisageworldwide.com" data-name="Mr. Khun Sar Aung Dee" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Team Lead – Senior Conflict and Political Researcher">aungdee@envisageworldwide.com — Mr. Khun Sar Aung Dee</option>
-        <option value="mam@envisageworldwide.com" data-name="Mr. Min Aung Mann" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Consultant (Part Time)">mam@envisageworldwide.com — Mr. Min Aung Mann</option>
-        <option value="naymyolinn@envisageworldwide.com" data-name="Mr. Nay Myo Linn" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Junior Political Analyst">naymyolinn@envisageworldwide.com — Mr. Nay Myo Linn</option>
-        <option value="yt@envisageworldwide.com" data-name="MR. SAI YEE TIP" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Team Lead – Senior Researcher">yt@envisageworldwide.com — MR. SAI YEE TIP</option>
-        <option value="tumai@envisageworldwide.com" data-name="Mr. Tu Mai" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Senior Conflict Researcher">tumai@envisageworldwide.com — Mr. Tu Mai</option>
-        <option value="maysu@envisageworldwide.com" data-name="Mrs. May Shu Tint Lwin" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Myanmar Researcher">maysu@envisageworldwide.com — Mrs. May Shu Tint Lwin</option>
-        <option value="yu@envisageworldwide.com" data-name="Ms. Yu Mon Thin" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Team Lead – Senior Political Analyst">yu@envisageworldwide.com — Ms. Yu Mon Thin</option>
-        <option value="karel@envisageworldwide.com" data-name="Mr. Karel Clara Andre Thijssen" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Research Director &amp; Political Analyst">karel@envisageworldwide.com — Mr. Karel Clara Andre Thijssen</option>
-        <option value="nika@envisageworldwide.com" data-name="Ms. Dominika Lee Magal Hoefle" data-company="Elite Tech" data-dept="Myanmar Country Research" data-role="Regional Director">nika@envisageworldwide.com — Ms. Dominika Lee Magal Hoefle</option>
-        <option value="simon@envisageworldwide.com" data-name="Mr Simon Aleaxander Gideon Engwerda" data-company="Elite Tech" data-dept="Software Development" data-role="Technology Director &amp; Dev Lead">simon@envisageworldwide.com — Mr Simon Aleaxander Gideon Engwerda</option>
-        <option value="wez@envisageworldwide.com" data-name="Mr. We Hkawng" data-company="Elite Tech" data-dept="Software Development" data-role="Junior Full-Stack Developer">wez@envisageworldwide.com — Mr. We Hkawng</option>
-        <option value="lance@envisageworldwide.com" data-name="Mr. Lance Muteyo" data-company="Elite Tech" data-dept="Zimbabwe Country Research" data-role="Zimbabwe Regional Director">lance@envisageworldwide.com — Mr. Lance Muteyo</option>
-        <option value="ahfu@envisageworldwide.com" data-name="Ahfu" data-company="Elite Tech" data-dept="Myanmar In-Country" data-role="Country Director">ahfu@envisageworldwide.com — Ahfu</option>
-      </optgroup>
-      <optgroup label="── Envisage ──">
-        <option value="chanon@envisageworldwide.com" data-name="Chanon Tungngeon" data-company="Envisage" data-dept="Commercial - SAM" data-role="Financial Data Engineer">chanon@envisageworldwide.com — Chanon Tungngeon</option>
-        <option value="ying@envisageworldwide.com" data-name="Miss Bunditying Punyano (Ying)" data-company="Envisage" data-dept="Commercial - SAM" data-role="Product Director">ying@envisageworldwide.com — Miss Bunditying Punyano (Ying)</option>
-        <option value="jisoo@envisageworldwide.com" data-name="Mr. Jisooh Oh" data-company="Envisage" data-dept="Commercial - SAM" data-role="Technology Manager">jisoo@envisageworldwide.com — Mr. Jisooh Oh</option>
-        <option value="mallika@envisageworldwide.com" data-name="Mallika" data-company="Envisage" data-dept="Finance &amp; Accounting" data-role="Senior Accountant">mallika@envisageworldwide.com — Mallika</option>
-        <option value="accounting@envisageworldwide.com" data-name="Miss Thamita Bosang" data-company="Envisage" data-dept="Finance &amp; Accounting" data-role="Junior Accountant">accounting@envisageworldwide.com — Miss Thamita Bosang</option>
-        <option value="admin@envisageworldwide.com" data-name="Mr. Jamorn Jajong (WIN)" data-company="Envisage" data-dept="Finance &amp; Accounting" data-role="CFO / Admin Manager">admin@envisageworldwide.com — Mr. Jamorn Jajong (WIN)</option>
-        <option value="apue@envisageworldwide.com" data-name="Mr Apue Bechegoo (Por)" data-company="Envisage" data-dept="Myanmar Country Research" data-role="Senior Researcher">apue@envisageworldwide.com — Mr Apue Bechegoo (Por)</option>
-        <option value="pn@envisageworldwide.com" data-name="Mr. Sa Kha Lane Phan" data-company="Envisage" data-dept="Myanmar Country Research" data-role="Senior Conflict and Political Researcher">pn@envisageworldwide.com — Mr. Sa Kha Lane Phan</option>
-        <option value="shh@envisageworldwide.com" data-name="Mr. Sai Hsai Hein" data-company="Envisage" data-dept="Myanmar Country Research" data-role="Myanmar Researcher">shh@envisageworldwide.com — Mr. Sai Hsai Hein</option>
-        <option value="tk@envisageworldwide.com" data-name="Mr. Tanapong Kasamsuk (TK)" data-company="Envisage" data-dept="Myanmar Country Research" data-role="Senior Researcher">tk@envisageworldwide.com — Mr. Tanapong Kasamsuk (TK)</option>
-        <option value="gift@envisageworldwide.com" data-name="Ms. Thanaporn Boon-Long (Gift)" data-company="Envisage" data-dept="Myanmar Country Research" data-role="Graphic Assistant / Admin Assistant">gift@envisageworldwide.com — Ms. Thanaporn Boon-Long (Gift)</option>
-        <option value="mt@envisageworldwide.com" data-name="Khant Gi Mont Tip" data-company="Envisage" data-dept="Myanmar Country Research" data-role="Operation Director / Data Specialist">mt@envisageworldwide.com — Khant Gi Mont Tip</option>
-      </optgroup>
-    </select>
-    <span id="company_pill" class="company-pill"></span>
-  </div>
 
   <!-- NOTICE BANNER -->
   <div class="notice-banner">
@@ -736,50 +672,6 @@ function clearForm(silent){
   document.getElementById('last_day').value = lwd.toISOString().split('T')[0];
   calcDates();
   document.getElementById('val_msg').style.display = 'none';
-}
-function onStaffSelect(){
-  var sel = document.getElementById('staff_email');
-  var opt = sel.options[sel.selectedIndex];
-  if(!opt || !opt.value) {
-    var pill = document.getElementById('company_pill');
-    if(pill) pill.style.display = 'none';
-    return;
-  }
-  var name    = opt.getAttribute('data-name')    || '';
-  var company = opt.getAttribute('data-company') || '';
-  var dept    = opt.getAttribute('data-dept')    || '';
-  var role    = opt.getAttribute('data-role')    || '';
-
-  // Fill whichever fields exist in this form
-  var fields = {
-    // Name fields
-    'emp_name':name, 'traveler':name, 'req_name':name, 'cert_name':name,
-    'sig_requester':name, 'requester_name':name, 'staff_name':name,
-    'applicant_name':name, 'employee_name':name,
-    // Dept fields
-    'dept':dept, 'req_dept':dept, 'department':dept, 'emp_dept':dept,
-    // Position/role fields
-    'position':role, 'emp_position':role, 'role':role, 'job_title':role,
-    // Company fields
-    'company':company,
-    // Email fields (fill with the email itself)
-    'emp_email':opt.value, 'email':opt.value, 'contact_email':opt.value
-  };
-  Object.keys(fields).forEach(function(id){
-    var el = document.getElementById(id);
-    if(el && !el.readOnly) el.value = fields[id];
-    // Company field is readonly but should still be filled
-    if(el && id === 'company') el.value = fields[id];
-    if(el && id === 'emp_email') el.value = fields[id];
-  });
-
-  // Company pill
-  var pill = document.getElementById('company_pill');
-  if(pill){
-    pill.textContent = company;
-    pill.className = 'company-pill ' + (company === 'Elite Tech' ? 'pill-elite' : 'pill-env');
-    pill.style.display = 'inline-block';
-  }
 }
 </script>
 <iframe name="hidden_iframe" style="display:none;"></iframe>
