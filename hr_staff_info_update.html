@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff Information Update | Envisage HR</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#e0f7f5 0%,#eaf4fb 100%);padding:20px;color:#1a2744;min-height:100vh;}
+
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#00b8a9;font-size:13px;font-weight:700;text-decoration:none;margin-bottom:14px;padding:6px 14px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.back-link:hover{background:#e0faf8;}
+
+.page{background:#fff;max-width:920px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+
+input[type="text"],input[type="number"],input[type="date"],input[type="email"],
+input[type="tel"],input[type="url"],select,textarea{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #3a7bd5;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input:focus,select:focus,textarea:focus{border-bottom-color:#00b8a9;background:rgba(0,184,169,.05);}
+input.invalid,select.invalid{border-bottom-color:#e74c3c!important;background:rgba(231,76,60,.05);}
+input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-color:#00b8a9;}
+textarea{resize:vertical;min-height:52px;border:1.5px solid #3a7bd5;border-radius:4px;padding:6px;background:#fafcff;}
+textarea:focus{border-color:#00b8a9;}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:2px solid #e0eaf4;}
+.header-logo{width:70px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.header-logo .logo-box{width:62px;height:62px;background:linear-gradient(135deg,#00b8a9,#009e90);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.header-center{flex:1;padding:0 12px;}
+.header-center h1{font-size:22px;font-weight:800;color:#1a2744;line-height:1.1;}
+.header-center .sub{font-size:12px;color:#555;margin-top:4px;font-weight:600;line-height:1.6;}
+.header-right{width:210px;flex-shrink:0;border:2px solid #c5d8ec;border-radius:8px;padding:10px 12px;font-size:12px;}
+.ref-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-weight:700;}
+.ref-row .lbl{white-space:nowrap;}
+.ref-row input{flex:1;min-width:0;}
+.connection-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:4px;}
+.connection-dot.ok{background:#27ae60;}.connection-dot.err{background:#e74c3c;}
+
+/* TAB NAV */
+.tab-nav{display:flex;background:#1a2744;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tab-btn{flex:1;min-width:120px;padding:12px 10px;color:rgba(255,255,255,.55);font-size:11.5px;font-weight:700;text-align:center;cursor:pointer;border:none;background:none;font-family:'Sarabun',sans-serif;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.tab-btn .tab-ico{font-size:16px;}
+.tab-btn:hover{color:#fff;background:rgba(255,255,255,.07);}
+.tab-btn.active{color:#00b8a9;border-bottom-color:#00b8a9;background:rgba(0,184,169,.1);}
+.tab-btn .tab-dot{width:6px;height:6px;border-radius:50%;background:#e74c3c;display:none;margin:0 auto;}
+.tab-btn.has-data .tab-dot{display:block;}
+
+/* TAB PANELS */
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* SECTION HEADERS */
+.sec-hdr{background:#1a2744;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:#00b8a9;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+/* SECTIONS */
+.section{padding:14px 22px;border-bottom:1px solid #e0eaf4;}
+.frow{display:flex;align-items:flex-end;gap:8px;margin-bottom:12px;font-size:12px;font-weight:700;}
+.frow label{white-space:nowrap;font-weight:700;color:#1a2744;}
+.frow input,.frow select,.frow textarea{flex:1;min-width:40px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 28px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
+.four-col{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0 16px;}
+
+/* UPDATE TYPE SELECTOR */
+.update-chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.update-chip{display:flex;align-items:center;gap:6px;padding:7px 14px;border:2px solid #e0eaf4;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;color:#555;}
+.update-chip input[type="checkbox"]{width:13px;height:13px;}
+.update-chip:hover{border-color:#00b8a9;color:#007d72;}
+.update-chip.checked{border-color:#00b8a9;background:#e0faf8;color:#007d72;}
+
+/* INFO BOXES */
+.info-box{background:#f0fdfb;border:1.5px solid #b0e8e0;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:11.5px;color:#1a5c52;line-height:1.7;}
+.info-box strong{display:block;font-size:12px;margin-bottom:4px;color:#007d72;}
+.warn-box{background:#fff8e1;border:1.5px solid #ffc107;border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:11.5px;color:#7a5c00;line-height:1.7;}
+.warn-box strong{display:block;font-size:12px;margin-bottom:4px;}
+
+/* STATUS BADGE */
+.status-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;}
+.status-opt{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 14px;border:2px solid #e0eaf4;border-radius:20px;transition:all .2s;}
+.status-opt input[type="radio"]{width:13px;height:13px;}
+.status-opt.s-valid{border-color:#27ae60;background:#edf7f0;color:#1a7a40;}
+.status-opt.s-expired{border-color:#e74c3c;background:#fde8e8;color:#c0392b;}
+.status-opt.s-pending{border-color:#f39c12;background:#fff8e1;color:#7a5c00;}
+.status-opt.s-new{border-color:#3a7bd5;background:#e8f0fb;color:#1a4a8e;}
+
+/* DEADLINE HIGHLIGHT */
+.deadline-box{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#1a2744,#243660);border-radius:10px;padding:14px 18px;margin:10px 0;}
+.deadline-box .dl-label{color:rgba(255,255,255,.75);font-size:12px;font-weight:700;}
+.deadline-box .dl-val{color:#00b8a9;font-size:18px;font-weight:800;}
+.deadline-box .dl-days{color:#ffc107;font-size:11px;font-weight:700;margin-top:2px;}
+
+/* DOCUMENT CHECKLIST */
+.doc-check{display:flex;flex-direction:column;gap:7px;margin-top:8px;}
+.doc-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;font-weight:600;padding:7px 10px;border-radius:6px;background:#f7fbff;border:1px solid #e0eaf4;}
+.doc-item input[type="checkbox"]{margin-top:1px;width:14px;height:14px;}
+
+/* ATTACHMENTS */
+.attach-hint{font-size:11.5px;color:#6b7c93;margin-bottom:10px;line-height:1.5;}
+.attach-upload-btn{display:inline-flex;align-items:center;gap:7px;background:#e0faf8;border:1.5px dashed #00b8a9;color:#007d72;font-size:12px;font-weight:700;padding:8px 16px;border-radius:6px;cursor:pointer;transition:background .2s;}
+.attach-upload-btn:hover{background:#c0f0eb;}
+.attach-upload-btn input[type="file"]{display:none;}
+.attach-list{margin-top:10px;display:flex;flex-direction:column;gap:5px;}
+.attach-item{display:flex;align-items:center;gap:8px;background:#f0fdfb;border:1px solid #c0e8e0;border-radius:6px;padding:6px 10px;font-size:11.5px;}
+.attach-item-name{flex:1;font-weight:600;color:#1a2744;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.attach-item-size{color:#6b7c93;flex-shrink:0;font-size:11px;}
+.attach-remove{background:none;border:none;color:#e74c3c;cursor:pointer;font-size:14px;padding:0 4px;line-height:1;}
+
+/* FOOTER */
+.footer-banner{background:#1a2744;color:#fff;text-align:center;padding:12px 20px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.footer-banner .shield{width:34px;height:34px;background:#00b8a9;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.footer-banner .main-txt{font-size:13px;font-weight:800;letter-spacing:.4px;}
+.footer-banner .sub-txt{font-size:10px;opacity:.8;margin-top:2px;}
+
+/* ACTION BAR */
+.action-bar{display:flex;justify-content:center;gap:12px;padding:14px 20px;background:#f7fbff;border-top:2px solid #e0eaf4;flex-wrap:wrap;}
+.btn{padding:10px 26px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-teal{background:#00b8a9;color:#fff;}
+.btn-teal:hover{background:#009e90;transform:translateY(-1px);box-shadow:0 3px 10px rgba(0,184,169,.3);}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #1a2744;}
+.btn-outline:hover{background:#f0f6fc;}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none!important;}
+
+.val-msg{display:none;background:#fff3cd;border:1px solid #ffc107;color:#856404;font-size:12px;padding:10px 16px;margin:0 20px 10px;border-radius:6px;font-weight:600;}
+.spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* MODAL */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;}
+.overlay.show{display:flex;}
+.modal{background:#fff;border-radius:12px;padding:30px 34px;max-width:460px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2);}
+.modal h2{font-size:20px;font-weight:800;color:#1a2744;margin-bottom:10px;}
+.modal p{font-size:13px;color:#555;line-height:1.6;margin-bottom:6px;}
+.modal .ref-id{font-size:22px;font-weight:800;color:#00b8a9;margin:12px 0;}
+.modal .close-btn{margin-top:18px;background:#00b8a9;color:#fff;border:none;border-radius:6px;padding:10px 26px;font-size:13px;font-weight:700;cursor:pointer;}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;border-radius:0;}
+  .action-bar,.tab-nav{display:none;}
+  .tab-panel{display:block!important;}
+}
+
+@media(max-width:680px){
+  body{padding:10px;}
+  .header{flex-direction:column;padding:14px 14px 10px;gap:10px;}
+  .header-logo{display:none;}
+  .header-right{width:100%;}
+  .header-center h1{font-size:17px;}
+  .two-col,.three-col,.four-col{grid-template-columns:1fr!important;gap:0;}
+  .tab-btn{min-width:90px;font-size:10.5px;padding:10px 6px;}
+  .tab-btn .tab-ico{font-size:14px;}
+  .section{padding:12px 14px;}
+  input,select,textarea{font-size:16px!important;}
+  .action-bar{flex-direction:column;gap:10px;padding:12px 14px;}
+  .action-bar .btn{width:100%;padding:13px;}
+  .deadline-box{flex-direction:column;gap:6px;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ ACCESS GATE ══ -->
+<div id="env_gate" style="position:fixed;inset:0;background:#0d1a35;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:36px 40px;max-width:400px;width:100%;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.4);">
+    <div style="width:56px;height:56px;background:linear-gradient(135deg,#00b8a9,#009e90);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;">👤</div>
+    <div style="font-size:20px;font-weight:800;color:#1a2744;margin-bottom:4px;">Staff Access Only</div>
+    <div style="font-size:12px;color:#6b7c93;margin-bottom:20px;line-height:1.6;">Enter your company email to access this form.</div>
+    <input type="email" id="gate_email" placeholder="Enter your company email"
+      style="width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;margin-bottom:6px;box-sizing:border-box;"
+      onkeydown="if(event.key==='Enter')_checkGate()">
+    <div id="gate_err" style="color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;">❌ Access restricted to @envisageworldwide.com only.</div>
+    <button onclick="_checkGate()"
+      style="width:100%;background:#00b8a9;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;"
+      onmouseover="this.style.background='#009e90'" onmouseout="this.style.background='#00b8a9'">
+      Continue →
+    </button>
+    <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE · Internal Use Only</div>
+  </div>
+</div>
+<script>
+(function(){
+  if(sessionStorage.getItem('env_auth')==='ok'){
+    var g=document.getElementById('env_gate');
+    if(g) g.style.display='none';
+  }
+})();
+function _checkGate(){
+  var email=(document.getElementById('gate_email').value||'').trim().toLowerCase();
+  var err=document.getElementById('gate_err');
+  if(email.endsWith('@envisageworldwide.com')){
+    sessionStorage.setItem('env_auth','ok');
+    document.getElementById('env_gate').style.display='none';
+    err.style.display='none';
+    document.getElementById('emp_email').value=email;
+  } else {
+    err.style.display='block';
+    document.getElementById('gate_email').style.borderColor='#e74c3c';
+    setTimeout(function(){document.getElementById('gate_email').style.borderColor='#c0d0e4';},2000);
+  }
+}
+</script>
+<!-- ══ END ACCESS GATE ══ -->
+
+<a href="forms_portal.html" class="back-link">← Back to Portal</a>
+
+<!-- SUCCESS MODAL -->
+<div class="overlay" id="success_overlay">
+  <div class="modal">
+    <div style="font-size:46px;margin-bottom:8px;">✅</div>
+    <h2>Information Updated!</h2>
+    <p>Your staff information update has been submitted.</p>
+    <div class="ref-id" id="modal_ref_id">SIU-XXXXXXX</div>
+    <p>The following HR contacts have been notified:</p>
+    <p style="font-size:12px;background:#f0fdfb;border-radius:8px;padding:10px 14px;margin:8px 0;text-align:left;line-height:1.9;">
+      📧 <strong>mt@envisageworldwide.com</strong> (HR Manager)<br>
+      📧 <strong>admin@envisageworldwide.com</strong> (Admin)
+    </p>
+    <p>Your records will be updated within <strong>1–2 working days</strong>.<br>Keep copies of any submitted documents.</p>
+    <button class="close-btn" onclick="closeModal()">OK – Done</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">
+      <div class="logo-box">👤</div>
+    </div>
+    <div class="header-center">
+      <h1>STAFF INFORMATION UPDATE</h1>
+      <div class="sub">Update your personal records — address, visa, passport, immigration documents.<br>Notifies mt@envisageworldwide.com &amp; admin@envisageworldwide.com — records updated within 1–2 working days.</div>
+    </div>
+    <div class="header-right">
+      <div class="ref-row">
+        <span>📋</span>
+        <span class="lbl" style="font-weight:700;">Ref No. :</span>
+        <input type="text" id="ref_no" placeholder="Auto-generated" readonly>
+      </div>
+      <div class="ref-row">
+        <span>📅</span>
+        <span class="lbl">Date :</span>
+        <input type="date" id="submit_date">
+      </div>
+      <div style="margin-top:8px;font-size:11px;font-weight:700;">
+        <span class="connection-dot" id="conn_dot"></span>
+        <span id="conn_label">Checking…</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB NAVIGATION -->
+  <div class="tab-nav" id="tab_nav">
+    <button class="tab-btn active" onclick="switchTab('personal',this)">
+      <span class="tab-ico">👤</span> Personal Info
+      <span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('address',this)">
+      <span class="tab-ico">🏠</span> Address
+      <span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('passport',this)">
+      <span class="tab-ico">📕</span> Passport
+      <span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('visa',this)">
+      <span class="tab-ico">🛂</span> Visa
+      <span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('report90',this)">
+      <span class="tab-ico">📆</span> 90-Day Report
+      <span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('tm30',this)">
+      <span class="tab-ico">🏨</span> TM30
+      <span class="tab-dot"></span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('other',this)">
+      <span class="tab-ico">📁</span> Other Docs
+      <span class="tab-dot"></span>
+    </button>
+  </div>
+
+  <!-- ════════ TAB 1: PERSONAL INFO ════════ -->
+  <div class="tab-panel active" id="panel_personal">
+    <div class="sec-hdr"><div class="ico">👤</div>Personal &amp; Employee Information</div>
+    <div class="section">
+      <div class="two-col">
+        <div class="frow"><label>Full Name (English) :</label><input type="text" id="emp_name" placeholder="As in passport"></div>
+        <div class="frow"><label>Full Name (Myanmar / Burmese) :</label><input type="text" id="emp_name_mm" placeholder="မြန်မာနာမည်"></div>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Employee ID :</label><input type="text" id="emp_id" placeholder="EMP-XXXX"></div>
+        <div class="frow"><label>Date of Birth :</label><input type="date" id="dob"></div>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Position / Title :</label><input type="text" id="position" placeholder="Job title"></div>
+        <div class="frow"><label>Department :</label>
+          <select id="dept">
+            <option value="">— Select —</option>
+            <option>Finance</option>
+            <option>HR &amp; Admin</option>
+            <option>Operations</option>
+            <option>Sales &amp; Marketing</option>
+            <option>Technology</option>
+            <option>Management</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Company Email :</label><input type="email" id="emp_email" placeholder="name@envisageworldwide.com"></div>
+        <div class="frow"><label>Mobile / Line ID :</label><input type="tel" id="emp_contact" placeholder="Phone or Line ID"></div>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Nationality :</label>
+          <select id="nationality">
+            <option value="Myanmar">Myanmar (Burmese)</option>
+            <option value="Thai">Thai</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="frow"><label>NRC / National ID No. :</label><input type="text" id="nrc_no" placeholder="e.g. 12/OUKAMA(N)123456"></div>
+      </div>
+      <div class="frow">
+        <label>Emergency Contact (Name &amp; Phone) :</label>
+        <input type="text" id="emergency_contact" placeholder="Full name — Relationship — Phone number">
+      </div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">✏️</div>What would you like to update?</div>
+    <div class="section">
+      <div style="font-size:12px;color:#555;margin-bottom:10px;">Select all sections you need to update, then complete the relevant tabs above.</div>
+      <div class="update-chips">
+        <label class="update-chip" id="chip_address"><input type="checkbox" onchange="toggleChip(this,'chip_address')"> 🏠 Address</label>
+        <label class="update-chip" id="chip_passport"><input type="checkbox" onchange="toggleChip(this,'chip_passport')"> 📕 Passport</label>
+        <label class="update-chip" id="chip_visa"><input type="checkbox" onchange="toggleChip(this,'chip_visa')"> 🛂 Visa</label>
+        <label class="update-chip" id="chip_90day"><input type="checkbox" onchange="toggleChip(this,'chip_90day')"> 📆 90-Day Report</label>
+        <label class="update-chip" id="chip_tm30"><input type="checkbox" onchange="toggleChip(this,'chip_tm30')"> 🏨 TM30</label>
+        <label class="update-chip" id="chip_other"><input type="checkbox" onchange="toggleChip(this,'chip_other')"> 📁 Other Documents</label>
+      </div>
+      <div class="frow" style="margin-top:6px;">
+        <label>Reason / Notes for HR :</label>
+        <textarea id="update_reason" rows="2" placeholder="Briefly explain what changed and why (e.g. moved to new address, passport renewed, visa extended)"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB 2: ADDRESS ════════ -->
+  <div class="tab-panel" id="panel_address">
+    <div class="sec-hdr"><div class="ico">🏠</div>Current Address in Thailand</div>
+    <div class="section">
+      <div class="info-box"><strong>📍 Thailand Residential Address</strong>This should be the address where you are currently staying in Thailand. This is used for TM30 registration and official correspondence.</div>
+      <div class="frow"><label>Address Line 1 (Room / House No., Building) :</label><input type="text" id="addr1_th" placeholder="e.g. Room 205, Baan Suan Apartment, Soi 12"></div>
+      <div class="frow"><label>Address Line 2 (Street / Road) :</label><input type="text" id="addr2_th" placeholder="e.g. Sukhumvit Road"></div>
+      <div class="three-col">
+        <div class="frow"><label>Sub-district (Tambon) :</label><input type="text" id="tambon" placeholder="Tambon / Khwaeng"></div>
+        <div class="frow"><label>District (Amphoe) :</label><input type="text" id="amphoe" placeholder="Amphoe / Khet"></div>
+        <div class="frow"><label>Province :</label><input type="text" id="province" placeholder="e.g. Bangkok, Chiang Mai"></div>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Postal Code :</label><input type="text" id="postcode" placeholder="5-digit postal code"></div>
+        <div class="frow"><label>Date Moved In :</label><input type="date" id="addr_moved_in"></div>
+      </div>
+      <div class="frow"><label>Landlord / Building Owner Name :</label><input type="text" id="landlord_name" placeholder="For TM30 purposes"></div>
+      <div class="frow"><label>Landlord Phone :</label><input type="text" id="landlord_phone" placeholder="Landlord contact number"></div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">🏡</div>Home Address in Myanmar</div>
+    <div class="section">
+      <div class="frow"><label>Address Line 1 :</label><input type="text" id="mm_addr1" placeholder="House / street address in Myanmar"></div>
+      <div class="frow"><label>Address Line 2 :</label><input type="text" id="mm_addr2" placeholder="Township / Quarter (ရပ်ကွက်)"></div>
+      <div class="two-col">
+        <div class="frow"><label>Township (မြို့နယ်) :</label><input type="text" id="mm_township" placeholder="e.g. Hlaing, Dagon"></div>
+        <div class="frow"><label>City / State :</label><input type="text" id="mm_city" placeholder="e.g. Yangon, Mandalay, Naypyidaw"></div>
+      </div>
+      <div class="frow"><label>Emergency Contact at Home Address :</label><input type="text" id="mm_emergency" placeholder="Name — Relationship — Phone (Myanmar number)"></div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">📎</div>Supporting Documents</div>
+    <div class="section">
+      <div class="doc-check">
+        <label class="doc-item"><input type="checkbox"> Copy of rental agreement / lease contract</label>
+        <label class="doc-item"><input type="checkbox"> House registration / Tabien Baan (ทะเบียนบ้าน)</label>
+        <label class="doc-item"><input type="checkbox"> Utility bill showing address (electric / water)</label>
+      </div>
+      <br>
+      <label class="attach-upload-btn">
+        <input type="file" multiple accept="image/*,.pdf" onchange="handleFiles(this,'attach_list_addr')">
+        📎 Attach Address Documents
+      </label>
+      <div class="attach-list" id="attach_list_addr"></div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB 3: PASSPORT ════════ -->
+  <div class="tab-panel" id="panel_passport">
+    <div class="sec-hdr"><div class="ico">📕</div>Passport Information</div>
+    <div class="section">
+      <div class="warn-box"><strong>⚠️ Passport Renewal / New Passport</strong>Always inform HR as soon as you receive a new passport. Work permit and visa records must be updated.</div>
+
+      <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:8px;">Passport Status</div>
+      <div class="status-row">
+        <label class="status-opt s-valid"><input type="radio" name="pp_status" value="New Passport"> 📕 New Passport</label>
+        <label class="status-opt s-valid"><input type="radio" name="pp_status" value="Renewed"> 🔄 Renewed</label>
+        <label class="status-opt s-expired"><input type="radio" name="pp_status" value="Near Expiry"> ⚠️ Near Expiry</label>
+        <label class="status-opt s-pending"><input type="radio" name="pp_status" value="In Process"> ⏳ In Process (applying)</label>
+      </div>
+
+      <div class="two-col" style="margin-top:12px;">
+        <div class="frow"><label>Passport Number :</label><input type="text" id="pp_no" placeholder="e.g. MA123456"></div>
+        <div class="frow"><label>Passport Type :</label>
+          <select id="pp_type">
+            <option value="">— Select —</option>
+            <option>Ordinary Passport (Myanmar)</option>
+            <option>Official Passport (Myanmar)</option>
+            <option>Emergency Certificate (EC)</option>
+            <option>Certificate of Identity (CI)</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="three-col">
+        <div class="frow"><label>Issue Date :</label><input type="date" id="pp_issue"></div>
+        <div class="frow"><label>Expiry Date :</label><input type="date" id="pp_expiry" onchange="calcDaysLeft('pp_expiry','pp_days_left')"></div>
+        <div class="frow"><label>Issuing Country :</label><input type="text" id="pp_country" value="Myanmar" placeholder="Myanmar"></div>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Place of Issue :</label><input type="text" id="pp_place" placeholder="e.g. Yangon, Mandalay, Naypyidaw"></div>
+        <div class="frow"><label>Issuing Authority :</label><input type="text" id="pp_authority" placeholder="e.g. Department of Immigration, Myanmar"></div>
+      </div>
+
+      <div class="deadline-box" id="pp_deadline_box">
+        <div>
+          <div class="dl-label">Passport Expiry</div>
+          <div class="dl-val" id="pp_expiry_display">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="dl-days" id="pp_days_left">Enter expiry date</div>
+        </div>
+      </div>
+
+      <div class="frow"><label>Old Passport Number (if renewed) :</label><input type="text" id="pp_old_no" placeholder="Previous passport number (leave blank if not applicable)"></div>
+      <div class="frow"><label>Additional Notes :</label><textarea id="pp_notes" rows="2" placeholder="Any additional information HR should know"></textarea></div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">📎</div>Documents to Upload</div>
+    <div class="section">
+      <div class="doc-check">
+        <label class="doc-item"><input type="checkbox"> Passport bio page (photo page) — clear scan or photo</label>
+        <label class="doc-item"><input type="checkbox"> All pages with visa stamps (if applicable)</label>
+        <label class="doc-item"><input type="checkbox"> Old passport bio page (if renewal)</label>
+      </div>
+      <br>
+      <label class="attach-upload-btn">
+        <input type="file" multiple accept="image/*,.pdf" onchange="handleFiles(this,'attach_list_pp')">
+        📎 Attach Passport Documents
+      </label>
+      <div class="attach-list" id="attach_list_pp"></div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB 4: VISA ════════ -->
+  <div class="tab-panel" id="panel_visa">
+    <div class="sec-hdr"><div class="ico">🛂</div>Visa &amp; Work Permit Information</div>
+    <div class="section">
+      <div class="info-box"><strong>🛂 Visa Update</strong>Inform HR immediately when your visa is renewed, extended, or changed. HR will update your work permit records accordingly.</div>
+
+      <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:8px;">Visa Status</div>
+      <div class="status-row">
+        <label class="status-opt s-new"><input type="radio" name="visa_status" value="New Visa"> 🆕 New Visa</label>
+        <label class="status-opt s-valid"><input type="radio" name="visa_status" value="Extended"> ✅ Extended</label>
+        <label class="status-opt s-expired"><input type="radio" name="visa_status" value="Near Expiry"> ⚠️ Near Expiry</label>
+        <label class="status-opt s-pending"><input type="radio" name="visa_status" value="Changing Type"> 🔄 Changing Type</label>
+      </div>
+
+      <div class="two-col" style="margin-top:12px;">
+        <div class="frow"><label>Visa Type :</label>
+          <select id="visa_type">
+            <option value="">— Select —</option>
+            <option>Non-Immigrant B (Business / Work)</option>
+            <option>Non-Immigrant O (Dependent)</option>
+            <option>Non-Immigrant O-A (Long Stay)</option>
+            <option>Non-Immigrant ED (Education)</option>
+            <option>Tourist Visa (TR)</option>
+            <option>Border Pass / BORDER</option>
+            <option>Smart Visa</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="frow"><label>Visa Entry Type :</label>
+          <select id="visa_entry">
+            <option value="">— Select —</option>
+            <option>Single Entry</option>
+            <option>Multiple Entry</option>
+          </select>
+        </div>
+      </div>
+      <div class="three-col">
+        <div class="frow"><label>Issue Date :</label><input type="date" id="visa_issue"></div>
+        <div class="frow"><label>Expiry Date :</label><input type="date" id="visa_expiry" onchange="calcDaysLeft('visa_expiry','visa_days_left')"></div>
+        <div class="frow"><label>Permitted to Stay Until :</label><input type="date" id="visa_stay_until" onchange="calcDaysLeft('visa_stay_until','visa_stay_days')"></div>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Visa Stamp No. / TM No. :</label><input type="text" id="visa_stamp_no" placeholder="Stamp or TM reference number"></div>
+        <div class="frow"><label>Issued at :</label>
+          <select id="visa_issued_at">
+            <option value="">— Select office —</option>
+            <option>Bangkok Immigration (Chaeng Watthana)</option>
+            <option>One Stop Service Center (Chamchuri)</option>
+            <option>Chiang Mai Immigration</option>
+            <option>Phuket Immigration</option>
+            <option>Mae Sai / Mae Sot Border</option>
+            <option>Myanmar Embassy, Bangkok</option>
+            <option>Thai Embassy, Yangon</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="deadline-box">
+        <div>
+          <div class="dl-label">Visa Expiry</div>
+          <div class="dl-val" id="visa_expiry_display">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="dl-days" id="visa_days_left">Enter expiry date</div>
+        </div>
+      </div>
+
+      <div class="deadline-box" style="margin-top:0;">
+        <div>
+          <div class="dl-label">Permitted Stay Until</div>
+          <div class="dl-val" id="visa_stay_display">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="dl-days" id="visa_stay_days">Enter stay-until date</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">💼</div>Work Permit Information</div>
+    <div class="section">
+      <div class="two-col">
+        <div class="frow"><label>Work Permit No. :</label><input type="text" id="wp_no" placeholder="WP number"></div>
+        <div class="frow"><label>Work Permit Expiry :</label><input type="date" id="wp_expiry" onchange="calcDaysLeft('wp_expiry','wp_days_left')"></div>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Issued by Office :</label>
+          <select id="wp_office">
+            <option value="">— Select —</option>
+            <option>Department of Employment, Bangkok</option>
+            <option>One Stop Service Center</option>
+            <option>Chiang Mai Employment Office</option>
+            <option>Phuket Employment Office</option>
+            <option>Other Provincial Employment Office</option>
+          </select>
+        </div>
+        <div class="frow"><label>Occupation on Work Permit :</label><input type="text" id="wp_occupation" placeholder="Occupation as stated on WP"></div>
+      </div>
+      <div class="deadline-box">
+        <div>
+          <div class="dl-label">Work Permit Expiry</div>
+          <div class="dl-val" id="wp_expiry_display">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="dl-days" id="wp_days_left">Enter WP expiry date</div>
+        </div>
+      </div>
+      <div class="frow"><label>Additional Notes :</label><textarea id="visa_notes" rows="2" placeholder="Any border runs, visa changes, or special circumstances HR should know"></textarea></div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">📎</div>Documents to Upload</div>
+    <div class="section">
+      <div class="doc-check">
+        <label class="doc-item"><input type="checkbox"> Visa stamp page (passport page with new visa)</label>
+        <label class="doc-item"><input type="checkbox"> TM6 / Arrival card (if available)</label>
+        <label class="doc-item"><input type="checkbox"> Work permit (front and back)</label>
+        <label class="doc-item"><input type="checkbox"> Extension stamp page</label>
+      </div>
+      <br>
+      <label class="attach-upload-btn">
+        <input type="file" multiple accept="image/*,.pdf" onchange="handleFiles(this,'attach_list_visa')">
+        📎 Attach Visa &amp; Work Permit Documents
+      </label>
+      <div class="attach-list" id="attach_list_visa"></div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB 5: 90-DAY REPORT ════════ -->
+  <div class="tab-panel" id="panel_report90">
+    <div class="sec-hdr"><div class="ico">📆</div>90-Day Report (TM47)</div>
+    <div class="section">
+      <div class="warn-box"><strong>⏰ 90-Day Reporting Reminder</strong>All foreigners staying in Thailand for more than 90 consecutive days must report to Immigration every 90 days (TM47 form). Failure to report may result in a fine of 2,000 THB.</div>
+
+      <div class="two-col">
+        <div class="frow"><label>Last 90-Day Report Date :</label><input type="date" id="r90_last_date"></div>
+        <div class="frow"><label>Next Report Due Date :</label><input type="date" id="r90_next_due" onchange="calcDaysLeft('r90_next_due','r90_days_left')"></div>
+      </div>
+
+      <div class="deadline-box">
+        <div>
+          <div class="dl-label">Next 90-Day Report Due</div>
+          <div class="dl-val" id="r90_due_display">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="dl-days" id="r90_days_left">Enter due date</div>
+        </div>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:8px;margin-top:4px;">Reporting Method Used</div>
+      <div class="status-row">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="r90_method" value="Online"> 💻 Online (immigration.go.th)
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="r90_method" value="In Person"> 🏛️ In Person (Immigration Office)
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="r90_method" value="By Post"> 📮 By Post
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="r90_method" value="HR Assisted"> 👥 HR Assisted
+        </label>
+      </div>
+
+      <div class="two-col" style="margin-top:10px;">
+        <div class="frow"><label>Report Receipt No. :</label><input type="text" id="r90_receipt_no" placeholder="TM47 receipt / reference number"></div>
+        <div class="frow"><label>Immigration Office :</label>
+          <select id="r90_office">
+            <option value="">— Select —</option>
+            <option>Chaeng Watthana (Bangkok)</option>
+            <option>One Stop Service Center</option>
+            <option>Chiang Mai</option>
+            <option>Online Portal</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="frow">
+        <label>Notes / Issues :</label>
+        <textarea id="r90_notes" rows="2" placeholder="Any issues during reporting? Was there a fine? Did address change during the report?"></textarea>
+      </div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">📅</div>90-Day Report History (Last 3)</div>
+    <div class="section">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;">
+        <thead>
+          <tr style="background:#1a2744;color:#fff;">
+            <th style="padding:8px 10px;text-align:left;font-weight:700;">#</th>
+            <th style="padding:8px 10px;text-align:left;font-weight:700;">Report Date</th>
+            <th style="padding:8px 10px;text-align:left;font-weight:700;">Next Due Date</th>
+            <th style="padding:8px 10px;text-align:left;font-weight:700;">Method</th>
+            <th style="padding:8px 10px;text-align:left;font-weight:700;">Receipt No.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid #e0eaf4;">
+            <td style="padding:6px 10px;">1</td>
+            <td><input type="date" style="border-bottom:none;"></td>
+            <td><input type="date" style="border-bottom:none;"></td>
+            <td><input type="text" placeholder="e.g. Online" style="border-bottom:none;"></td>
+            <td><input type="text" placeholder="Receipt no." style="border-bottom:none;"></td>
+          </tr>
+          <tr style="border-bottom:1px solid #e0eaf4;background:#fafcff;">
+            <td style="padding:6px 10px;">2</td>
+            <td><input type="date" style="border-bottom:none;"></td>
+            <td><input type="date" style="border-bottom:none;"></td>
+            <td><input type="text" placeholder="e.g. In Person" style="border-bottom:none;"></td>
+            <td><input type="text" placeholder="Receipt no." style="border-bottom:none;"></td>
+          </tr>
+          <tr>
+            <td style="padding:6px 10px;">3</td>
+            <td><input type="date" style="border-bottom:none;"></td>
+            <td><input type="date" style="border-bottom:none;"></td>
+            <td><input type="text" placeholder="e.g. By Post" style="border-bottom:none;"></td>
+            <td><input type="text" placeholder="Receipt no." style="border-bottom:none;"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">📎</div>Documents to Upload</div>
+    <div class="section">
+      <div class="doc-check">
+        <label class="doc-item"><input type="checkbox"> TM47 receipt / acknowledgement slip</label>
+        <label class="doc-item"><input type="checkbox"> Screenshot of online report confirmation (if online)</label>
+      </div>
+      <br>
+      <label class="attach-upload-btn">
+        <input type="file" multiple accept="image/*,.pdf" onchange="handleFiles(this,'attach_list_90')">
+        📎 Attach 90-Day Report Documents
+      </label>
+      <div class="attach-list" id="attach_list_90"></div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB 6: TM30 ════════ -->
+  <div class="tab-panel" id="panel_tm30">
+    <div class="sec-hdr"><div class="ico">🏨</div>TM30 — Notification of Foreign National's Address</div>
+    <div class="section">
+      <div class="info-box"><strong>🏨 What is TM30?</strong>TM30 must be filed by the housemaster (landlord or employer) within 24 hours of a foreigner arriving at or returning to a residence in Thailand. If you move or return from a trip, a new TM30 is required.</div>
+
+      <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:8px;">TM30 Event Type</div>
+      <div class="status-row">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="tm30_type" value="New Address"> 🏠 New Address
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="tm30_type" value="Return from Travel"> ✈️ Returned from Travel
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="tm30_type" value="Re-entry"> 🔄 Re-entry to Thailand
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="tm30_type" value="Annual Update"> 📋 Annual Update
+        </label>
+      </div>
+
+      <div class="two-col" style="margin-top:12px;">
+        <div class="frow"><label>Date of Arrival / Return :</label><input type="date" id="tm30_arrival"></div>
+        <div class="frow"><label>TM30 Filing Deadline :</label><input type="date" id="tm30_deadline" onchange="calcDaysLeft('tm30_deadline','tm30_days_left')"></div>
+      </div>
+
+      <div class="deadline-box">
+        <div>
+          <div class="dl-label">TM30 Filing Deadline</div>
+          <div class="dl-val" id="tm30_deadline_display">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="dl-days" id="tm30_days_left">Enter deadline</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">🏠</div>Notified Address Details</div>
+    <div class="section">
+      <div class="frow"><label>Address (as per TM30 filing) :</label><input type="text" id="tm30_addr" placeholder="Full address to be registered on TM30"></div>
+      <div class="two-col">
+        <div class="frow"><label>Province :</label><input type="text" id="tm30_province" placeholder="Province"></div>
+        <div class="frow"><label>Immigration Office Jurisdiction :</label><input type="text" id="tm30_jurisdiction" placeholder="e.g. Bangkok, Chaeng Watthana"></div>
+      </div>
+      <div class="frow"><label>TM30 Reference / Notification No. :</label><input type="text" id="tm30_ref_no" placeholder="TM30 receipt number (if available)"></div>
+
+      <div style="font-size:12px;font-weight:700;color:#1a2744;margin-bottom:8px;margin-top:6px;">Who will file TM30?</div>
+      <div class="status-row">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="tm30_filer" value="HR/Company"> 🏢 HR / Company (request HR to file)
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="tm30_filer" value="Landlord"> 🔑 Landlord (already filed)
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;cursor:pointer;padding:6px 12px;border:2px solid #e0eaf4;border-radius:20px;">
+          <input type="radio" name="tm30_filer" value="Already Filed"> ✅ Already Filed (uploading receipt)
+        </label>
+      </div>
+
+      <div class="frow" style="margin-top:8px;">
+        <label>Additional Notes for HR :</label>
+        <textarea id="tm30_notes" rows="2" placeholder="Any travel details, address changes, or special circumstances related to this TM30"></textarea>
+      </div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">📎</div>Documents to Upload</div>
+    <div class="section">
+      <div class="doc-check">
+        <label class="doc-item"><input type="checkbox"> TM30 receipt / acknowledgement</label>
+        <label class="doc-item"><input type="checkbox"> Copy of passport (bio page + latest entry stamp)</label>
+        <label class="doc-item"><input type="checkbox"> Lease agreement / landlord ID (if HR needs to file)</label>
+      </div>
+      <br>
+      <label class="attach-upload-btn">
+        <input type="file" multiple accept="image/*,.pdf" onchange="handleFiles(this,'attach_list_tm30')">
+        📎 Attach TM30 Documents
+      </label>
+      <div class="attach-list" id="attach_list_tm30"></div>
+    </div>
+  </div>
+
+  <!-- ════════ TAB 7: OTHER DOCUMENTS ════════ -->
+  <div class="tab-panel" id="panel_other">
+    <div class="sec-hdr"><div class="ico">📁</div>Other Documents &amp; Updates</div>
+    <div class="section">
+      <div class="info-box"><strong>📁 Other Document Types</strong>Use this section for any immigration or HR documents not covered in the other tabs — re-entry permits, border run confirmations, health insurance updates, or any other records.</div>
+
+      <div class="frow"><label>Document / Update Type :</label>
+        <select id="other_doc_type">
+          <option value="">— Select —</option>
+          <option>Re-entry Permit (Single / Multiple)</option>
+          <option>Border Run Record</option>
+          <option>Health Insurance Update</option>
+          <option>Bank Account Update</option>
+          <option>Emergency Contact Update</option>
+          <option>Thai Language Certificate</option>
+          <option>Educational Certificate</option>
+          <option>Marriage / Family Status Change</option>
+          <option>Social Security Card Update</option>
+          <option>Other (describe below)</option>
+        </select>
+      </div>
+      <div class="frow"><label>Description :</label>
+        <textarea id="other_desc" rows="3" placeholder="Describe the update or document you are submitting. Include relevant dates, reference numbers, or any action required from HR."></textarea>
+      </div>
+      <div class="two-col">
+        <div class="frow"><label>Document Date :</label><input type="date" id="other_doc_date"></div>
+        <div class="frow"><label>Expiry Date (if applicable) :</label><input type="date" id="other_expiry" onchange="calcDaysLeft('other_expiry','other_days_left')"></div>
+      </div>
+      <div class="deadline-box" id="other_deadline_box">
+        <div>
+          <div class="dl-label">Document Expiry</div>
+          <div class="dl-val" id="other_expiry_display">—</div>
+        </div>
+        <div style="text-align:right;">
+          <div class="dl-days" id="other_days_left">Enter expiry if applicable</div>
+        </div>
+      </div>
+      <div class="frow"><label>Reference / Document Number :</label><input type="text" id="other_ref_no" placeholder="Document reference number (if any)"></div>
+      <div class="frow"><label>Action Required from HR :</label>
+        <select id="other_action">
+          <option value="">— Select —</option>
+          <option>File / Save document to record only</option>
+          <option>Update HR database</option>
+          <option>Assist with renewal or application</option>
+          <option>Inform relevant authorities</option>
+          <option>No action needed — for reference only</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="sec-hdr"><div class="ico">📎</div>Documents to Upload</div>
+    <div class="section">
+      <label class="attach-upload-btn">
+        <input type="file" multiple accept="image/*,.pdf,.doc,.docx" onchange="handleFiles(this,'attach_list_other')">
+        📎 Attach Documents
+      </label>
+      <div class="attach-list" id="attach_list_other"></div>
+    </div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="val-msg" id="val_msg">⚠️ Please fill in your name, email, and at least one section to update.</div>
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="window.print()">🖨️ Print</button>
+    <button class="btn btn-outline" onclick="clearForm()">🗑️ Clear</button>
+    <button class="btn btn-teal" onclick="submitForm()" id="submit_btn">✅ Submit Update to HR</button>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer-banner">
+    <div class="shield">👤</div>
+    <div>
+      <div class="main-txt">STAFF INFORMATION UPDATE</div>
+      <div class="sub-txt">HR will process your update within 1–2 working days · Notifies mt@envisageworldwide.com &amp; admin@envisageworldwide.com</div>
+    </div>
+  </div>
+
+</div><!-- end .page -->
+
+<script>
+// ── INIT ──────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  var today = new Date();
+  var yyyy = today.getFullYear();
+  var mm = String(today.getMonth()+1).padStart(2,'0');
+  var dd = String(today.getDate()).padStart(2,'0');
+  var todayStr = yyyy+'-'+mm+'-'+dd;
+  document.getElementById('submit_date').value = todayStr;
+  var ts = Date.now().toString().slice(-6);
+  document.getElementById('ref_no').value = 'SIU-'+yyyy+'-'+ts;
+  document.getElementById('modal_ref_id').textContent = 'SIU-'+yyyy+'-'+ts;
+  setTimeout(function(){
+    document.getElementById('conn_dot').className='connection-dot ok';
+    document.getElementById('conn_label').textContent='Connected';
+  },1200);
+});
+
+// ── TABS ──────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('panel_'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── UPDATE CHIP TOGGLE ────────────────────────────────
+function toggleChip(cb, chipId) {
+  var chip = document.getElementById(chipId);
+  if(cb.checked) chip.classList.add('checked');
+  else chip.classList.remove('checked');
+}
+
+// ── DAYS LEFT CALCULATOR ──────────────────────────────
+function calcDaysLeft(dateInputId, labelId) {
+  var val = document.getElementById(dateInputId).value;
+  var displayMap = {
+    'pp_expiry':'pp_expiry_display',
+    'visa_expiry':'visa_expiry_display',
+    'visa_stay_until':'visa_stay_display',
+    'wp_expiry':'wp_expiry_display',
+    'r90_next_due':'r90_due_display',
+    'tm30_deadline':'tm30_deadline_display',
+    'other_expiry':'other_expiry_display'
+  };
+  var displayId = displayMap[dateInputId];
+  if(!val){ if(displayId) document.getElementById(displayId).textContent='—'; return; }
+  var target = new Date(val);
+  var now = new Date(); now.setHours(0,0,0,0);
+  var diff = Math.round((target-now)/(1000*60*60*24));
+  var label = document.getElementById(labelId);
+  var disp = document.getElementById(displayId);
+  if(disp) disp.textContent = target.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  if(diff < 0){
+    label.textContent = '❌ EXPIRED '+Math.abs(diff)+' days ago';
+    label.style.color = '#e74c3c';
+  } else if(diff <= 30){
+    label.textContent = '⚠️ '+diff+' days remaining — ACT SOON';
+    label.style.color = '#ffc107';
+  } else if(diff <= 90){
+    label.textContent = '🟡 '+diff+' days remaining';
+    label.style.color = '#f39c12';
+  } else {
+    label.textContent = '✅ '+diff+' days remaining';
+    label.style.color = '#00b8a9';
+  }
+}
+
+// ── FILE ATTACHMENTS ──────────────────────────────────
+function handleFiles(input, listId){
+  var list = document.getElementById(listId);
+  Array.from(input.files).forEach(function(file){
+    var item = document.createElement('div');
+    item.className = 'attach-item';
+    var sizeKB = (file.size/1024).toFixed(0);
+    item.innerHTML =
+      '<span style="font-size:16px;">📄</span>'+
+      '<span class="attach-item-name">'+file.name+'</span>'+
+      '<span class="attach-item-size">'+sizeKB+' KB</span>'+
+      '<button class="attach-remove" onclick="this.parentElement.remove()" title="Remove">✕</button>';
+    list.appendChild(item);
+  });
+  input.value='';
+}
+
+// ── SUBMIT ────────────────────────────────────────────
+function submitForm(){
+  var name = document.getElementById('emp_name').value.trim();
+  var email = document.getElementById('emp_email').value.trim();
+  var msg = document.getElementById('val_msg');
+  if(!name || !email){
+    msg.style.display='block';
+    msg.textContent='⚠️ Please fill in your Full Name and Email before submitting.';
+    msg.scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
+  msg.style.display='none';
+  var btn = document.getElementById('submit_btn');
+  btn.disabled=true;
+  btn.innerHTML='<span class="spinner"></span>Submitting…';
+  setTimeout(function(){
+    btn.disabled=false;
+    btn.innerHTML='✅ Submit Update to HR';
+    document.getElementById('success_overlay').classList.add('show');
+  },1800);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+}
+
+function clearForm(){
+  document.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"],input[type="date"],input[type="time"],input[type="url"],textarea').forEach(function(el){
+    if(el.id!=='ref_no' && el.id!=='submit_date') el.value='';
+  });
+  document.querySelectorAll('select').forEach(function(el){ el.selectedIndex=0; });
+  document.querySelectorAll('input[type="radio"],input[type="checkbox"]').forEach(function(el){ el.checked=false; });
+  document.querySelectorAll('[id^="attach_list_"]').forEach(function(el){ el.innerHTML=''; });
+  document.querySelectorAll('.update-chip').forEach(function(c){ c.classList.remove('checked'); });
+  document.getElementById('val_msg').style.display='none';
+  // Reset nationality default
+  document.getElementById('nationality').value='Myanmar';
+}
+</script>
+</body>
+</html>
