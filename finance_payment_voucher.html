@@ -770,7 +770,7 @@ function addItemRow(){
     '<td><input type="text" placeholder="Description"></td>' +
     '<td><input type="number" min="0" step="1" placeholder="0" oninput="recalc()"></td>' +
     '<td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()"></td>' +
-    '<td><input type="number" readonly placeholder="0.00"></td>' +
+    '<td><input type="text" class="row-amt" readonly placeholder="0.00" style="text-align:right;background:#f5f8fc;color:#1a2744;font-weight:700;"></td>' +
     '<td><button class="del-btn" onclick="delRow(this)">✕</button></td>';
   tbody.appendChild(tr);
 }
@@ -779,11 +779,12 @@ function delRow(btn){ btn.closest('tr').remove(); recalc(); }
 function recalc(){
   var subtotal = 0;
   document.querySelectorAll('#items_body tr').forEach(function(tr){
-    var inputs = tr.querySelectorAll('input[type="number"]');
-    var qty   = parseFloat(inputs[0].value) || 0;
-    var price = parseFloat(inputs[1].value) || 0;
+    var numInputs = tr.querySelectorAll('input[type="number"]');
+    var qty   = parseFloat(numInputs[0] ? numInputs[0].value : 0) || 0;
+    var price = parseFloat(numInputs[1] ? numInputs[1].value : 0) || 0;
     var amt   = qty * price;
-    inputs[2].value = amt.toFixed(2);
+    var amtCell = tr.querySelector('.row-amt');
+    if(amtCell) amtCell.value = amt > 0 ? amt.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '';
     subtotal += amt;
   });
   var vat = document.getElementById('vat_toggle').checked ? subtotal * 0.07 : 0;
@@ -850,10 +851,11 @@ function _readFilesB64(){
 function collectItems(){
   var items = [];
   document.querySelectorAll('#items_body tr').forEach(function(tr,i){
-    var inputs = tr.querySelectorAll('input[type="number"]');
-    var desc  = tr.querySelectorAll('input[type="text"]')[0].value.trim();
-    var qty   = parseFloat(inputs[0].value)||0;
-    var price = parseFloat(inputs[1].value)||0;
+    var numInputs = tr.querySelectorAll('input[type="number"]');
+    var txtInputs = tr.querySelectorAll('input[type="text"]');
+    var desc  = txtInputs[0] ? txtInputs[0].value.trim() : '';
+    var qty   = parseFloat(numInputs[0] ? numInputs[0].value : 0)||0;
+    var price = parseFloat(numInputs[1] ? numInputs[1].value : 0)||0;
     if(desc || qty || price) items.push({no:i+1,desc:desc,qty:qty,price:price,amount:qty*price});
   });
   return items;
