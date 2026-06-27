@@ -219,7 +219,7 @@ input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-c
   <div style="background:#fff;border-radius:16px;padding:36px 40px;max-width:400px;width:100%;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.4);">
     <div style="width:56px;height:56px;background:#1a2744;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;">🔒</div>
     <div style="font-size:20px;font-weight:800;color:#1a2744;margin-bottom:4px;">Staff Access Only</div>
-    <div style="font-size:12px;color:#6b7c93;margin-bottom:20px;line-height:1.6;">This page is restricted to Envisage staff.<br>Enter your company email to continue.</div>
+    <div style="font-size:12px;color:#6b7c93;margin-bottom:20px;line-height:1.6;">This page is for internal staff only.<br>Enter your company email to continue.</div>
     <input type="email" id="gate_email" placeholder="Enter your company email"
       style="width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:Arial,sans-serif;color:#1a2744;outline:none;margin-bottom:6px;box-sizing:border-box;"
       onkeydown="if(event.key==='Enter')_checkGate()">
@@ -321,13 +321,16 @@ function _checkGate(){
       <div class="frow"><label>Position / Title :</label><input type="text" id="position" placeholder="Job title"></div>
       <div class="frow"><label>Department :</label>
         <select id="dept">
-          <option value="">— Select —</option>
-          <option>Finance</option>
-          <option>HR & Admin</option>
-          <option>Operations</option>
-          <option>Sales & Marketing</option>
-          <option>Technology</option>
-          <option>Management</option>
+          <option value="">— Select Department —</option>
+          <option>Administration</option>
+          <option>CMT – Executive</option>
+          <option>CMT – Operations</option>
+          <option>Commercial - SAM</option>
+          <option>Finance & Accounting</option>
+          <option>Myanmar Country Research</option>
+          <option>Myanmar In-Country</option>
+          <option>Software Development</option>
+          <option>Zimbabwe Country Research</option>
           <option>Other</option>
         </select>
       </div>
@@ -432,7 +435,7 @@ function _checkGate(){
         <input type="date" id="settle_date" style="max-width:200px;">
       </div>
       <div style="font-size:11px;color:#444;line-height:1.6;margin-bottom:10px;font-style:italic;">
-        I, <strong id="cert_name_display">__________________________</strong>, understand and agree that:
+        I, <input type="text" id="cert_name_display" placeholder="Your full name" oninput="var v=this.value; document.getElementById('cert_name')&&(document.getElementById('cert_name').value=v);" style="border:none;border-bottom:1.5px solid #1a5c2a;background:transparent;font-size:11px;font-weight:700;font-style:italic;color:#1a2744;width:180px;outline:none;padding:0 2px;">, understand and agree that:
       </div>
       <div class="settle-row"><input type="checkbox" id="s1"><label for="s1">I will submit a completed Expense Claim with all original receipts within <strong>15 days</strong> of the event/trip completion date.</label></div>
       <div class="settle-row"><input type="checkbox" id="s2"><label for="s2">Any unused advance funds will be returned to Finance immediately upon settlement.</label></div>
@@ -459,7 +462,7 @@ function _checkGate(){
       <div style="font-size:11px;color:#444;line-height:1.6;margin-bottom:10px;font-style:italic;">
         I certify that the above information is accurate, the advance is required for legitimate business purposes, and I commit to settling within the agreed deadline.
       </div>
-      <div class="frow"><label>Name :</label><input type="text" id="cert_name" placeholder="Your full name" oninput="document.getElementById('cert_name_display').textContent = this.value || '__________________________'"></div>
+      <div class="frow"><label>Name :</label><input type="text" id="cert_name" placeholder="Your full name" oninput="document.getElementById('cert_name_display').value = this.value;"></div>
       <div class="frow"><label>Date :</label><input type="date" id="cert_date"></div>
     </div>
     <div class="bottom-right">
@@ -810,7 +813,7 @@ function clearForm(silent){
   document.querySelectorAll('textarea').forEach(function(t){t.value='';});
   document.querySelectorAll('input[type="checkbox"]').forEach(function(i){i.checked=false;});
   document.getElementById('oa_no').checked=true; toggleOA();
-  document.getElementById('cert_name_display').textContent='__________________________';
+  document.getElementById('cert_name_display').value='';
   document.getElementById('est_body').innerHTML=''; rowCount=0;
   var today=new Date().toISOString().split('T')[0];
   document.getElementById('submit_date').value=today;

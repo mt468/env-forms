@@ -171,7 +171,7 @@ textarea:focus{border-color:#00b8a9;}
   <div style="background:#fff;border-radius:16px;padding:36px 40px;max-width:400px;width:100%;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.4);">
     <div style="width:56px;height:56px;background:#1a2744;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;">🔒</div>
     <div style="font-size:20px;font-weight:800;color:#1a2744;margin-bottom:4px;">Staff Access Only</div>
-    <div style="font-size:12px;color:#6b7c93;margin-bottom:20px;line-height:1.6;">This page is restricted to Envisage staff.<br>Enter your company email to continue.</div>
+    <div style="font-size:12px;color:#6b7c93;margin-bottom:20px;line-height:1.6;">This page is for internal staff only.<br>Enter your company email to continue.</div>
     <input type="email" id="gate_email" placeholder="Enter your company email"
       style="width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:Arial,sans-serif;color:#1a2744;outline:none;margin-bottom:6px;box-sizing:border-box;"
       onkeydown="if(event.key==='Enter')_checkGate()">
@@ -247,8 +247,67 @@ function _checkGate(){
       <div class="frow"><label>Employee ID :</label><input type="text" id="emp_id" placeholder="e.g. ENV-0001"></div>
     </div>
     <div class="two-col">
-      <div class="frow"><label>Department :</label><input type="text" id="emp_dept" placeholder="Your department" required></div>
-      <div class="frow"><label>Position / Title :</label><input type="text" id="emp_position" placeholder="Your job title"></div>
+      <div class="frow"><label>Department :</label><select id="emp_dept" required>
+          <option value="">— Select Department —</option>
+          <option>Administration</option>
+          <option>CMT – Executive</option>
+          <option>CMT – Operations</option>
+          <option>Commercial - SAM</option>
+          <option>Finance & Accounting</option>
+          <option>Myanmar Country Research</option>
+          <option>Myanmar In-Country</option>
+          <option>Software Development</option>
+          <option>Zimbabwe Country Research</option>
+          <option>Other</option>
+        </select></div>
+      <div class="frow"><label>Position / Title :</label><select id="emp_position">
+          <option value="">— Select Role —</option>
+          <option>Admin Assistant</option>
+          <option>Admin Manager</option>
+          <option>Business Analyst</option>
+          <option>CFO</option>
+          <option>Chief Editor</option>
+          <option>Consultant (Part Time)</option>
+          <option>Country Director</option>
+          <option>Data Assistant</option>
+          <option>Data Specialist</option>
+          <option>Designer & Marketing</option>
+          <option>Executive Manager</option>
+          <option>Financial Data Engineer</option>
+          <option>Financial Data Engineer (Part-time)</option>
+          <option>Founder & Director</option>
+          <option>Full-Stack Developer</option>
+          <option>Graphic Assistant</option>
+          <option>Head of Myanmar Client-Partner Relations</option>
+          <option>Investor & Sales Relation</option>
+          <option>Junior Accountant</option>
+          <option>Junior Full-Stack Developer</option>
+          <option>Junior Political Analyst</option>
+          <option>Junior Researcher</option>
+          <option>Myanmar Researcher</option>
+          <option>Operation Director</option>
+          <option>Product Director</option>
+          <option>Regional Director</option>
+          <option>Research Assistant</option>
+          <option>Research Director & Political Analyst</option>
+          <option>Researcher</option>
+          <option>Senior Accountant</option>
+          <option>Senior Conflict Researcher</option>
+          <option>Senior Conflict and Political Researcher</option>
+          <option>Senior English Report Editor</option>
+          <option>Senior Finance</option>
+          <option>Senior Political Analyst</option>
+          <option>Senior Researcher</option>
+          <option>Solutions Manager</option>
+          <option>Team Lead – Graphic Design</option>
+          <option>Team Lead – Senior Conflict and Political Researcher</option>
+          <option>Team Lead – Senior Political Analyst</option>
+          <option>Team Lead – Senior Researcher</option>
+          <option>Technology Director & Dev Lead</option>
+          <option>Technology Manager</option>
+          <option>Zimbabwe Regional Director</option>
+          <option>Other</option>
+        </select></div>
     </div>
     <div class="two-col">
       <div class="frow"><label>Email :</label><input type="email" id="emp_email" placeholder="your@envisageworldwide.com" required></div>
