@@ -851,4 +851,16 @@ async function submitForm(){
 
   setTimeout(function(){
     document.getElementById('modal_ca_id').textContent=payload.pr_no;
-    document.getElementById('success_overlay').c
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Submit Cash Advance →';
+  }, 5000);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  location.reload();
+}
+</script>
+</body>
+</html>

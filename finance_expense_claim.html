@@ -857,4 +857,17 @@ async function submitForm(){
   document.body.removeChild(form);
 
   setTimeout(function(){
-    document.getElementById('modal_ec_id').textContent = paylo
+    document.getElementById('modal_ec_id').textContent = payload.ec_no || 'EC-SUBMITTED';
+    document.getElementById('success_overlay').classList.add('show');
+    btn.disabled = false;
+    btn.textContent = 'Submit Expense Claim →';
+  }, 5000);
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  location.reload();
+}
+</script>
+</body>
+</html>

@@ -803,9 +803,15 @@ function clearForm(silent){
   document.getElementById('cert_date').value = today;
   document.getElementById('pr_no').value = generatePRNo();
   document.getElementById('advance_fields').style.opacity='1';
+  document.getElementById('pr_no').value = generatePRNo();
+  document.getElementById('advance_fields').style.opacity='1';
   document.getElementById('advance_fields').style.pointerEvents='auto';
-  document.getElementById('val_msg').style.display='none';
-  calcTotal();
+  rebindCalc();
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  location.reload();
 }
 </script>
 </body>

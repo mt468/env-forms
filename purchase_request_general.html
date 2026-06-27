@@ -768,14 +768,16 @@ async function submitForm(){
     document.body.removeChild(form);
   };
   form.submit();
+  setTimeout(function(){
+    btn.disabled = false;
+    btn.innerHTML = '☁️ Submit to Google Sheets';
+  }, 8000);
 }
 
 function closeModal(){
   document.getElementById('success_overlay').classList.remove('show');
-  clearForm(true);
+  location.reload();
 }
-
-// ── CLEAR ──
-function clearForm(silent){
-  if(!silent && !confirm('Clear all entered data?')) return;
-  document.querySelectorAll('input[type="text"],input[type="number"],input[type="date"]').forEach(function(i){i.value='';i.classList.remove('i
+</script>
+</body>
+</html>
