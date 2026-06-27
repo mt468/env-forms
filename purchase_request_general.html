@@ -468,7 +468,7 @@ function _checkGate(){
       <div class="notes-title">⚠️ Important Notes</div>
       <div class="note-item"><div class="note-dot nd-red">✕</div><span>No voucher, no approval, no cash.</span></div>
       <div class="note-item"><div class="note-dot nd-ora">!</div><span>Splitting payments to avoid approval limits is strictly prohibited.</span></div>
-      <div class="note-item"><div class="note-dot nd-yel">!</div><span>≤ 2,000: No approval. 2,001–10,000: Manager. 10,001–50,000: Manager+CFO+Finance+Director. 50,001–100,000: Manager+CFO+Director.</span></div>
+      <div class="note-item"><div class="note-dot nd-yel">!</div><span>≤ 2,000: No approval. 2,001–20,000: Manager. 20,001–50,000: Manager → Finance Dept → CFO. 50,001–100,000: Manager → Finance Dept → CFO → Director.</span></div>
       <div class="note-item"><div class="note-dot nd-grn">✓</div><span>Follow the policy and protect the company.</span></div>
     </div>
   </div>
@@ -521,17 +521,17 @@ function getEmailConfig(amount) {
   if (amount <= 2000) {
     return { approvers: [], cc: base.join(', '),
       label: '✅ ≤ 2,000 THB — No approval required', color: '#27ae60', bg: '#eafaf1', border: '#a9dfbf' };
-  } else if (amount <= 10000) {
+  } else if (amount <= 20000) {
     return { approvers: [APPROVER_MANAGER], cc: base.concat(['apple@envisageworldwide.com']).join(', '),
-      label: '🔵 2,001–10,000 THB — Manager approval required (mt@envisageworldwide.com)', color: '#2471a3', bg: '#eaf4fb', border: '#a9cce3' };
+      label: '🔵 2,001–20,000 THB — Manager approval required', color: '#2471a3', bg: '#eaf4fb', border: '#a9cce3' };
   } else if (amount <= 50000) {
-    return { approvers: [APPROVER_MANAGER, APPROVER_CFO, APPROVER_FINANCE, APPROVER_DIRECTOR],
+    return { approvers: [APPROVER_MANAGER, APPROVER_FINANCE, APPROVER_CFO],
       cc: base.concat(['apple@envisageworldwide.com','joelh@envisageworldwide.com']).join(', '),
-      label: '🟠 10,001–50,000 THB — Manager + CFO + Finance Dept + Director approval required', color: '#ca6f1e', bg: '#fef5e7', border: '#f5cba7' };
+      label: '🟠 20,001–50,000 THB — Manager → Finance Dept → CFO approval required', color: '#ca6f1e', bg: '#fef5e7', border: '#f5cba7' };
   } else {
-    return { approvers: [APPROVER_MANAGER, APPROVER_CFO, APPROVER_DIRECTOR],
+    return { approvers: [APPROVER_MANAGER, APPROVER_FINANCE, APPROVER_CFO, APPROVER_DIRECTOR],
       cc: base.concat(['apple@envisageworldwide.com','joelh@envisageworldwide.com']).join(', '),
-      label: '🔴 50,001–100,000 THB — Manager + CFO + Director approval required', color: '#c0392b', bg: '#fdedec', border: '#f1948a' };
+      label: '🔴 50,001–100,000 THB — Manager → Finance Dept → CFO → Director approval required', color: '#c0392b', bg: '#fdedec', border: '#f1948a' };
   }
 }
 
