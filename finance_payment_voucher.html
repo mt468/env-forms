@@ -935,6 +935,7 @@ async function submitForm(){
     docs_attached:   docs_attached,
     cert_name:       document.getElementById('cert_name').value,
     cert_date:       document.getElementById('cert_date').value,
+    cc_emails:       'accounting@envisageworldwide.com',
   };
 
   payload.attachments_files = _selFiles.length > 0 ? await _readFilesB64() : [];
