@@ -241,11 +241,19 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
   </div>
 </div>
 <script>
-// Gate asks every page load — no sessionStorage persistence
+// Auto-skip gate if already authenticated this session
+(function(){
+  var saved = sessionStorage.getItem('portal_auth');
+  if(saved && saved.endsWith('@envisageworldwide.com')){
+    document.getElementById('env_gate').style.display='none';
+  }
+})();
+
 function _checkGate(){
   var email=(document.getElementById('gate_email').value||'').trim().toLowerCase();
   var err=document.getElementById('gate_err');
   if(email.endsWith('@envisageworldwide.com')){
+    sessionStorage.setItem('portal_auth', email);
     document.getElementById('env_gate').style.display='none';
     err.style.display='none';
   } else {
@@ -823,32 +831,4 @@ function filterForms(q){
   });
 }
 
-// ── Dept pill filter ───────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function(){
-  document.querySelectorAll('.dept-pill[data-dept]').forEach(function(pill){
-    pill.addEventListener('click', function(){
-      var target = this.dataset.dept;
-      document.querySelectorAll('.dept-pill').forEach(function(p){ p.classList.remove('active'); });
-      this.classList.add('active');
-      document.querySelectorAll('.dept-section').forEach(function(sec){
-        sec.style.display = (target === 'all' || sec.id === target) ? '' : 'none';
-      });
-    });
-  });
-});
-
-// ── Bottom nav active state on scroll ─────────────────────────
-window.addEventListener('scroll', function(){
-  var scrollY = window.scrollY + 80;
-  ['finance','hr','admin'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(!el) return;
-    var top = el.offsetTop;
-    var bottom = top + el.offsetHeight;
-    var link = document.querySelector('.mbn-item[href="#'+id+'"]');
-    if(link) link.classList.toggle('active', scrollY >= top && scrollY < bottom);
-  });
-}, {passive:true});
-</script>
-</body>
-</html>
+// ── Dept pill filter ─────────────────────────────�
