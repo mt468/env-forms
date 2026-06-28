@@ -835,11 +835,6 @@ function filterForms(q){
     sec.querySelectorAll('a.form-card, div.form-card').forEach(function(card){
       var kw = (card.dataset.keywords || '') + ' ' + (card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '');
       var show = !q || kw.toLowerCase().indexOf(q) > -1;
-      card.style.display = show ? '' : 'none';
-      if(show) anyVisible = true;
-    });
-    sec.style.display = (!q || anyVisible) ? '' : 'none';
-  });
 }
 </script>
 </body>

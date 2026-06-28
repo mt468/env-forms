@@ -50,6 +50,24 @@ body{font-family:Arial,sans-serif;background:#f0f4f8;color:#1a2744;}
 
 .people-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px;}
 
+.section-divider{padding:24px 32px 0;display:flex;align-items:center;gap:12px;}
+.section-divider-title{font-size:13px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.8px;white-space:nowrap;}
+.section-divider-line{flex:1;height:1px;background:#dde3ee;}
+
+.balance-table{width:100%;border-collapse:collapse;}
+.balance-table th{font-size:10px;font-weight:700;color:#7a8ca0;text-transform:uppercase;letter-spacing:.6px;padding:6px 10px;border-bottom:2px solid #f0f4f8;text-align:left;}
+.balance-table th.r{text-align:right;}
+.balance-table td{padding:8px 10px;border-bottom:1px solid #f0f4f8;font-size:12px;vertical-align:middle;}
+.balance-table tr:last-child td{border-bottom:none;}
+.balance-table tr:hover td{background:#f8fafc;}
+.bal-track{display:inline-block;width:80px;height:8px;background:#f0f4f8;border-radius:20px;overflow:hidden;vertical-align:middle;margin-right:5px;}
+.bal-fill{height:100%;border-radius:20px;}
+.bal-val{font-size:11px;font-weight:700;vertical-align:middle;}
+.bal-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;}
+.bal-ok{background:#e8f8f5;color:#0a8a6a;}
+.bal-low{background:#fef3e2;color:#d68900;}
+.bal-over{background:#fde8e8;color:#c0392b;}
+
 footer{text-align:center;padding:18px 0 24px;font-size:11px;color:#aaa;}
 </style>
 </head>
@@ -131,6 +149,58 @@ footer{text-align:center;padding:18px 0 24px;font-size:11px;color:#aaa;}
   </div>
 </div>
 
+<div class="section-divider">
+  <span class="section-divider-title">&#x1F4CA; Leave Balance 2026</span>
+  <div class="section-divider-line"></div>
+  <span style="font-size:11px;color:#7a8ca0;white-space:nowrap;">Annual 10d &middot; Sick 11d entitlement &middot; Personal / Annual / Vacation / Sick only</span>
+</div>
+
+<div class="kpi-row" style="padding-top:14px;">
+  <div class="kpi">
+    <div class="kpi-label">Staff tracked</div>
+    <div class="kpi-value">19</div>
+    <div class="kpi-sub">Active in 2026</div>
+    <div class="kpi-icon">&#x1F465;</div>
+  </div>
+  <div class="kpi n">
+    <div class="kpi-label">Avg annual used</div>
+    <div class="kpi-value">3.8d</div>
+    <div class="kpi-sub">of 10d entitlement</div>
+    <div class="kpi-icon">&#x1F4C6;</div>
+  </div>
+  <div class="kpi o">
+    <div class="kpi-label">Low balance (&le;3d)</div>
+    <div class="kpi-value" style="color:#e67e22;">2</div>
+    <div class="kpi-sub">Sai Hsai Hein, We Hkawng</div>
+    <div class="kpi-icon">&#x26A0;&#xFE0F;</div>
+  </div>
+  <div class="kpi" style="border-top-color:#e74c3c;">
+    <div class="kpi-label">Exceeded entitlement</div>
+    <div class="kpi-value" style="color:#e74c3c;">1</div>
+    <div class="kpi-sub">Tania &mdash; 9d over</div>
+    <div class="kpi-icon">&#x1F6A8;</div>
+  </div>
+</div>
+
+<div class="row row1" style="padding-bottom:24px;">
+  <div class="card">
+    <div class="card-title">Annual &amp; Sick Leave Balance per Staff &nbsp;<span style="font-size:10px;font-weight:400;color:#7a8ca0;text-transform:none;letter-spacing:0;">(Annual 10d &middot; Sick 11d)</span></div>
+    <table class="balance-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Annual used</th>
+          <th>Annual remaining</th>
+          <th>Sick used</th>
+          <th>Sick remaining</th>
+          <th class="r">Status</th>
+        </tr>
+      </thead>
+      <tbody id="balanceRows"></tbody>
+    </table>
+  </div>
+</div>
+
 <footer>Generated June 2026 &middot; Envisage HR &middot; Source: Leave Approval Form Responses (67 records)</footer>
 
 <script>
@@ -154,86 +224,7 @@ var people = [
   ['Yu Mon Thin',5.5],['Ying Punyano',4],['Thamita Bosang',3.5],
   ['June Pyae Sone',2],['ThawThaw',1.5],['Nay Myo Linn',1.5],['Pin Tip',1]
 ];
-var barColors = ['#00b8a9','#6c3fa0','#e74c3c','#f39c12','#3498db','#27ae60',
-                 '#00b8a9','#6c3fa0','#e74c3c','#f39c12','#3498db','#27ae60',
-                 '#00b8a9','#6c3fa0','#e74c3c','#f39c12','#3498db'];
-
-// Monthly vertical bars
-var maxDay = 29.5;
-var mc = document.getElementById('monthChart');
-months.forEach(function(m){
-  var pct = (m.d/maxDay*100).toFixed(0);
-  var isMax = m.d===maxDay;
-  var col = document.createElement('div');
-  col.className='vbar-col';
-  col.innerHTML='<div class="vbar-val">'+m.d+'</div>'+
-    '<div class="vbar-fill" style="height:'+pct+'%;background:'+(isMax?'#6c3fa0':'#00b8a9')+'"></div>'+
-    '<div class="vbar-label">'+m.l+'</div>';
-  mc.appendChild(col);
-});
-
-// Donut SVG
-function drawDonut(id,segs,total,label){
-  var svg=document.getElementById(id);
-  var cx=75,cy=75,r=55,sw=28,cum=0;
-  segs.forEach(function(s){
-    var frac=s.v/total;
-    var a1=cum*2*Math.PI-Math.PI/2;
-    var a2=(cum+frac)*2*Math.PI-Math.PI/2;
-    var x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1);
-    var x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
-    var lg=frac>0.5?1:0;
-    var p=document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('fill','none');
-    p.setAttribute('stroke',s.color);
-    p.setAttribute('stroke-width',sw);
-    p.setAttribute('d','M '+x1+' '+y1+' A '+r+' '+r+' 0 '+lg+' 1 '+x2+' '+y2);
-    svg.appendChild(p);
-    cum+=frac;
-  });
-  var t=document.createElementNS('http://www.w3.org/2000/svg','text');
-  t.setAttribute('x',cx);t.setAttribute('y',cy+4);
-  t.setAttribute('text-anchor','middle');
-  t.setAttribute('font-size','13');t.setAttribute('font-weight','800');
-  t.setAttribute('fill','#1a2744');t.textContent=label||total+'d';
-  svg.appendChild(t);
 }
-
-drawDonut('donutType',
-  typeData.map(function(t){return{v:t.d,color:typeColors[t.l]};}),
-  108,'108d');
-var tl=document.getElementById('typeLegend');
-typeData.forEach(function(t){
-  tl.innerHTML+='<div class="legend-item"><div class="legend-dot" style="background:'+typeColors[t.l]+'"></div>'+t.l+' ('+t.d+'d)</div>';
-});
-
-drawDonut('donutPaid',
-  [{v:93.5,color:'#00b8a9'},{v:14.5,color:'#e74c3c'}],
-  108,'108d');
-
-// Count bars
-var maxC=28;
-var cd=document.getElementById('typeCountBars');
-var sorted=[{l:'Personal',d:30.5,c:28},{l:'Sick',d:19.5,c:24},{l:'Vacation',d:48,c:12},
-            {l:'School',d:5,c:1},{l:'Visa Run',d:4,c:1},{l:'Hospital',d:1,c:1}];
-sorted.forEach(function(t){
-  var pct=(t.c/maxC*100).toFixed(0);
-  cd.innerHTML+='<div class="hbar-row">'+
-    '<div class="hbar-label">'+t.l+' Leave</div>'+
-    '<div class="hbar-track"><div class="hbar-fill" style="width:'+pct+'%;background:'+typeColors[t.l]+'"></div></div>'+
-    '<div class="hbar-val">'+t.c+'</div></div>';
-});
-
-// People bars
-var maxP=23;
-var pd=document.getElementById('peopleBars');
-people.forEach(function(p,i){
-  var pct=(p[1]/maxP*100).toFixed(0);
-  pd.innerHTML+='<div class="hbar-row">'+
-    '<div class="hbar-label" style="width:110px;" title="'+p[0]+'">'+p[0]+'</div>'+
-    '<div class="hbar-track"><div class="hbar-fill" style="width:'+pct+'%;background:'+barColors[i]+'"></div></div>'+
-    '<div class="hbar-val">'+p[1]+'d</div></div>';
-});
 </script>
 </body>
 </html>
