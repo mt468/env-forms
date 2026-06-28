@@ -193,10 +193,18 @@ var _allRows   = [];
 var _openRowId = null;
 
 // ── GATE ─────────────────────────────────────────────────────────
+(function(){
+  if(sessionStorage.getItem('hr_admin_auth')==='ok'){
+    var g=document.getElementById('gate'); if(g) g.style.display='none';
+    setTimeout(loadData, 50);
+  }
+})();
+
 function checkGate() {
   var pass = document.getElementById('gate_pass').value;
   var err  = document.getElementById('gate_err');
   if (pass === PASSCODE) {
+    sessionStorage.setItem('hr_admin_auth','ok');
     document.getElementById('gate').style.display = 'none';
     err.style.display = 'none';
     loadData();
