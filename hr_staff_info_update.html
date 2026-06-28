@@ -1061,7 +1061,8 @@ function submitForm(){
     purpose        : sections.length ? 'Update: ' + sections.join(', ') : 'Staff information update',
     description    : document.getElementById('update_reason').value,
     cert_name      : name,
-    cert_date      : document.getElementById('submit_date').value
+    cert_date      : document.getElementById('submit_date').value,
+    cc_emails      : 'admin@envisageworldwide.com, gift@envisageworldwide.com'
   };
 
   var btn = document.getElementById('submit_btn');
