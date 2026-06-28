@@ -243,8 +243,8 @@ body{font-family:'Sarabun',sans-serif;background:#f0f4f8;color:#1a2744;min-heigh
 <script>
 // Auto-skip gate if already authenticated this session
 (function(){
-  var saved = sessionStorage.getItem('portal_auth');
-  if(saved && saved.endsWith('@envisageworldwide.com')){
+  var saved = sessionStorage.getItem('portal_auth') || sessionStorage.getItem('env_auth');
+  if((saved && saved.endsWith('@envisageworldwide.com')) || saved === 'ok'){
     document.getElementById('env_gate').style.display='none';
   }
 })();
@@ -254,6 +254,7 @@ function _checkGate(){
   var err=document.getElementById('gate_err');
   if(email.endsWith('@envisageworldwide.com')){
     sessionStorage.setItem('portal_auth', email);
+    sessionStorage.setItem('env_auth', 'ok'); // shared key used by all forms
     document.getElementById('env_gate').style.display='none';
     err.style.display='none';
   } else {
