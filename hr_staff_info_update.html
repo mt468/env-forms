@@ -174,7 +174,7 @@ textarea:focus{border-color:#00b8a9;}
     <input type="email" id="gate_email" placeholder="Enter your company email"
       style="width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;margin-bottom:6px;box-sizing:border-box;"
       onkeydown="if(event.key==='Enter')_checkGate()">
-    <div id="gate_err" style="color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;">❌ Access restricted to @envisageworldwide.com only.</div>
+    <div id="gate_err" style="color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;">❌ Access restricted to @yourcompanyemail only.</div>
     <button onclick="_checkGate()"
       style="width:100%;background:#00b8a9;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;"
       onmouseover="this.style.background='#009e90'" onmouseout="this.style.background='#00b8a9'">
@@ -201,7 +201,7 @@ function _checkGate(){
 </script>
 <!-- ══ END ACCESS GATE ══ -->
 
-<a href="forms_portal.html" class="back-link">← Back to Portal</a>
+<a href="https://mt468.github.io/env-forms/forms_portal.html" class="back-link">← Back to Portal</a>
 
 <!-- SUCCESS MODAL -->
 <div class="overlay" id="success_overlay">
@@ -1102,8 +1102,4 @@ function clearForm(){
   document.querySelectorAll('[id^="attach_list_"]').forEach(function(el){ el.innerHTML=''; });
   document.querySelectorAll('.update-chip').forEach(function(c){ c.classList.remove('checked'); });
   document.getElementById('val_msg').style.display='none';
-  document.getElementById('nationality').value='Myanmar';
-}
-</script>
-</body>
-</html>
+  doc

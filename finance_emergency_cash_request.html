@@ -233,7 +233,7 @@ input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-c
     <input type="email" id="gate_email" placeholder="Enter your company email"
       style="width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;margin-bottom:6px;box-sizing:border-box;"
       onkeydown="if(event.key==='Enter')_checkGate()">
-    <div id="gate_err" style="color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;">❌ Access restricted to @envisageworldwide.com only.</div>
+    <div id="gate_err" style="color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;">❌ Access restricted to @yourcompanyemail only.</div>
     <button onclick="_checkGate()"
       style="width:100%;background:#c0392b;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;transition:background .2s;"
       onmouseover="this.style.background='#a93226'" onmouseout="this.style.background='#c0392b'">
@@ -918,4 +918,10 @@ function clearForm() {
   var mm = String(today.getMonth()+1).padStart(2,'0');
   var yyyy = today.getFullYear();
   document.getElementById('submit_date').value = yyyy+'-'+mm+'-'+dd;
-  if(document.getElementById('req_date')) document.getElementById('r
+  if(document.getElementById('req_date')) document.getElementById('req_date').value = yyyy+'-'+mm+'-'+dd;
+}
+</script>
+<!-- Hidden iframe for CORS-safe GAS POST -->
+<iframe name="hidden_iframe" style="display:none;"></iframe>
+</body>
+</html>
