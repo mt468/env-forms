@@ -829,7 +829,7 @@ function showPolicy(dept, tab, clickedEl){
 // ── Search / filter ────────────────────────────────────────────
 function filterForms(q){
   q = (q || '').toLowerCase().trim();
-  document.quer  document.querySelectorAll('.dept-section').forEach(function(sec){
+  document.querySelectorAll('.dept-section').forEach(function(sec){
     var anyVisible = false;
     sec.querySelectorAll('a.form-card, div.form-card').forEach(function(card){
       var kw = (card.dataset.keywords || '') + ' ' + (card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '');
@@ -843,4 +843,3 @@ function filterForms(q){
 </script>
 </body>
 </html>
-��────────────────────────�
