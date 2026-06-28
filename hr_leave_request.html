@@ -324,7 +324,16 @@ function _checkGate(){
       <div class="frow"><label>Email :</label><input type="email" id="emp_email" placeholder="your@envisageworldwide.com" required></div>
       <div class="frow"><label>Phone / Line :</label><input type="tel" id="emp_phone" placeholder="Contact number"></div>
     </div>
-    <div class="frow"><label>Manager / Supervisor :</label><input type="text" id="emp_manager" placeholder="Direct manager's name" required></div>
+    <div class="two-col">
+      <div class="frow"><label>Manager / Supervisor :</label><input type="text" id="emp_manager" placeholder="Direct manager's name" required></div>
+      <div class="frow"><label>Office :</label>
+        <select id="emp_office" required>
+          <option value="">— Select Office —</option>
+          <option value="Chiang Rai">Chiang Rai</option>
+          <option value="Remote">Remote</option>
+        </select>
+      </div>
+    </div>
   </div>
 
   <!-- SECTION 2: LEAVE TYPE -->
@@ -408,7 +417,16 @@ function _checkGate(){
       <div class="ds-item"><div class="ds-val" id="ds_to">–</div><div class="ds-lbl">To</div></div>
       <div class="ds-item"><div class="ds-val" id="ds_session" style="font-size:14px;">–</div><div class="ds-lbl">Session</div></div>
     </div>
-    <div class="frow" style="margin-top:12px;"><label>Contact During Leave :</label><input type="text" id="contact_leave" placeholder="Phone number or email to reach you if needed"></div>
+    <div class="two-col" style="margin-top:12px;">
+      <div class="frow"><label>First Day Back :</label><input type="date" id="return_date" title="First working day you return after leave"></div>
+      <div class="frow"><label>Paid / Unpaid :</label>
+        <select id="paid_status">
+          <option value="Paid">Paid</option>
+          <option value="Unpaid">Unpaid</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow"><label>Contact During Leave :</label><input type="text" id="contact_leave" placeholder="Phone number or email to reach you if needed"></div>
     <div class="frow"><label>Emergency Contact :</label><input type="text" id="emergency_contact" placeholder="Name and phone of emergency contact"></div>
   </div>
 
@@ -563,8 +581,10 @@ function validate(){
     {id:'emp_dept',   label:'Department'},
     {id:'emp_email',  label:'Email'},
     {id:'emp_manager',label:'Manager'},
+    {id:'emp_office', label:'Office'},
     {id:'date_from',  label:'Start Date'},
     {id:'date_to',    label:'End Date'},
+    {id:'return_date',label:'First Day Back'},
   ];
   var missing = [];
   required.forEach(function(f){
@@ -603,11 +623,14 @@ function submitForm(){
     emp_email        : document.getElementById('emp_email').value,
     emp_phone        : document.getElementById('emp_phone').value,
     emp_manager      : document.getElementById('emp_manager').value,
+    office           : document.getElementById('emp_office').value,
     leave_type       : leaveType,
     date_from        : document.getElementById('date_from').value,
     date_to          : document.getElementById('date_to').value,
+    return_date      : document.getElementById('return_date').value,
     session          : document.getElementById('session').value,
     total_days       : document.getElementById('ds_days').textContent,
+    paid_status      : document.getElementById('paid_status').value,
     contact_leave    : document.getElementById('contact_leave').value,
     emergency_contact: document.getElementById('emergency_contact').value,
     reason           : document.getElementById('reason').value,
@@ -643,9 +666,10 @@ function closeModal(){
 
 function clearForm(){
   var today = new Date().toISOString().split('T')[0];
-  ['emp_name','emp_id','emp_dept','emp_position','emp_email','emp_phone','emp_manager',
-   'other_specify','contact_leave','emergency_contact','reason','handover_person','handover_notes','appr_requester'
+  ['emp_name','emp_id','emp_dept','emp_position','emp_email','emp_phone','emp_manager','emp_office',
+   'return_date','other_specify','contact_leave','emergency_contact','reason','handover_person','handover_notes','appr_requester'
   ].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('paid_status').value = 'Paid';
   document.querySelectorAll('input[name="leave_type"]').forEach(function(r){ r.checked=false; });
   document.querySelectorAll('.leave-type-card').forEach(function(c){ c.classList.remove('selected'); });
   document.getElementById('other_specify_row').style.display = 'none';

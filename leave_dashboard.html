@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave Dashboard | Envisage</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Sarabun', sans-serif; background: #f0f2f5; color: #1a2744; min-height: 100vh; }
+
+    /* ── Gate ─────────────────────────────────────── */
+    #gate-overlay {
+      position: fixed; inset: 0;
+      background: rgba(26,39,68,0.96);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
+    }
+    .gate-box {
+      background: #fff; border-radius: 14px;
+      padding: 44px 40px; max-width: 420px; width: 92%;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+    }
+    .gate-icon {
+      width: 56px; height: 56px; background: #00b8a9;
+      border-radius: 12px; display: inline-flex;
+      align-items: center; justify-content: center; margin-bottom: 18px;
+    }
+    .gate-icon svg { width: 28px; height: 28px; }
+    .gate-box h2 { font-size: 22px; font-weight: 700; color: #1a2744; margin-bottom: 6px; }
+    .gate-box p  { font-size: 14px; color: #888; margin-bottom: 28px; line-height: 1.5; }
+    .gate-input {
+      width: 100%; padding: 12px 14px;
+      border: 1.5px solid #d8dce8; border-radius: 8px;
+      font-size: 14px; font-family: 'Sarabun', sans-serif;
+      outline: none; margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .gate-input:focus { border-color: #00b8a9; }
+    .gate-input.error  { border-color: #e74c3c; }
+    .gate-btn {
+      width: 100%; padding: 13px;
+      background: #1a2744; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      font-family: 'Sarabun', sans-serif;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .gate-btn:hover { background: #00b8a9; }
+    .gate-error { color: #e74c3c; font-size: 13px; margin-top: 10px; display: none; }
+
+    /* ── Header ───────────────────────────────────── */
+    header {
+      background: #1a2744; color: #fff;
+      padding: 0 24px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+    }
+    .hdr-left  { display: flex; align-items: center; gap: 12px; }
+    .hdr-logo  {
+      width: 38px; height: 38px; background: #00b8a9;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    }
+    .hdr-logo svg { width: 22px; height: 22px; }
+    .hdr-title { font-size: 17px; font-weight: 700; }
+    .hdr-org   { font-size: 11px; opacity: 0.5; font-weight: 400; letter-spacing: 0.05em; }
+    .hdr-right { display: flex; align-items: center; gap: 16px; }
+    .hdr-meta  { font-size: 12px; color: rgba(255,255,255,0.45); }
+    .back-link {
+      color: #00b8a9; text-decoration: none; font-size: 13px;
+      display: flex; align-items: center; gap: 5px;
+      transition: opacity 0.2s;
+    }
+    .back-link:hover { opacity: 0.75; }
+    .reload-btn {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+      color: #fff; font-size: 12px; font-family: 'Sarabun', sans-serif;
+      padding: 6px 12px; border-radius: 6px; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .reload-btn:hover { background: rgba(255,255,255,0.16); }
+
+    /* ── Main ─────────────────────────────────────── */
+    main { max-width: 1240px; margin: 0 auto; padding: 24px 20px 32px; }
+
+    /* ── Stats row ────────────────────────────────── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 16px; margin-bottom: 22px;
+    }
+    .stat-card {
+      background: #fff; border-radius: 10px; padding: 20px 22px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      border-left: 4px solid #00b8a9;
+    }
+    .stat-card.c-warn  { border-left-color: #f39c12; }
+    .stat-card.c-red   { border-left-color: #e74c3c; }
+    .stat-card.c-navy  { border-left-color: #1a2744; }
+    .stat-num   { font-size: 30px; font-weight: 700; color: #1a2744; line-height: 1; }
+    .stat-label { font-size: 12px; color: #888; margin-top: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .stat-sub   { font-size: 11px; color: #bbb; margin-top: 2px; }
+
+    /* ── Filter bar ───────────────────────────────── */
+    .filter-bar {
+      background: #fff; border-radius: 10px;
+      padding: 14px 20px; margin-bottom: 20px;
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .filter-group { display: flex; align-items: center; gap: 8px; }
+    .filter-label { font-size: 12px; font-weight: 600; color: #666; }
+    .filter-select, .filter-input {
+      padding: 8px 12px;
+      border: 1.5px solid #e0e4ee; border-radius: 7px;
+      font-size: 13px; font-family: 'Sarabun', sans-serif;
+      color: #1a2744; outline: none; transition: border-color 0.2s; background: #fff;
+    }
+    .filter-select:focus, .filter-input:focus { border-color: #00b8a9; }
+    .filter-input { min-width: 200px; }
+    .filter-info { margin-left: auto; font-size: 12px; color: #bbb; }
+
+    /* ── Content grid ─────────────────────────────── */
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 290px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    /* ── Table card ───────────────────────────────── */
+    .table-card {
+      background: #fff; border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden;
+    }
+    .card-header {
+      padding: 16px 20px; border-bottom: 1px solid #f0f2f5;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .card-title { font-size: 15px; font-weight: 700; color: #1a2744; }
+    .card-count { font-size: 12px; color: #aaa; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    thead th {
+      background: #f7f8fb; padding: 10px 14px;
+      text-align: left; font-weight: 600; color: #666;
+      font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em;
+      white-space: nowrap; border-bottom: 1px solid #eee;
+    }
+    tbody tr { border-bottom: 1px solid #f5f5f7; transition: background 0.12s; }
+    tbody tr:hover { background: #f7fbfa; }
+    tbody td { padding: 11px 14px; vertical-align: middle; }
+    tbody tr:last-child { border-bottom: none; }
+
+    .staff-name   { font-weight: 600; color: #1a2744; font-size: 13px; }
+    .staff-office { font-size: 11px; color: #aaa; margin-top: 1px; }
+
+    /* progress bar inside table */
+    .pb-wrap { min-width: 100px; }
+    .pb-bar   { height: 6px; border-radius: 3px; background: #eee; overflow: hidden; margin-bottom: 3px; }
+    .pb-fill  { height: 100%; border-radius: 3px; transition: width 0.4s; }
+    .pb-fill.ok   { background: #00b8a9; }
+    .pb-fill.warn { background: #f39c12; }
+    .pb-fill.over { background: #e74c3c; }
+    .pb-text  { font-size: 11px; font-weight: 600; }
+    .pb-text.ok   { color: #00b8a9; }
+    .pb-text.warn { color: #f39c12; }
+    .pb-text.over { color: #e74c3c; }
+
+    .badge {
+      display: inline-block; padding: 3px 9px;
+      border-radius: 20px; font-size: 11px; font-weight: 600;
+    }
+    .badge.on-leave { background: #fff3cd; color: #856404; }
+    .badge.active   { background: #e8faf8; color: #00766b; }
+    .badge.future   { background: #e8eaf6; color: #3949ab; }
+
+    /* ── Right panel ──────────────────────────────── */
+    .right-panel { display: flex; flex-direction: column; gap: 16px; }
+    .panel-card {
+      background: #fff; border-radius: 10px; padding: 18px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .panel-title {
+      font-size: 13px; font-weight: 700; color: #1a2744;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .live-dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #e74c3c;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .leave-item {
+      padding: 10px 12px; background: #f7f8fb;
+      border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #00b8a9;
+    }
+    .leave-item:last-child { margin-bottom: 0; }
+    .li-name { font-weight: 600; font-size: 13px; color: #1a2744; }
+    .li-type { font-size: 11px; color: #888; margin-top: 2px; }
+    .li-days { font-size: 11px; color: #00b8a9; font-weight: 600; margin-top: 2px; }
+    .no-leave { text-align: center; padding: 18px 0; color: #bbb; font-size: 13px; }
+
+    /* type breakdown bars */
+    .type-row { margin-bottom: 10px; }
+    .type-row:last-child { margin-bottom: 0; }
+    .type-header {
+      display: flex; justify-content: space-between;
+      font-size: 12px; margin-bottom: 4px;
+    }
+    .type-name  { font-weight: 500; color: #444; }
+    .type-value { color: #888; }
+    .type-bar   { height: 5px; background: #eee; border-radius: 3px; overflow: hidden; }
+    .type-fill  { height: 100%; border-radius: 3px; }
+
+    /* ── Monthly chart ────────────────────────────── */
+    .chart-section {
+      background: #fff; border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 20px; margin-top: 20px;
+    }
+    .chart-title { font-size: 15px; font-weight: 700; color: #1a2744; margin-bottom: 16px; }
+    .chart-wrap  { position: relative; height: 210px; }
+
+    /* ── Loading ──────────────────────────────────── */
+    .loading-box { text-align: center; padding: 52px 20px; color: #aaa; }
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid #e0e4ee; border-top-color: #00b8a9;
+      border-radius: 50%; animation: spin 0.75s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-txt { font-size: 13px; }
+
+    /* ── Footer ───────────────────────────────────── */
+    .footer { text-align: center; padding: 20px 0 8px; font-size: 12px; color: #bbb; }
+    .footer span { color: #00b8a9; }
+
+    /* ── Responsive ───────────────────────────────── */
+    @media (max-width: 960px) {
+      .stats-row { grid-template-columns: repeat(2,1fr); }
+      .content-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 540px) {
+      .stats-row { grid-template-columns: 1fr 1fr; }
+      .pb-wrap { min-width: 80px; }
+      main { padding: 16px 12px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ GATE ══════════════════════════════════════════════════════════════ -->
+<div id="gate-overlay">
+  <div class="gate-box">
+    <div class="gate-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+        <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+      </svg>
+    </div>
+    <h2>Leave Dashboard</h2>
+    <p>Enter your company email to view the team's leave &amp; balance overview.</p>
+    <input type="email" id="gate-email" class="gate-input" placeholder="Enter your company email" autocomplete="email" />
+    <button class="gate-btn" onclick="checkGate()">Access Dashboard</button>
+    <div class="gate-error" id="gate-error">Please use your @envisageworldwide.com email address.</div>
+  </div>
+</div>
+
+<!-- ══ HEADER ════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="hdr-left">
+    <div class="hdr-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="hdr-org">ENVISAGE</div>
+      <div class="hdr-title">Leave &amp; WFH Dashboard</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <span class="hdr-meta" id="hdr-updated">Loading…</span>
+    <button class="reload-btn" onclick="reloadData()">↺ Refresh</button>
+    <a href="forms_portal.html" class="back-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Portal
+    </a>
+  </div>
+</header>
+
+<!-- ══ MAIN ══════════════════════════════════════════════════════════════ -->
+<main id="main-content" style="display:none;">
+
+  <!-- Stats row -->
+  <div class="stats-row">
+    <div class="stat-card c-red">
+      <div class="stat-num" id="s-onleave">–</div>
+      <div class="stat-label">On Leave Today</div>
+      <div class="stat-sub" id="s-date"></div>
+    </div>
+    <div class="stat-card c-warn">
+      <div class="stat-num" id="s-personal-avg">–</div>
+      <div class="stat-label">Avg Personal / Vac Used</div>
+      <div class="stat-sub">of 10-day quota</div>
+    </div>
+    <div class="stat-card c-navy">
+      <div class="stat-num" id="s-sick-avg">–</div>
+      <div class="stat-label">Avg Sick Leave Used</div>
+      <div class="stat-sub">of 11-day quota</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="s-total">–</div>
+      <div class="stat-label">Total Submissions</div>
+      <div class="stat-sub">YTD 2026</div>
+    </div>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <span class="filter-label">Office</span>
+      <select class="filter-select" id="f-office" onchange="renderTable()">
+        <option value="">All Offices</option>
+        <option value="Chiang Rai">Chiang Rai</option>
+        <option value="Remote">Remote</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Search</span>
+      <input type="text" class="filter-input" id="f-search" placeholder="Search staff name…" oninput="renderTable()" />
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Sort by</span>
+      <select class="filter-select" id="f-sort" onchange="renderTable()">
+        <option value="personal">Personal Used ↓</option>
+        <option value="sick">Sick Used ↓</option>
+        <option value="name">Name A–Z</option>
+      </select>
+    </div>
+    <div class="filter-info">2026 Leave Approval Form · Live data</div>
+  </div>
+
+  <!-- Content grid: table + right panel -->
+  <div class="content-grid">
+
+    <!-- Leave balance table -->
+    <div class="table-card">
+      <div class="card-header">
+        <span class="card-title">Staff Leave Balance — 2026</span>
+        <span class="card-count" id="tbl-count"></span>
+      </div>
+      <div id="tbl-container">
+        <div class="loading-box">
+          <div class="spinner"></div>
+          <div class="loading-txt">Fetching live leave data…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="right-panel">
+
+      <!-- On leave today -->
+      <div class="panel-card">
+        <div class="panel-title">
+          <span class="live-dot"></span>
+          On Leave Today
+        </div>
+        <div id="today-list">
+          <div class="loading-box" style="padding:20px 0;">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Leave type breakdown -->
+      <div class="panel-card">
+        <div class="panel-title">Days by Leave Type</div>
+        <div id="type-breakdown"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Monthly chart -->
+  <div class="chart-section">
+    <div class="chart-title">Monthly Leave Trend — 2026</div>
+    <div class="chart-wrap">
+      <canvas id="monthly-chart"></canvas>
+    </div>
+  </div>
+
+  <div class="footer">
+    Envisage Worldwide · HR Leave Dashboard ·
+    <span>Policy: 10 days Personal/Vacation · 11 days Sick Leave (paid)</span>
+  </div>
+
+</main>
+
+<!-- ══ SCRIPT ════════════════════════════════════════════════════════════ -->
+<script>
+// ── Config ────────────────────────────────────────────────────────────────
+const SHEET_URL   = 'https://docs.google.com/spreadsheets/d/14qmKikqOE11siaf9n8BGY7R1DOCXFGViUWWmfnxFX2Q/gviz/tq?tqx=out:csv&gid=1419161532';
+const P_QUOTA     = 10;   // personal / vacation days
+const S_QUOTA     = 11;   // sick leave days
+const P_TYPES     = ['Personal Leave', 'Vacation Leave'];
+const S_TYPES     = ['Sick Leave', 'Hospital'];
+
+const TYPE_COLORS = {
+  'Personal Leave' : '#00b8a9',
+  'Vacation Leave' : '#3498db',
+  'Sick Leave'     : '#e74c3c',
+  'Hospital'       : '#e67e22',
+  'School Trip'    : '#9b59b6',
+  'Visa Run'       : '#95a5a6'
+};
+
+let allRecords = [];
+let staffMap   = {};
+let chartInst  = null;
+
+// ── Gate ──────────────────────────────────────────────────────────────────
+document.getElementById('gate-email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkGate();
+});
+
+function checkGate() {
+  const email = (document.getElementById('gate-email').value || '').trim().toLowerCase();
+  const errEl = document.getElementById('gate-error');
+  const inpEl = document.getElementById('gate-email');
+  if (email.endsWith('@envisageworldwide.com')) {
+    document.getElementById('gate-overlay').style.display = 'none';
+    document.getElementById('main-content').style.display = 'block';
+    loadData();
+  } else {
+    errEl.style.display = 'block';
+    inpEl.classList.add('error');
+    setTimeout(() => { errEl.style.display = 'none'; inpEl.classList.remove('error'); }, 3000);
+  }
+}
+
+// ── CSV parser ────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const rows = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const row = [];
+    let inQ = false, cur = '';
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === '"') {
+        if (inQ && line[i+1] === '"') { cur += '"'; i++; }
+        else inQ = !inQ;
+      } else if (line[i] === ',' && !inQ) {
+        row.push(cur.trim()); cur = '';
+      } else cur += line[i];
+    }
+    row.push(cur.trim());
+    rows.push(row);
+  }
+  return rows;
+}
+
+function parseDate(s) {
+  if (!s) return null;
+  const p = s.trim().split('/');
+  if (p.length !== 3) return null;
+  const d = new Date(parseInt(p[2]), parseInt(p[0])-1, parseInt(p[1]));
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function today0() {
+  const d = new Date(); d.setHours(0,0,0,0); return d;
+}
+
+function normType(t) {
+  return (t || '').trim().replace(/\s+/g,' ');
+}
+
+// ── Load data ─────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res  = await fetch(SHEET_URL + '&t=' + Date.now());
+    const text = await res.text();
+    const rows = parseCSV(text);
+
+    // Col index: 0=Timestamp 1=Email 2=Name 3=Office 4=Applied
+    //            5=Starts 6=Ends 7=Returns 8=Type1 9=Detail
+    //            10=Paid 11=Contact 12=UID 13=Col1 14=NumDays
+    allRecords = rows.slice(1).map(r => ({
+      email  : (r[1]||'').toLowerCase().trim(),
+      name   : (r[2]||'').trim(),
+      office : (r[3]||'').trim(),
+      starts : parseDate(r[5]),
+      ends   : parseDate(r[6]),
+      type1  : normType(r[8]),
+      paid   : (r[10]||'').trim(),
+      days   : parseFloat(r[14]) || 0
+    })).filter(r => r.email && r.days > 0);
+
+    buildStaffMap();
+    updateStats();
+    renderTable();
+    renderTodayPanel();
+    renderTypeBreakdown();
+    renderMonthlyChart();
+
+    document.getElementById('hdr-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'});
+
+  } catch(err) {
+    console.error(err);
+    document.getElementById('tbl-container').innerHTML =
+      '<div class="loading-box" style="color:#e74c3c;">Failed to load data.<br>Check your connection and try again.</div>';
+  }
+}
+
+function reloadData() {
+  document.getElementById('tbl-container').innerHTML =
+    '<div class="loading-box"><div class="spinner"></div><div class="loading-txt">Refreshing…</div></div>';
+  loadData();
+}
+
+// ── Build staff map ───────────────────────────────────────────────────────
+function buildStaffMap() {
+  staffMap = {};
+  allRecords.forEach(r => {
+    if (!staffMap[r.email]) {
+      staffMap[r.email] = {
+        email: r.email, name: r.name, office: r.office,
+        pPaid:0, pUnpaid:0, sPaid:0, sUnpaid:0,
+        otherPaid:0, otherUnpaid:0, records:[]
+      };
+    }
+    const s = staffMap[r.email];
+    s.name = r.name; // keep latest
+    s.records.push(r);
+    const paid = r.paid === 'Paid';
+    const d    = r.days;
+    if      (P_TYPES.includes(r.type1)) paid ? (s.pPaid   += d) : (s.pUnpaid   += d);
+    else if (S_TYPES.includes(r.type1)) paid ? (s.sPaid   += d) : (s.sUnpaid   += d);
+    else                                paid ? (s.otherPaid+= d) : (s.otherUnpaid+= d);
+  });
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────
+function updateStats() {
+  const now   = today0();
+  const onLvSet = new Set();
+
+  allRecords.forEach(r => {
+    if (!r.starts || !r.ends) return;
+    const s = new Date(r.starts); s.setHours(0,0,0,0);
+    const e = new Date(r.ends);   e.setHours(0,0,0,0);
+    if (s <= now && now <= e) onLvSet.add(r.email);
+  });
+
+  document.getElementById('s-onleave').textContent = onLvSet.size;
+  document.getElementById('s-date').textContent =
+    now.toLocaleDateString('en-US', {weekday:'short', month:'short', day:'numeric'});
+
+  const list = Object.values(staffMap);
+  const avgP = list.reduce((a,s) => a + s.pPaid, 0) / list.length;
+  const avgS = list.reduce((a,s) => a + s.sPaid, 0) / list.length;
+  document.getElementById('s-personal-avg').textContent = avgP.toFixed(1) + ' d';
+  document.getElementById('s-sick-avg').textContent     = avgS.toFixed(1) + ' d';
+  document.getElementById('s-total').textContent        = allRecords.length;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function getCls(used, quota) {
+  const p = used / quota;
+  return p >= 1 ? 'over' : p >= 0.75 ? 'warn' : 'ok';
+}
+
+function progressBar(used, quota) {
+  const pct = Math.min(100, (used / quota) * 100);
+  const cls  = getCls(used, quota);
+  const rem  = quota - used;
+  return `<div class="pb-wrap">
+    <div class="pb-bar"><div class="pb-fill ${cls}" style="width:${pct.toFixed(1)}%"></div></div>
+    <div class="pb-text ${cls}">${used % 1 === 0 ? used : used.toFixed(1)}/${quota}
+      &nbsp;(${rem > 0 ? (rem%1===0?rem:rem.toFixed(1))+' left' : '<span style="color:#e74c3c">exceeded</span>'})</div>
+  </div>`;
+}
+
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ── Render table ──────────────────────────────────────────────────────────
+function renderTable() {
+  const offFilter  = document.getElementById('f-office').value;
+  const txtFilter  = document.getElementById('f-search').value.toLowerCase();
+  const sortBy     = document.getElementById('f-sort').value;
+  const now        = today0();
+
+  let list = Object.values(staffMap).filter(s => {
+    if (offFilter && s.office !== offFilter) return false;
+    if (txtFilter && !s.name.toLowerCase().includes(txtFilter)) return false;
+    return true;
+  });
+
+  list.sort((a,b) => {
+    if (sortBy === 'name')    return a.name.localeCompare(b.name);
+    if (sortBy === 'sick')    return b.sPaid - a.sPaid;
+    return (b.pPaid) - (a.pPaid);
+  });
+
+  document.getElementById('tbl-count').textContent = list.length + ' staff';
+
+  if (!list.length) {
+    document.getElementById('tbl-container').innerHTML =
+      '<div class="loading-box">No staff matched the current filters.</div>';
+    return;
+  }
+
+  let html = `<div style="overflow-x:auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Staff</th>
+        <th>Office</th>
+        <th>Personal / Vacation</th>
+        <th>Sick Leave</th>
+        <th>Other (paid)</th>
+        <th>Unpaid</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  list.forEach(s => {
+    // on leave today?
+    const onToday = s.records.some(r => {
+      if (!r.starts || !r.ends) return false;
+      const st = new Date(r.starts); st.setHours(0,0,0,0);
+      const en = new Date(r.ends);   en.setHours(0,0,0,0);
+      return st <= now && now <= en;
+    });
+    // approved future leave?
+    const hasFuture = !onToday && s.records.some(r => {
+      if (!r.starts) return false;
+      const st = new Date(r.starts); st.setHours(0,0,0,0);
+      return st > now;
+    });
+
+    const unpaidTotal = parseFloat((s.pUnpaid + s.sUnpaid + s.otherUnpaid).toFixed(1));
+    const statusBadge = onToday   ? '<span class="badge on-leave">On Leave</span>'
+                      : hasFuture ? '<span class="badge future">Future Approved</span>'
+                      :             '<span class="badge active">Active</span>';
+
+    html += `<tr>
+      <td><div class="staff-name">${esc(s.name)}</div></td>
+      <td><div class="staff-office">${esc(s.office)}</div></td>
+      <td>${progressBar(s.pPaid, P_QUOTA)}</td>
+      <td>${progressBar(s.sPaid, S_QUOTA)}</td>
+      <td style="font-size:12px;color:#666;">${s.otherPaid > 0 ? s.otherPaid.toFixed(1).replace('.0','') + ' d' : '–'}</td>
+      <td style="font-size:12px;color:${unpaidTotal > 0 ? '#e74c3c' : '#bbb'};">${unpaidTotal > 0 ? unpaidTotal + ' d' : '–'}</td>
+      <td>${statusBadge}</td>
+    </tr>`;
+  });
+
+  html += '</tbody></table></div>';
+  document.getElementById('tbl-container').innerHTML = html;
+}
+
+// ── Today panel ───────────────────────────────────────────────────────────
+function renderTodayPanel() {
+  const now = today0();
+  const seen = new Set();
+  const items = allRecords.filter(r => {
+    if (!r.starts || !r.ends) return false;
+    const st = new Date(r.starts); st.setHours(0,0,0,0);
+    const en = new Date(r.ends);   en.setHours(0,0,0,0);
+    if (st <= now && now <= en && !seen.has(r.email)) {
+      seen.add(r.email); return true;
+    }
+    return false;
+  });
+
+  const el = document.getElementById('today-list');
+  if (!items.length) {
+    el.innerHTML = '<div class="no-leave">No staff on leave today 🎉</div>';
+    return;
+  }
+
+  const typeColorMap = TYPE_COLORS;
+  el.innerHTML = items.map(r => {
+    const color = typeColorMap[r.type1] || '#aaa';
+    return `<div class="leave-item" style="border-left-color:${color};">
+      <div class="li-name">${esc(r.name)}</div>
+      <div class="li-type">${esc(r.type1)}</div>
+      <div class="li-days">${r.days} day${r.days !== 1 ? 's' : ''} · ${esc(r.paid)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Type breakdown ────────────────────────────────────────────────────────
+function renderTypeBreakdown() {
+  const counts = {};
+  allRecords.forEach(r => {
+    if (!counts[r.type1]) counts[r.type1] = 0;
+    counts[r.type1] += r.days;
+  });
+
+  const sorted = Object.entries(counts)
+    .sort((a,b) => b[1] - a[1]);
+  const total = sorted.reduce((s,[,v]) => s+v, 0);
+
+  document.getElementById('type-breakdown').innerHTML = sorted.map(([type, days]) => {
+    const pct = Math.round((days/total)*100);
+    const col = TYPE_COLORS[type] || '#bbb';
+    return `<div class="type-row">
+      <div class="type-header">
+        <span class="type-name">${esc(type)}</span>
+        <span class="type-value">${days%1===0?days:days.toFixed(1)} d (${pct}%)</span>
+      </div>
+      <div class="type-bar">
+        <div class="type-fill" style="width:${pct}%;background:${col};"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Monthly chart ─────────────────────────────────────────────────────────
+function renderMonthlyChart() {
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const pArr = new Array(12).fill(0);
+  const sArr = new Array(12).fill(0);
+  const oArr = new Array(12).fill(0);
+
+  allRecords.forEach(r => {
+    if (!r.starts) return;
+    const m = r.starts.getMonth();
+    if      (P_TYPES.includes(r.type1)) pArr[m] += r.days;
+    else if (S_TYPES.includes(r.type1)) sArr[m] += r.days;
+    else                                oArr[m] += r.days;
+  });
+
+  // Show up to current month + 1 (to preview upcoming)
+  const upTo = Math.min(11, new Date().getMonth() + 1);
+  const labels = MONTHS.slice(0, upTo + 1);
+
+  if (chartInst) { chartInst.destroy(); chartInst = null; }
+
+  const ctx = document.getElementById('monthly-chart').getContext('2d');
+  chartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Personal / Vacation',
+          data: pArr.slice(0, upTo + 1),
+          backgroundColor: '#00b8a9',
+          borderRadius: 3,
+          stack: 's'
+        },
+        {
+          label: 'Sick Leave',
+          data: sArr.slice(0, upTo + 1),
+          backgroundColor: '#e74c3c',
+          borderRadius: 3,
+          stack: 's'
+        },
+        {
+          label: 'Other',
+          data: oArr.slice(0, upTo + 1),
+          backgroundColor: '#9b59b6',
+          borderRadius: 3,
+          stack: 's'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: {
+            boxWidth: 11, padding: 16,
+            font: { size: 12, family: 'Sarabun' }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y} days`
+          }
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { display: false },
+          ticks: { font: { family: 'Sarabun', size: 12 } }
+        },
+        y: {
+          stacked: true,
+          grid: { color: '#f0f2f5' },
+          ticks: { font: { family: 'Sarabun', size: 12 } },
+          title: { display: true, text: 'Days', font: { family: 'Sarabun', size: 11 } }
+        }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
