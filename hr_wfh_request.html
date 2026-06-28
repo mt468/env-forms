@@ -262,7 +262,7 @@ function _checkGate(){
           <option>Zimbabwe Country Research</option>
           <option>Other</option>
         </select></div>
-      <div class="frow"><label>Position / Title :</label><select id="emp_position">
+      <div class="frow" style="display:none"><label>Position / Title :</label><select id="emp_position">
           <option value="">— Select Role —</option>
           <option>Admin Assistant</option>
           <option>Admin Manager</option>
@@ -465,17 +465,17 @@ function _checkGate(){
         </tr>
         <tr>
           <td><div class="role-cell"><div class="ava ava-b">👤</div>Direct Manager</div></td>
-          <td><input type="text" placeholder="Manager name"></td>
-          <td><select><option value="">–</option><option>Approved</option><option>Denied</option><option>Pending</option></select></td>
-          <td><input type="text" placeholder="Signed"></td>
-          <td><input type="date"></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><select disabled><option value="">–</option><option>Approved</option><option>Denied</option><option>Pending</option></select></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="date" disabled></td>
         </tr>
         <tr>
           <td><div class="role-cell"><div class="ava ava-p">👤</div>HR Department</div></td>
-          <td><input type="text" placeholder="HR officer name"></td>
-          <td><select><option value="">–</option><option>Noted</option><option>Approved</option><option>Denied</option></select></td>
-          <td><input type="text" placeholder="Signed"></td>
-          <td><input type="date"></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><select disabled><option value="">–</option><option>Noted</option><option>Approved</option><option>Denied</option></select></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="date" disabled></td>
         </tr>
       </tbody>
     </table>
@@ -681,9 +681,4 @@ function clearForm(){
   document.getElementById('wfh_no').value    = generateFormNo('WFH');
   document.getElementById('submit_date').value = today;
   document.getElementById('val_msg').style.display = 'none';
-  document.querySelectorAll('.invalid').forEach(function(el){ el.classList.remove('invalid'); });
-  calcDays();
-}
-</script>
-</body>
-</html>
+  document.querySelectorAll('.invalid').for
