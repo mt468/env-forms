@@ -667,6 +667,16 @@ function _checkGate(){
         <div class="card-bottom"><span class="card-meta">Staff lookup</span><div class="card-arrow">→</div></div>
       </a>
 
+      <!-- Leave Dashboard -->
+      <a href="leave_dashboard.html" class="form-card" data-keywords="leave wfh dashboard balance vacation sick personal overview staff">
+        <div class="card-top">
+          <div class="card-icon-row"><div class="card-ico">📅</div><span class="card-tag">HR</span></div>
+          <div class="card-title">Leave Dashboard</div>
+          <div class="card-desc">Overview of team leave balances, who's on leave today, and monthly leave trends for 2026.</div>
+        </div>
+        <div class="card-bottom"><span class="card-meta">Live data</span><div class="card-arrow">→</div></div>
+      </a>
+
       <!-- HR Admin Dashboard (admin only) -->
       <a href="hr_admin_dashboard.html" class="form-card" data-keywords="admin dashboard hr tracker manage requests status update">
         <div class="card-top">
@@ -819,7 +829,7 @@ function showPolicy(dept, tab, clickedEl){
 // ── Search / filter ────────────────────────────────────────────
 function filterForms(q){
   q = (q || '').toLowerCase().trim();
-  document.querySelectorAll('.dept-section').forEach(function(sec){
+  document.quer  document.querySelectorAll('.dept-section').forEach(function(sec){
     var anyVisible = false;
     sec.querySelectorAll('a.form-card, div.form-card').forEach(function(card){
       var kw = (card.dataset.keywords || '') + ' ' + (card.querySelector('.card-title') ? card.querySelector('.card-title').textContent : '');
@@ -830,5 +840,7 @@ function filterForms(q){
     sec.style.display = (!q || anyVisible) ? '' : 'none';
   });
 }
-
-// ── Dept pill filter ─────────────────────────────�
+</script>
+</body>
+</html>
+��────────────────────────�
