@@ -786,7 +786,35 @@ async function submitForm(){
   btn.innerHTML = '<span class="spinner"></span>Submitting…';
 
   var data = collectData();
-  if(_selFiles.length>
+  if(_selFiles.length > 0){
+    try {
+      var b64files = await _readFilesB64();
+      data.attachments_files = b64files;
+    } catch(e){ console.warn('File read error', e); }
+  }
+
+  var iframe = document.createElement('iframe');
+  iframe.name = '_gas_' + Date.now();
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  var form = document.createElement('form');
+  form.method = 'POST';
+  form.action = SCRIPT_URL;
+  form.target = iframe.name;
+  var inp = document.createElement('input');
+  inp.type = 'hidden';
+  inp.name = 'data';
+  inp.value = JSON.stringify(data);
+  form.appendChild(inp);
+  document.body.appendChild(form);
+  form.submit();
+
+  setTimeout(function(){
+    document.getElementById('success_overlay').style.display = 'flex';
+    btn.disabled = false;
+    btn.innerHTML = '&#x2601;&#xfe0f; Submit to Google Sheets';
+    try{ document.body.removeChild(form); document.body.removeChild(iframe); }catch(e){}
+  }, 2000);
 }
 </script>
 </body>

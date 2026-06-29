@@ -245,19 +245,19 @@ input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-c
 </div>
 <script>
 (function(){
-  var saved = sessionStorage.getItem('portal_auth');
-  if(saved && saved.endsWith('@envisageworldwide.com')){
-    var g=document.getElementById('env_gate');
-    if(g) g.style.display='none';
+  if(sessionStorage.getItem('env_auth')==='ok'){
+    var g=document.getElementById('env_gate'); if(g) g.style.display='none';
+    var saved=sessionStorage.getItem('env_user_email');
     var ef=document.getElementById('emp_email');
-    if(ef && !ef.value) ef.value=saved;
+    if(ef && saved && !ef.value) ef.value=saved;
   }
 })();
 function _checkGate(){
   var email=(document.getElementById('gate_email').value||'').trim().toLowerCase();
   var err=document.getElementById('gate_err');
   if(email.endsWith('@envisageworldwide.com')){
-    sessionStorage.setItem('portal_auth', email);
+    sessionStorage.setItem('env_auth','ok');
+    sessionStorage.setItem('env_user_email',email);
     document.getElementById('env_gate').style.display='none';
     err.style.display='none';
     document.getElementById('emp_email').value=email;
