@@ -410,7 +410,7 @@
 <!-- ══ SCRIPT ════════════════════════════════════════════════════════════ -->
 <script>
 // ── Config ────────────────────────────────────────────────────────────────
-const SHEET_URL   = 'https://docs.google.com/spreadsheets/d/14qmKikqOE11siaf9n8BGY7R1DOCXFGViUWWmfnxFX2Q/gviz/tq?tqx=out:csv&gid=1419161532';
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
 const P_QUOTA     = 10;   // personal / vacation days
 const S_QUOTA     = 11;   // sick leave days
 const P_TYPES     = ['Personal Leave', 'Vacation Leave'];
@@ -499,22 +499,20 @@ function normType(t) {
 // ── Load data ─────────────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const res  = await fetch(SHEET_URL + '&t=' + Date.now());
-    const text = await res.text();
-    const rows = parseCSV(text);
+    const res  = await fetch(GAS_URL + '?page=leave_data&t=' + Date.now());
+    const json = await res.json();
 
-    // Col index: 0=Timestamp 1=Email 2=Name 3=Office 4=Applied
-    //            5=Starts 6=Ends 7=Returns 8=Type1 9=Detail
-    //            10=Paid 11=Contact 12=UID 13=Col1 14=NumDays
-    allRecords = rows.slice(1).map(r => ({
-      email  : (r[1]||'').toLowerCase().trim(),
-      name   : (r[2]||'').trim(),
-      office : (r[3]||'').trim(),
-      starts : parseDate(r[5]),
-      ends   : parseDate(r[6]),
-      type1  : normType(r[8]),
-      paid   : (r[10]||'').trim(),
-      days   : parseFloat(r[14]) || 0
+    if (!json.success) throw new Error(json.message || 'GAS error');
+
+    allRecords = json.rows.map(r => ({
+      email  : (r.email  || '').toLowerCase().trim(),
+      name   : (r.name   || '').trim(),
+      office : (r.office || '').trim(),
+      starts : parseDate(r.starts),
+      ends   : parseDate(r.ends),
+      type1  : normType(r.type),
+      paid   : (r.paid   || '').trim(),
+      days   : parseFloat(r.days) || 0
     })).filter(r => r.email && r.days > 0);
 
     buildStaffMap();
