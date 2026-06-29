@@ -152,12 +152,26 @@ var _userEmail  = '';
 var _searchMode = 'email'; // 'email' or 'ref'
 
 // ── GATE ─────────────────────────────────────────────────────────
+(function(){
+  if(sessionStorage.getItem('env_auth')==='ok'){
+    var g=document.getElementById('gate'); if(g) g.style.display='none';
+    // pre-fill email and auto-search if stored
+    var stored = sessionStorage.getItem('env_user_email');
+    if(stored){ 
+      var si=document.getElementById('search_input'); if(si) si.value=stored;
+      if(typeof doSearch==='function') setTimeout(doSearch,100);
+    }
+  }
+})();
+
 function checkGate() {
   var email = (document.getElementById('gate_email').value || '').trim().toLowerCase();
   var err   = document.getElementById('gate_err');
   if (email.endsWith('@envisageworldwide.com')) {
     document.getElementById('gate').style.display = 'none';
     err.style.display = 'none';
+    sessionStorage.setItem('env_auth','ok');
+    sessionStorage.setItem('env_user_email', email);
     _userEmail = email;
     // Pre-fill search with their email and auto-search
     document.getElementById('search_input').value = email;

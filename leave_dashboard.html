@@ -434,11 +434,20 @@ document.getElementById('gate-email').addEventListener('keydown', e => {
   if (e.key === 'Enter') checkGate();
 });
 
+(function(){
+  if(sessionStorage.getItem('env_auth')==='ok'){
+    var g=document.getElementById('gate-overlay'); if(g) g.style.display='none';
+    var m=document.getElementById('main-content'); if(m) m.style.display='block';
+    if(typeof loadData==='function') setTimeout(loadData,100);
+  }
+})();
+
 function checkGate() {
   const email = (document.getElementById('gate-email').value || '').trim().toLowerCase();
   const errEl = document.getElementById('gate-error');
   const inpEl = document.getElementById('gate-email');
   if (email.endsWith('@envisageworldwide.com')) {
+    sessionStorage.setItem('env_auth','ok');
     document.getElementById('gate-overlay').style.display = 'none';
     document.getElementById('main-content').style.display = 'block';
     loadData();
