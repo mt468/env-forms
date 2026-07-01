@@ -161,6 +161,23 @@ textarea:focus{border-color:#00b8a9;}
   .action-bar .btn{width:100%;padding:13px;}
   .deadline-box{flex-direction:column;gap:6px;text-align:center;}
 }
+
+/* ── File preview modal ──────────────────────────────────── */
+.preview-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;align-items:center;justify-content:center;}
+.preview-overlay.active{display:flex;}
+.preview-box{background:#fff;border-radius:10px;max-width:92vw;max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,.5);}
+.preview-hdr{display:flex;align-items:center;gap:12px;padding:11px 16px;background:#1a2744;color:#fff;}
+.preview-hdr-name{flex:1;font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.preview-close{background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:2px 6px;border-radius:4px;}
+.preview-close:hover{background:rgba(255,255,255,.15);}
+.preview-body{flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;background:#e8eef5;padding:16px;}
+.preview-body img{max-width:100%;max-height:78vh;border-radius:4px;box-shadow:0 2px 12px rgba(0,0,0,.25);}
+.preview-body iframe{width:78vw;height:78vh;border:none;border-radius:4px;}
+.preview-no-support{text-align:center;color:#6b7c93;padding:40px 24px;}
+.preview-no-support .pns-icon{font-size:40px;margin-bottom:12px;}
+.preview-no-support .pns-msg{font-size:14px;line-height:1.7;}
+.attach-preview-btn{background:none;border:none;color:#3a7bd5;cursor:pointer;font-size:13px;padding:2px 5px;line-height:1;flex-shrink:0;opacity:.75;border-radius:3px;}
+.attach-preview-btn:hover{opacity:1;background:#e8f0fb;}
 </style>
 </head>
 <body>
@@ -945,7 +962,9 @@ function handleFiles(input, listId){
       '<span style="font-size:16px;">📄</span>'+
       '<span class="attach-item-name">'+file.name+'</span>'+
       '<span class="attach-item-size">'+sizeKB+' KB</span>'+
+      '<button class="attach-preview-btn" type="button" title="Preview file">&#x1F441;</button>'+
       '<button class="attach-remove" onclick="this.parentElement.remove()" title="Remove">✕</button>';
+    item.querySelector('.attach-preview-btn').addEventListener('click',(function(f){return function(){_showPreview(f);};})(file));
     list.appendChild(item);
 
 // ── SUBMIT ────────────────────────────────────────────
@@ -1002,6 +1021,29 @@ function clearForm(){
 ;
   window.addEventListener('afterprint', restore);
 }
+
+// ── File preview ─────────────────────────────────────────
+function _showPreview(f){
+  var ext=f.name.split('.').pop().toLowerCase();
+  document.getElementById('previewFileName').textContent=f.name;
+  var url=URL.createObjectURL(f);
+  var body=document.getElementById('previewBody');
+  if(['jpg','jpeg','png','gif','webp','bmp','svg'].indexOf(ext)>-1){
+    body.innerHTML='<img src="'+url+'" alt="">';
+  }else if(ext==='pdf'){
+    body.innerHTML='<iframe src="'+url+'#toolbar=1"></iframe>';
+  }else{
+    var sz=f.size>1048576?(f.size/1048576).toFixed(1)+' MB':(f.size/1024).toFixed(0)+' KB';
+    body.innerHTML='<div class="preview-no-support"><div class="pns-icon">📎</div><div class="pns-msg"><strong>'+f.name+'</strong><br>'+sz+'<br><br>Preview not available for <strong>.'+ext+'</strong> files.<br>File is attached and will upload on submit.</div></div>';
+  }
+  document.getElementById('previewOverlay').classList.add('active');
+  setTimeout(function(){URL.revokeObjectURL(url);},60000);
+}
+function _closePreview(){
+  document.getElementById('previewOverlay').classList.remove('active');
+  document.getElementById('previewBody').innerHTML='';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')_closePreview();});
 </script>
 
 <script>
