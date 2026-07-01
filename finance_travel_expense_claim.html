@@ -196,6 +196,15 @@ textarea:focus{border-color:#00b8a9;}
 .preview-no-support .pns-msg{font-size:14px;line-height:1.7;}
 .attach-preview-btn{background:none;border:none;color:#3a7bd5;cursor:pointer;font-size:13px;padding:2px 5px;line-height:1;flex-shrink:0;opacity:.75;border-radius:3px;}
 .attach-preview-btn:hover{opacity:1;background:#e8f0fb;}
+
+  /* ── File Preview Overlay ───────────────────────── */
+  #previewOverlay{display:none;position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:20px;}
+  #previewOverlay.active{display:flex!important;}
+  #previewBody img{max-width:100%;max-height:68vh;border-radius:6px;object-fit:contain;display:block;}
+  #previewBody iframe{width:min(660px,80vw);height:min(520px,68vh);border:none;border-radius:6px;display:block;}
+  .preview-no-support{text-align:center;padding:32px 24px;color:#555;font-family:'Sarabun',Arial,sans-serif;}
+  .pns-icon{font-size:48px;margin-bottom:12px;}
+  .pns-msg{font-size:13px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -215,6 +224,9 @@ textarea:focus{border-color:#00b8a9;}
       onmouseover="this.style.background='#00b8a9'" onmouseout="this.style.background='#1a2744'">
       Continue →
     </button>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #eee;text-align:center;">
+      <button onclick="printEmptyForm()" style="background:none;border:none;color:#3a7bd5;font-size:12px;cursor:pointer;text-decoration:underline;font-family:'Sarabun',Arial,sans-serif;padding:0;">🖨️ Download blank form instead</button>
+    </div>
     <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE · Internal Use Only</div>
   </div>
 </div>
@@ -653,8 +665,51 @@ window.addEventListener('DOMContentLoaded', function(){
   tec.value = 'TEC-' + yy + mm + dd + '-' + String(Math.floor(1000+Math.random()*9000));
 
   // Sync dept to header
-  document.getElementById('emp_dept').addEventListener('change', function(){
-    document.getElementById('hdr_dept').value = this.value;
+  var deptEl = document.getElementById('emp_dept');
+  if(deptEl) deptEl.addEventListener('change', function(){
+    var h = document.getElementById('hdr_dept'); if(h) h.value = this.value;
+  });
+
+  // Add 3 initial expense rows
+  addRow(); addRow(); addRow();
+});
+
+// ── ADD / REMOVE EXPENSE ROW ──────────────────────────────────────
+function addRow(){
+  _rowCount++;
+  var idx = _rowCount;
+  var catOpts = CATEGORIES.map(function(c){ return '<option value="'+c+'">'+c+'</option>'; }).join('');
+  var curOpts = CURRENCIES.map(function(c){ return '<option value="'+c.code+'"'+(c.code==='THB'?' selected':'')+'>'+c.code+' — '+c.label.split('—')[1].trim()+'</option>'; }).join('');
+  var tr = document.createElement('tr');
+  tr.id = 'erow_' + idx;
+  tr.innerHTML =
+    '<td style="text-align:center;color:#888;font-weight:700;">'+idx+'</td>'+
+    '<td><select class="cat-sel" onchange="onCatChange(this)">'+catOpts+'</select></td>'+
+    '<td><input type="text" class="desc-inp" placeholder="Description / vendor name"></td>'+
+    '<td><select class="curr-sel" onchange="onCurrChange(this)">'+curOpts+'</select></td>'+
+    '<td><input type="number" class="amt-foreign" placeholder="0.00" min="0" step="0.01" oninput="updateRowThb(this.closest(\'tr\'))"></td>'+
+    '<td><input type="number" class="rate-inp" placeholder="Rate" min="0" step="0.01" oninput="updateRowThb(this.closest(\'tr\'))" style="display:none;"><span class="rate-fixed" style="font-size:11px;color:#aaa;">1.00</span></td>'+
+    '<td><input type="number" class="amt-thb" placeholder="0.00" readonly tabindex="-1" style="background:#f5f8fc;color:#1a2744;font-weight:700;"></td>'+
+    '<td style="text-align:center;"><input type="checkbox" class="rcpt-chk" title="Receipt attached"></td>'+
+    '<td><button class="del-btn" onclick="delRow('+idx+')" title="Remove row" type="button">✕</button></td>';
+  document.getElementById('exp_body').appendChild(tr);
+}
+
+// ── ADVANCE SETTLEMENT TOGGLE ─────────────────────────────────────
+function toggleAdv(){
+  var yes = document.getElementById('adv_yes').checked;
+  var fields = document.getElementById('adv_fields');
+  if(!fields) return;
+  fields.style.opacity = yes ? '1' : '.4';
+  fields.style.pointerEvents = yes ? 'auto' : 'none';
+  var advRow = document.getElementById('net_adv_row');
+  if(advRow) advRow.style.display = yes ? 'flex' : 'none';
+  if(!yes){
+    var advAmt = document.getElementById('adv_amount'); if(advAmt) advAmt.value='';
+    var advRef = document.getElementById('adv_ref');    if(advRef) advRef.value='';
+  }
+  recalcTotal();
+}
 
 function onCatChange(sel) { /* future use */ }
 
@@ -693,17 +748,25 @@ function recalcTotal() {
   var rows = document.querySelectorAll('#exp_body tr');
   var total = 0;
   rows.forEach(function(tr){
-    var v = parseFloat(tr.querySelector('.amt-thb').value) || 0;
-    total += v;
+    var thbEl = tr.querySelector('.amt-thb');
+    if(thbEl) total += parseFloat(thbEl.value) || 0;
+  });
+  var grandEl = document.getElementById('grand_total');
+  if(grandEl) grandEl.textContent = total.toFixed(2);
+  var netTotalEl = document.getElementById('net_total');
+  if(netTotalEl) netTotalEl.textContent = total.toFixed(2) + ' THB';
+
+  var advAmt = document.getElementById('adv_yes') && document.getElementById('adv_yes').checked
+    ? (parseFloat((document.getElementById('adv_amount')||{}).value) || 0) : 0;
   var net = Math.max(0, total - advAmt);
   document.getElementById('net_reimburse').textContent = net.toFixed(2) + ' THB';
 
   var advRow = document.getElementById('net_adv_row');
   if (advAmt > 0) {
-    advRow.style.display = '';
+    if(advRow) advRow.style.display = '';
     document.getElementById('net_adv').textContent = advAmt.toFixed(2) + ' THB';
   } else {
-    advRow.style.display = 'none';
+    if(advRow) advRow.style.display = 'none';
   }
 
   // Approval tier badge
@@ -751,6 +814,9 @@ document.addEventListener('DOMContentLoaded', function(){
       var tc = document.getElementById('to_city').value;
       if (fc) document.getElementById('badge_from').textContent = fc;
       if (tc) document.getElementById('badge_to').textContent   = tc;
+    });
+  });
+});
 
 // ── FILE ATTACHMENTS ──────────────────────────────────────────────────
 function onAttachChange() {
@@ -775,6 +841,9 @@ async function _readFilesB64() {
       r.onload = function(e){ res({name:f.name,type:f.type,size:f.size,b64:e.target.result.split(',')[1]}); };
       r.onerror = rej;
       r.readAsDataURL(f);
+    });
+  }));
+}
 
 // ── COLLECT EXPENSE ROWS ──────────────────────────────────────────────
 function collectExpenseRows() {
@@ -792,6 +861,9 @@ function collectExpenseRows() {
                   amount_foreign:amtF, rate_to_thb:rate,
                   amount_thb:amtT, receipt:rcpt ? 'Yes' : 'No' });
     }
+  });
+  return rows;
+}
 
 // ── VALIDATE ─────────────────────────────────────────────────────────
 function validate() {
@@ -813,6 +885,9 @@ function validate() {
       missing.push(f.label);
       if (el) el.classList.add('invalid');
     } else { el.classList.remove('invalid'); }
+  });
+  return missing;
+}
 
 // ── SUBMIT ────────────────────────────────────────────────────────────
 async function submitForm() {
@@ -901,29 +976,37 @@ async function submitForm() {
 
 
 function printEmptyForm() {
-  try {
-    var saved = [];
-    // Clear inputs & textareas
-    document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea').forEach(function(el){
-      saved.push({el:el,v:el.value,p:el.placeholder||'',t:el.getAttribute('type')||''});
-      el.value=''; el.placeholder='';
-      if((el.getAttribute('type')||'')==='date') el.setAttribute('type','text');
-    });
-    // Hide select text via inline style (keeps the underline border visible)
-    var sels=[];
-    document.querySelectorAll('select').forEach(function(sel){
-      sels.push({sel:sel,style:sel.getAttribute('style')||''});
-      sel.style.cssText=(sel.getAttribute('style')||'')+
-        ';-webkit-appearance:none!important;appearance:none!important;color:transparent!important;';
-    });
-    window.print();
-    // Restore
-    saved.forEach(function(s){
-      s.el.value=s.v; s.el.placeholder=s.p;
-      if(s.t==='date') s.el.setAttribute('type','date');
-    });
+  // Hide gate overlay while printing
+  var gateEl = document.getElementById('env_gate');
+  var gateVis = gateEl ? gateEl.style.display : '';
+  if(gateEl) gateEl.style.display = 'none';
+  // Collect gate inputs to skip
+  var gateEls = new Set();
+  if(gateEl) gateEl.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
+  // Save & clear form fields
+  var saved = [];
+  document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea').forEach(function(el){
+    if(gateEls.has(el)) return;
+    saved.push({el:el,v:el.value,p:el.placeholder||'',t:el.getAttribute('type')||''});
+    el.value=''; el.placeholder='';
+    if((el.getAttribute('type')||'')==='date') el.setAttribute('type','text');
+  });
+  var sels=[];
+  document.querySelectorAll('select').forEach(function(sel){
+    if(gateEls.has(sel)) return;
+    sels.push({sel:sel,style:sel.getAttribute('style')||''});
+    sel.style.cssText=(sel.getAttribute('style')||'')+';-webkit-appearance:none!important;appearance:none!important;color:transparent!important;';
+  });
+  function restore(){
+    clearTimeout(_t);
+    saved.forEach(function(s){ s.el.value=s.v; s.el.placeholder=s.p; if(s.t==='date') s.el.setAttribute('type','date'); });
     sels.forEach(function(s){ s.sel.setAttribute('style',s.style); });
-  } catch(e){ window.print(); }
+    if(gateEl) gateEl.style.display = gateVis;
+    window.removeEventListener('afterprint', restore);
+  }
+  var _t = setTimeout(restore, 5000);
+  window.addEventListener('afterprint', restore);
+  window.print();
 }
 
 function closeModal() {

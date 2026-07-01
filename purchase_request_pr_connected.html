@@ -272,6 +272,15 @@ input[type="checkbox"]{width:15px;height:15px;accent-color:#1a2744;cursor:pointe
 .preview-no-support .pns-msg{font-size:14px;line-height:1.7;}
 .attach-preview-btn{background:none;border:none;color:#3a7bd5;cursor:pointer;font-size:13px;padding:2px 5px;line-height:1;flex-shrink:0;opacity:.75;border-radius:3px;}
 .attach-preview-btn:hover{opacity:1;background:#e8f0fb;}
+
+  /* ── File Preview Overlay ───────────────────────── */
+  #previewOverlay{display:none;position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:20px;}
+  #previewOverlay.active{display:flex!important;}
+  #previewBody img{max-width:100%;max-height:68vh;border-radius:6px;object-fit:contain;display:block;}
+  #previewBody iframe{width:min(660px,80vw);height:min(520px,68vh);border:none;border-radius:6px;display:block;}
+  .preview-no-support{text-align:center;padding:32px 24px;color:#555;font-family:'Sarabun',Arial,sans-serif;}
+  .pns-icon{font-size:48px;margin-bottom:12px;}
+  .pns-msg{font-size:13px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -290,6 +299,9 @@ input[type="checkbox"]{width:15px;height:15px;accent-color:#1a2744;cursor:pointe
       onmouseover="this.style.background='#00b8a9'" onmouseout="this.style.background='#1a2744'">
       Continue →
     </button>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #eee;text-align:center;">
+      <button onclick="printEmptyForm()" style="background:none;border:none;color:#3a7bd5;font-size:12px;cursor:pointer;text-decoration:underline;font-family:'Sarabun',Arial,sans-serif;padding:0;">🖨️ Download blank form instead</button>
+    </div>
     <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE &nbsp;·&nbsp; Internal Use Only</div>
   </div>
 </div>
@@ -314,12 +326,14 @@ function _checkGate(){
   }
 }
 function printEmptyForm() {
-  // Exclude gate inputs — they're hidden and shouldn't be touched
+  // Hide gate overlay while printing
+  var gateEl = document.getElementById('env_gate');
+  var gateVis = gateEl ? gateEl.style.display : '';
+  if(gateEl) gateEl.style.display = 'none';
+  // Collect gate inputs to skip
   var gateEls = new Set();
-  ['env_gate','pv_gate','gate','gate-overlay'].forEach(function(id){
-    var g = document.getElementById(id);
-    if(g) g.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
-  });
+  if(gateEl) gateEl.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
+  // Save & clear form fields
   var saved = [];
   document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea').forEach(function(el){
     if(gateEls.has(el)) return;
@@ -337,6 +351,7 @@ function printEmptyForm() {
     clearTimeout(_t);
     saved.forEach(function(s){ s.el.value=s.v; s.el.placeholder=s.p; if(s.t==='date') s.el.setAttribute('type','date'); });
     sels.forEach(function(s){ s.sel.setAttribute('style',s.style); });
+    if(gateEl) gateEl.style.display = gateVis;
     window.removeEventListener('afterprint', restore);
   }
   var _t = setTimeout(restore, 5000);
@@ -431,7 +446,21 @@ function printEmptyForm() {
     <div class="sec-hdr"><div class="ico">🧳</div>1. TRIP INFORMATION</div>
     <div class="trip-grid">
       <div>
-        <div class="frow"><label>Requesting Department / Project :</label><input type="text" id="dept" placeholder="e.g. Operations" required></div>
+        <div class="frow"><label>Department :</label>
+        <select id="dept" required>
+          <option value="">— Select Department —</option>
+          <option>Administration</option>
+          <option>CMT – Executive</option>
+          <option>CMT – Operations</option>
+          <option>Commercial - SAM</option>
+          <option>Finance &amp; Accounting</option>
+          <option>Myanmar Country Research</option>
+          <option>Myanmar In-Country</option>
+          <option>Software Development</option>
+          <option>Zimbabwe Country Research</option>
+          <option>Other</option>
+        </select>
+      </div>
         <div class="frow"><label>Purpose / Description :</label><input type="text" id="purpose" placeholder="Brief purpose of trip" required></div>
         <div style="height:8px;"></div>
         <div class="frow"><label>Destination (City / Country) :</label><input type="text" id="destination" placeholder="e.g. Bangkok, Thailand" required></div>
@@ -461,16 +490,16 @@ function printEmptyForm() {
       <div class="sec-hdr"><div class="ico">💳</div>2. TRAVEL EXPENSE DETAILS</div>
       <table class="expense-table">
         <thead>
-          <tr><th>No.</th><th>Expense Type</th><th>Description / Route / Details</th><th>Estimated<br>Amount (THB)</th></tr>
+          <tr><th>No.</th><th>Expense Type</th><th>Description / Route / Details</th><th>Currency</th><th>Estimated<br>Amount</th></tr>
         </thead>
         <tbody>
-          <tr><td>1</td><td><div class="etype"><span>✈️</span> Airfare</div></td><td><input type="text" id="airfare_desc" class="desc-input" placeholder="Route / details…"></td><td><input type="number" id="airfare_amt" class="amount-input" min="0" placeholder="0" step="1"></td></tr>
-          <tr><td>2</td><td><div class="etype"><span>🏨</span> Accommodation</div></td><td><input type="text" id="accomm_desc" class="desc-input" placeholder="Hotel / nights…"></td><td><input type="number" id="accomm_amt" class="amount-input" min="0" placeholder="0" step="1"></td></tr>
-          <tr><td>3</td><td><div class="etype"><span>🚗</span><div>Transportation<br><span class="esub">(Local / Airport Transfer)</span></div></div></td><td><input type="text" id="transport_desc" class="desc-input" placeholder="Transport details…"></td><td><input type="number" id="transport_amt" class="amount-input" min="0" placeholder="0" step="1"></td></tr>
-          <tr><td>4</td><td><div class="etype"><span>🍴</span><div>Meals<br><span class="esub">(Per Diem / Actual)</span></div></div></td><td><input type="text" id="meals_desc" class="desc-input" placeholder="Meal details…"></td><td><input type="number" id="meals_amt" class="amount-input" min="0" placeholder="0" step="1"></td></tr>
-          <tr><td>5</td><td><div class="etype"><span>👥</span><div>Meeting / Seminar<br><span class="esub">(Registration Fee)</span></div></div></td><td><input type="text" id="seminar_desc" class="desc-input" placeholder="Event / seminar name…"></td><td><input type="number" id="seminar_amt" class="amount-input" min="0" placeholder="0" step="1"></td></tr>
-          <tr><td>6</td><td><div class="etype"><span>📄</span><div>Other Expenses<br><span class="esub">(Please Specify)</span></div></div></td><td><input type="text" id="other_desc" class="desc-input" placeholder="Specify expense…"></td><td><input type="number" id="other_amt" class="amount-input" min="0" placeholder="0" step="1"></td></tr>
-          <tr class="total-row"><td colspan="3">TOTAL ESTIMATED AMOUNT (THB)</td><td><span id="total-display" style="font-size:13px;">0</span></td></tr>
+          <tr><td>1</td><td><div class="etype"><span>✈️</span> Airfare</div></td><td><input type="text" id="airfare_desc" class="desc-input" placeholder="Route / details…"></td><td><select class="cur-sel"><option>THB</option><option>USD</option><option>MMK</option><option>HKD</option><option>LAK</option></select></td><td><input type="number" id="airfare_amt" class="amount-input" min="0" placeholder="0" step="0.01"></td></tr>
+          <tr><td>2</td><td><div class="etype"><span>🏨</span> Accommodation</div></td><td><input type="text" id="accomm_desc" class="desc-input" placeholder="Hotel / nights…"></td><td><select class="cur-sel"><option>THB</option><option>USD</option><option>MMK</option><option>HKD</option><option>LAK</option></select></td><td><input type="number" id="accomm_amt" class="amount-input" min="0" placeholder="0" step="0.01"></td></tr>
+          <tr><td>3</td><td><div class="etype"><span>🚗</span><div>Transportation<br><span class="esub">(Local / Airport Transfer)</span></div></div></td><td><input type="text" id="transport_desc" class="desc-input" placeholder="Transport details…"></td><td><select class="cur-sel"><option>THB</option><option>USD</option><option>MMK</option><option>HKD</option><option>LAK</option></select></td><td><input type="number" id="transport_amt" class="amount-input" min="0" placeholder="0" step="0.01"></td></tr>
+          <tr><td>4</td><td><div class="etype"><span>🍴</span><div>Meals<br><span class="esub">(Per Diem / Actual)</span></div></div></td><td><input type="text" id="meals_desc" class="desc-input" placeholder="Meal details…"></td><td><select class="cur-sel"><option>THB</option><option>USD</option><option>MMK</option><option>HKD</option><option>LAK</option></select></td><td><input type="number" id="meals_amt" class="amount-input" min="0" placeholder="0" step="0.01"></td></tr>
+          <tr><td>5</td><td><div class="etype"><span>👥</span><div>Meeting / Seminar<br><span class="esub">(Registration Fee)</span></div></div></td><td><input type="text" id="seminar_desc" class="desc-input" placeholder="Event / seminar name…"></td><td><select class="cur-sel"><option>THB</option><option>USD</option><option>MMK</option><option>HKD</option><option>LAK</option></select></td><td><input type="number" id="seminar_amt" class="amount-input" min="0" placeholder="0" step="0.01"></td></tr>
+          <tr><td>6</td><td><div class="etype"><span>📄</span><div>Other Expenses<br><span class="esub">(Please Specify)</span></div></div></td><td><input type="text" id="other_desc" class="desc-input" placeholder="Specify expense…"></td><td><select class="cur-sel"><option>THB</option><option>USD</option><option>MMK</option><option>HKD</option><option>LAK</option></select></td><td><input type="number" id="other_amt" class="amount-input" min="0" placeholder="0" step="0.01"></td></tr>
+          <tr class="total-row"><td colspan="4">TOTAL ESTIMATED AMOUNT (THB)</td><td><span id="total-display" style="font-size:13px;">0</span></td></tr>
         </tbody>
       </table>
     </div>
@@ -640,13 +669,11 @@ window.addEventListener('DOMContentLoaded', function(){
   prField.readOnly = true;
   prField.style.cssText += ';background:#f0f4f8;color:#555;cursor:default;';
   updateConnectionStatus();
-  if(SCRIPT_URL) document.getElementById('setup_banner').style.display = 'none';
-  SCRIPT_URL = url;
-  localStorage.setItem('pr_script_url', url);
-  document.getElementById('setup_ok').style.display = 'block';
-  updateConnectionStatus();
-  setTimeout(function(){ document.getElementById('setup_banner').style.display='none'; }, 1800);
-}
+  var banner = document.getElementById('setup_banner');
+  if(banner) banner.style.display = 'none';
+  var ok = document.getElementById('setup_ok');
+  if(ok) ok.style.display = 'block';
+});
 
 function updateConnectionStatus(){
   var dot   = document.getElementById('conn_dot');
@@ -663,10 +690,18 @@ function updateConnectionStatus(){
 }
 
 // ── LIVE TOTAL ──
+function calcTotal(){
+  var total = 0;
+  document.querySelectorAll('.amount-input').forEach(function(inp){
+    total += parseFloat(inp.value) || 0;
+  });
+  var el = document.getElementById('total-display');
+  if(el) el.textContent = total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return total;
+}
 document.querySelectorAll('.amount-input').forEach(function(inp){
   inp.addEventListener('input', calcTotal);
-  return sum;
-}
+});
 
 // ── ADVANCE TOGGLE ──
 function toggleAdvance(cb){
@@ -701,6 +736,9 @@ function validate(){
     var el = document.getElementById(f.id);
     if(!el.value.trim()){ missing.push(f.label); el.classList.add('invalid'); }
     else el.classList.remove('invalid');
+  });
+  return missing;
+}
 
 // ── COLLECT DATA ──
 function collectData(){
@@ -790,12 +828,19 @@ function _renderAttachList(){
       '<button class="attach-preview-btn" onclick="_openPreview('+i+')" type="button" title="Preview file">&#x1F441;</button>'+
       '<button class="attach-remove" onclick="_removeAttach('+i+')" type="button">&#x2715;</button>'+
     '</div>';
+  });
+  var totalBytes=0; _selFiles.forEach(function(f){totalBytes+=f.size;});
+  if(warn) warn.style.display=totalBytes>10485760?'block':'none';
+}
 function _readFilesB64(){
   return Promise.all(_selFiles.map(function(f){
     return new Promise(function(res){
       var r=new FileReader();
       r.onload=function(e){res({name:f.name,type:f.type,size:f.size,b64:e.target.result.split(',')[1]});};
       r.readAsDataURL(f);
+    });
+  }));
+}
 
 async function submitForm(){
   var missing = validate();
@@ -916,5 +961,16 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')_closePrevie
   });
 })();
 </script>
+
+<!-- ── File Preview Overlay ─────────────────────── -->
+<div id="previewOverlay">
+  <div style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.35);padding:22px 26px;max-width:min(720px,94vw);max-height:90vh;display:flex;flex-direction:column;gap:14px;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <span id="previewFileName" style="font-family:'Sarabun',Arial,sans-serif;font-size:14px;font-weight:600;color:#1a2744;word-break:break-all;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 44px);"></span>
+      <button onclick="_closePreview()" style="flex-shrink:0;background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:#888;padding:2px 8px;border-radius:4px;" title="Close (Esc)">✕</button>
+    </div>
+    <div id="previewBody" style="overflow:auto;flex:1;min-height:120px;display:flex;align-items:flex-start;justify-content:center;"></div>
+  </div>
+</div>
 </body>
 </html>

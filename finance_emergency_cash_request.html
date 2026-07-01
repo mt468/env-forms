@@ -237,6 +237,15 @@ input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-c
 .preview-no-support .pns-msg{font-size:14px;line-height:1.7;}
 .attach-preview-btn{background:none;border:none;color:#3a7bd5;cursor:pointer;font-size:13px;padding:2px 5px;line-height:1;flex-shrink:0;opacity:.75;border-radius:3px;}
 .attach-preview-btn:hover{opacity:1;background:#e8f0fb;}
+
+  /* ── File Preview Overlay ───────────────────────── */
+  #previewOverlay{display:none;position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:20px;}
+  #previewOverlay.active{display:flex!important;}
+  #previewBody img{max-width:100%;max-height:68vh;border-radius:6px;object-fit:contain;display:block;}
+  #previewBody iframe{width:min(660px,80vw);height:min(520px,68vh);border:none;border-radius:6px;display:block;}
+  .preview-no-support{text-align:center;padding:32px 24px;color:#555;font-family:'Sarabun',Arial,sans-serif;}
+  .pns-icon{font-size:48px;margin-bottom:12px;}
+  .pns-msg{font-size:13px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -256,6 +265,9 @@ input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-c
       onmouseover="this.style.background='#a93226'" onmouseout="this.style.background='#c0392b'">
       Continue →
     </button>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #eee;text-align:center;">
+      <button onclick="printEmptyForm()" style="background:none;border:none;color:#3a7bd5;font-size:12px;cursor:pointer;text-decoration:underline;font-family:'Sarabun',Arial,sans-serif;padding:0;">🖨️ Download blank form instead</button>
+    </div>
     <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE &nbsp;·&nbsp; Internal Use Only</div>
     <a href="https://mt468.github.io/env-forms/forms_portal.html" style="display:inline-block;margin-top:12px;font-size:11px;color:#888;text-decoration:none;">← Back to Portal</a>
   </div>
@@ -742,6 +754,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('input[name="pay_method"]').forEach(function(r){
     r.addEventListener('change', function(){
       document.getElementById('bank_row').style.display = this.value === 'Bank Transfer' ? 'flex' : 'none';
+    });
+  });
+});
 
 // ── ITEMS TABLE ──────────────────────────────────────
 var rowCount = 0;
@@ -774,6 +789,24 @@ function calcTotal() {
   document.querySelectorAll('[id^="amt_"]').forEach(function(el){
     var v = parseFloat(el.value) || 0;
     total += v;
+  });
+  var el = document.getElementById('grand_total'); if(el) el.textContent = total.toFixed(2);
+  var disp = document.getElementById('total_display'); if(disp) disp.textContent = total.toLocaleString('en',{minimumFractionDigits:2}) + ' THB';
+}
+
+// ── URGENCY SELECTION ─────────────────────────────────
+function selectUrgency(type){
+  ['critical','urgent','high'].forEach(function(t){
+    var el = document.getElementById('urg_'+t);
+    if(el) el.classList.remove('selected-critical','selected-urgent','selected-high');
+  });
+  var sel = document.getElementById('urg_'+type);
+  if(sel){
+    sel.classList.add('selected-'+type);
+    var radio = sel.querySelector('input[type="radio"]');
+    if(radio) radio.checked = true;
+  }
+}
 
 // ── APPROVAL CHANGE ───────────────────────────────────
 function handleApprovalChange() {
@@ -781,27 +814,41 @@ function handleApprovalChange() {
   document.getElementById('rejection_panel').style.display = dec === 'Rejected' ? 'block' : 'none';
 }
 
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
 // ── ATTACHMENTS ───────────────────────────────────────
+var _selFiles = [];
 function handleFiles(input) {
   var list = document.getElementById('attach_list');
   Array.from(input.files).forEach(function(file) {
     var item = document.createElement('div');
     item.className = 'attach-item';
     var sizeKB = (file.size/1024).toFixed(0);
+    _selFiles.push(file);
     item.innerHTML =
       '<span style="font-size:16px;">📄</span>'+
       '<span class="attach-item-name">'+file.name+'</span>'+
       '<span class="attach-item-size">'+sizeKB+' KB</span>'+
       '<button class="attach-preview-btn" type="button" title="Preview file">&#x1F441;</button>'+
-      '<button class="attach-remove" onclick="this.parentElement.remove()" title="Remove">✕</button>';
+      '<button class="attach-remove" type="button" title="Remove">✕</button>';
     item.querySelector('.attach-preview-btn').addEventListener('click',(function(f){return function(){_showPreview(f);};})(file));
+    item.querySelector('.attach-remove').addEventListener('click',(function(f){return function(){_selFiles.splice(_selFiles.indexOf(f),1);item.remove();};})(file));
     list.appendChild(item);
   });
   input.value = '';
 }
 
+function _readFilesB64(){
+  return Promise.all(_selFiles.map(function(f){
+    return new Promise(function(res){
+      var r=new FileReader();
+      r.onload=function(e){res({name:f.name,type:f.type,size:f.size,b64:e.target.result.split(',')[1]});};
+      r.readAsDataURL(f);
+    });
+  }));
+}
+
 // ── SUBMIT ────────────────────────────────────────────
-function submitForm() {
+async function submitForm() {
   var urgency = document.querySelector('input[name="urgency"]:checked');
   var desc = document.getElementById('emerg_desc').value.trim();
   var name = document.getElementById('emp_name').value.trim();
@@ -844,14 +891,62 @@ function submitForm() {
       totalAmt += a;
       items.push({ category: (cat && cat.value)||'', desc: desc.value, amount: a });
     }
+  });
+
+  var attachments_files = _selFiles.length > 0 ? await _readFilesB64() : [];
+
+  var payload = {
+    action:      'submit',
+    form_type:   'Emergency Cash Request',
+    pr_no:       document.getElementById('ecr_no').value,
+    pr_date:     document.getElementById('submit_date').value,
+    emp_name:    name,
+    emp_email:   email,
+    urgency:     urgency ? urgency.value : '',
+    emerg_desc:  desc,
+    cash_by:     cashBy,
+    pay_method:  document.querySelector('input[name="pay_method"]:checked') ? document.querySelector('input[name="pay_method"]:checked').value : '',
+    items:       items,
+    total_amount: totalAmt,
+    sig:         sig,
+    cc_emails:   'mallika@envisageworldwide.com',
+    attachments_files: attachments_files
+  };
+
+  var btn = document.getElementById('submit_btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…'; }
+
+  var iframe = document.getElementById('hidden_iframe');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.id = 'hidden_iframe'; iframe.name = 'hidden_iframe';
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+  }
+  var form = document.createElement('form');
+  form.method = 'POST'; form.action = SCRIPT_URL; form.target = 'hidden_iframe';
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp); document.body.appendChild(form); form.submit(); document.body.removeChild(form);
+
+  setTimeout(function(){
+    var modal = document.getElementById('modal_ecr_id');
+    if (modal) modal.textContent = payload.pr_no;
+    var overlay = document.getElementById('success_overlay');
+    if (overlay) overlay.classList.add('show');
+    if (btn) { btn.disabled = false; btn.innerHTML = '✅ Submit Request'; }
+  }, 2200);
+}
 
 function printEmptyForm() {
-  // Exclude gate inputs — they're hidden and shouldn't be touched
+  // Hide gate overlay while printing
+  var gateEl = document.getElementById('env_gate');
+  var gateVis = gateEl ? gateEl.style.display : '';
+  if(gateEl) gateEl.style.display = 'none';
+  // Collect gate inputs to skip
   var gateEls = new Set();
-  ['env_gate','pv_gate','gate','gate-overlay'].forEach(function(id){
-    var g = document.getElementById(id);
-    if(g) g.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
-  });
+  if(gateEl) gateEl.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
+  // Save & clear form fields
   var saved = [];
   document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea').forEach(function(el){
     if(gateEls.has(el)) return;
@@ -869,6 +964,7 @@ function printEmptyForm() {
     clearTimeout(_t);
     saved.forEach(function(s){ s.el.value=s.v; s.el.placeholder=s.p; if(s.t==='date') s.el.setAttribute('type','date'); });
     sels.forEach(function(s){ s.sel.setAttribute('style',s.style); });
+    if(gateEl) gateEl.style.display = gateVis;
     window.removeEventListener('afterprint', restore);
   }
   var _t = setTimeout(restore, 5000);
@@ -888,6 +984,9 @@ function clearForm() {
    'fin_name','fin_comments','rejection_reason','manager_email'].forEach(function(id){
     var el = document.getElementById(id);
     if(el) el.value = '';
+  });
+  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){cb.checked=false;});
 }
 
 
@@ -959,5 +1058,16 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')_closePrevie
   });
 })();
 </script>
+
+<!-- ── File Preview Overlay ─────────────────────── -->
+<div id="previewOverlay">
+  <div style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.35);padding:22px 26px;max-width:min(720px,94vw);max-height:90vh;display:flex;flex-direction:column;gap:14px;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <span id="previewFileName" style="font-family:'Sarabun',Arial,sans-serif;font-size:14px;font-weight:600;color:#1a2744;word-break:break-all;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 44px);"></span>
+      <button onclick="_closePreview()" style="flex-shrink:0;background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:#888;padding:2px 8px;border-radius:4px;" title="Close (Esc)">✕</button>
+    </div>
+    <div id="previewBody" style="overflow:auto;flex:1;min-height:120px;display:flex;align-items:flex-start;justify-content:center;"></div>
+  </div>
+</div>
 </body>
 </html>

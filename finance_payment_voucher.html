@@ -254,6 +254,15 @@ input[readonly]{background:#f0f4f8;color:#555;cursor:default;}
 .preview-no-support .pns-msg{font-size:14px;line-height:1.7;}
 .attach-preview-btn{background:none;border:none;color:#3a7bd5;cursor:pointer;font-size:13px;padding:2px 5px;line-height:1;flex-shrink:0;opacity:.75;border-radius:3px;}
 .attach-preview-btn:hover{opacity:1;background:#e8f0fb;}
+
+  /* ── File Preview Overlay ───────────────────────── */
+  #previewOverlay{display:none;position:fixed;inset:0;z-index:99990;background:rgba(0,0,0,.65);align-items:center;justify-content:center;padding:20px;}
+  #previewOverlay.active{display:flex!important;}
+  #previewBody img{max-width:100%;max-height:68vh;border-radius:6px;object-fit:contain;display:block;}
+  #previewBody iframe{width:min(660px,80vw);height:min(520px,68vh);border:none;border-radius:6px;display:block;}
+  .preview-no-support{text-align:center;padding:32px 24px;color:#555;font-family:'Sarabun',Arial,sans-serif;}
+  .pns-icon{font-size:48px;margin-bottom:12px;}
+  .pns-msg{font-size:13px;line-height:1.6;}
 </style>
 </head>
 <body>
@@ -322,8 +331,20 @@ function _checkGate(){
     <div class="pv-meta">
       <div class="pv-meta-badge">PV No. <input type="text" id="pv_no" readonly></div>
       <div class="pv-meta-badge">Date <input type="date" id="pv_date"></div>
-      <div class="pv-meta-badge">Dept./Project
-        <input type="text" id="dept" placeholder="Auto-filled or type">
+      <div class="pv-meta-badge">Department
+        <select id="dept">
+          <option value="">— Select —</option>
+          <option>Administration</option>
+          <option>CMT – Executive</option>
+          <option>CMT – Operations</option>
+          <option>Commercial - SAM</option>
+          <option>Finance &amp; Accounting</option>
+          <option>Myanmar Country Research</option>
+          <option>Myanmar In-Country</option>
+          <option>Software Development</option>
+          <option>Zimbabwe Country Research</option>
+          <option>Other</option>
+        </select>
       </div>
       <div class="pv-meta-badge company-badge">🏢 Company
         <input type="text" id="company" readonly placeholder="Auto-filled">
@@ -745,7 +766,7 @@ function _checkGate(){
     </div>
     <label class="attach-upload-btn">
       Choose Files
-      <input type="file" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" onchange="onAttachChange()" style="display:none;">
+      <input type="file" id="attachment_input" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" onchange="onAttachChange()" style="display:none;">
     </label>
     <div class="attach-list" id="attach_list"></div>
     <div class="attach-size-warn" id="attach_size_warn" style="display:none;">⚠️ One or more files exceed 4 MB and will be skipped.</div>
@@ -770,6 +791,22 @@ function _checkGate(){
 
 <script>
 var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
+
+window.addEventListener('DOMContentLoaded', function(){
+  var d = new Date();
+  var today = d.toISOString().slice(0,10);
+  var stamp = 'PV-' + d.getFullYear().toString().slice(2) +
+    String(d.getMonth()+1).padStart(2,'0') + String(d.getDate()).padStart(2,'0') +
+    '-' + Math.floor(1000+Math.random()*9000);
+  var pvNo = document.getElementById('pv_no');
+  if(pvNo && !pvNo.value) pvNo.value = stamp;
+  var pvDate = document.getElementById('pv_date');
+  if(pvDate && !pvDate.value) pvDate.value = today;
+  var certDate = document.getElementById('cert_date');
+  if(certDate && !certDate.value) certDate.value = today;
+  // Start with 3 item rows
+  addItemRow(); addItemRow(); addItemRow();
+});
 
 // ── AUTO-FILL FROM STAFF SELECTOR ────────────────────────────────
 function onStaffSelect(){
@@ -834,6 +871,17 @@ function recalc(){
     var amtCell = tr.querySelector('.row-amt');
     if(amtCell) amtCell.value = amt > 0 ? amt.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}) : '';
     subtotal += amt;
+  });
+  _totalAmt = subtotal;
+  _netAmt   = subtotal;
+  var pvTotal = document.getElementById('pv_total');
+  if(pvTotal) pvTotal.value = subtotal.toFixed(2);
+  // Update approval tier badge if present
+  var cfg = typeof getEmailConfig === 'function' ? getEmailConfig(subtotal) : null;
+  var badge = document.getElementById('appr_tier_badge');
+  var text  = document.getElementById('appr_tier_text');
+  if(cfg && badge && text){ badge.style.background=cfg.bg; badge.style.borderColor=cfg.border; badge.style.color=cfg.color; text.textContent=cfg.label; }
+}
 function toggleWHT(){
   document.getElementById('wht_rate').disabled = !document.getElementById('wht_toggle').checked;
   recalc();
@@ -874,6 +922,9 @@ function _readFilesB64(){
       var r = new FileReader();
       r.onload = function(e){ res({name:f.name,type:f.type,size:f.size,b64:e.target.result.split(',')[1]}); };
       r.readAsDataURL(f);
+    });
+  }));
+}
 
 // ── COLLECT ITEMS ─────────────────────────────────────────────────
 function collectItems(){
@@ -885,6 +936,9 @@ function collectItems(){
     var qty   = parseFloat(numInputs[0] ? numInputs[0].value : 0)||0;
     var price = parseFloat(numInputs[1] ? numInputs[1].value : 0)||0;
     if(desc || qty || price) items.push({no:i+1,desc:desc,qty:qty,price:price,amount:qty*price});
+  });
+  return items;
+}
 
 // ── VALIDATE ─────────────────────────────────────────────────────
 function validate(){
@@ -899,16 +953,21 @@ function validate(){
     var el = document.getElementById(f.id);
     if(!el || !el.value.trim()){ missing.push(f.label); if(el) el.classList.add('invalid'); }
     else el.classList.remove('invalid');
+  });
+  return missing;
+}
 
 // ── SUBMIT ───────────────────────────────────────────────────────
 var _submitting = false;
 function printEmptyForm() {
-  // Exclude gate inputs — they're hidden and shouldn't be touched
+  // Hide gate overlay while printing
+  var gateEl = document.getElementById('env_gate');
+  var gateVis = gateEl ? gateEl.style.display : '';
+  if(gateEl) gateEl.style.display = 'none';
+  // Collect gate inputs to skip
   var gateEls = new Set();
-  ['env_gate','pv_gate','gate','gate-overlay'].forEach(function(id){
-    var g = document.getElementById(id);
-    if(g) g.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
-  });
+  if(gateEl) gateEl.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
+  // Save & clear form fields
   var saved = [];
   document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea').forEach(function(el){
     if(gateEls.has(el)) return;
@@ -926,6 +985,7 @@ function printEmptyForm() {
     clearTimeout(_t);
     saved.forEach(function(s){ s.el.value=s.v; s.el.placeholder=s.p; if(s.t==='date') s.el.setAttribute('type','date'); });
     sels.forEach(function(s){ s.sel.setAttribute('style',s.style); });
+    if(gateEl) gateEl.style.display = gateVis;
     window.removeEventListener('afterprint', restore);
   }
   var _t = setTimeout(restore, 5000);
@@ -1111,5 +1171,16 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')_closePrevie
   });
 })();
 </script>
+
+<!-- ── File Preview Overlay ─────────────────────── -->
+<div id="previewOverlay">
+  <div style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.35);padding:22px 26px;max-width:min(720px,94vw);max-height:90vh;display:flex;flex-direction:column;gap:14px;overflow:hidden;">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+      <span id="previewFileName" style="font-family:'Sarabun',Arial,sans-serif;font-size:14px;font-weight:600;color:#1a2744;word-break:break-all;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:calc(100% - 44px);"></span>
+      <button onclick="_closePreview()" style="flex-shrink:0;background:none;border:none;font-size:24px;line-height:1;cursor:pointer;color:#888;padding:2px 8px;border-radius:4px;" title="Close (Esc)">✕</button>
+    </div>
+    <div id="previewBody" style="overflow:auto;flex:1;min-height:120px;display:flex;align-items:flex-start;justify-content:center;"></div>
+  </div>
+</div>
 </body>
 </html>
