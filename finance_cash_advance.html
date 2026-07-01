@@ -700,7 +700,7 @@ function addRow(){
     '<td><input type="text" class="est-desc" placeholder="Details / vendor / notes"></td>' +
     '<td><select class="est-cur" onchange="updateEstRowThb(this.closest(\'tr\'))"><option>THB</option><option>USD</option><option>MMK</option><option>HKD</option><option>LAK</option></select></td>' +
     '<td><input type="number" class="est-amt" placeholder="0.00" min="0" step="0.01" oninput="updateEstRowThb(this.closest(\'tr\'))"></td>' +
-    '<td><input type="number" class="est-rate est-rate-locked" placeholder="—" value="1" readonly tabindex="-1" oninput="updateEstRowThb(this.closest(\'tr\'))"></td>' +
+    '<td><input type="number" class="est-rate est-rate-locked" placeholder="—" value="1" disabled oninput="updateEstRowThb(this.closest(\'tr\'))"></td>' +
     '<td><input type="number" class="est-amt-thb" placeholder="0.00" readonly tabindex="-1"></td>' +
     '<td><button class="del-btn" onclick="delRow(\'row_'+rowCount+'\')" title="Remove">✕</button></td>';
   tbody.appendChild(tr);
@@ -712,18 +712,15 @@ function updateEstRowThb(tr) {
   var rateEl = tr.querySelector('.est-rate');
   var thbEl  = tr.querySelector('.est-amt-thb');
   if (cur === 'THB') {
-    rateEl.readOnly  = true;
-    rateEl.tabIndex  = -1;
-    rateEl.value     = '1';
-    rateEl.placeholder = '—';
+    rateEl.disabled = true;
+    rateEl.value    = '1';
     rateEl.classList.add('est-rate-locked');
     thbEl.value = amt > 0 ? amt.toFixed(2) : '';
   } else {
-    rateEl.readOnly  = false;
-    rateEl.tabIndex  = 0;
-    rateEl.placeholder = 'e.g. 35.50';
+    var switching = rateEl.classList.contains('est-rate-locked');
+    rateEl.disabled = false;
     rateEl.classList.remove('est-rate-locked');
-    if (rateEl.value === '1') rateEl.value = '';
+    if (switching) { rateEl.value = ''; rateEl.focus(); }
     var rate = parseFloat(rateEl.value) || 0;
     thbEl.value = (amt > 0 && rate > 0) ? (amt * rate).toFixed(2) : '';
   }
