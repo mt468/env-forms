@@ -181,6 +181,9 @@ textarea:focus{border-color:#00b8a9;}
       onmouseover="this.style.background='#00b8a9'" onmouseout="this.style.background='#1a2744'">
       Continue →
     </button>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #eee;text-align:center;">
+      <button onclick="printEmptyForm()" style="background:none;border:none;color:#3a7bd5;font-size:12px;cursor:pointer;text-decoration:underline;font-family:'Sarabun',Arial,sans-serif;padding:0;">🖨️ Download blank form instead</button>
+    </div>
     <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE &nbsp;·&nbsp; Internal Use Only</div>
   </div>
 </div>
@@ -398,8 +401,8 @@ function _checkGate(){
   <div class="sec-hdr"><div class="ico">📅</div>3. LEAVE DATES & DURATION</div>
   <div class="section">
     <div class="three-col">
-      <div class="frow"><label>Start Date :</label><input type="date" id="date_from" onchange="calcDays()" required></div>
-      <div class="frow"><label>End Date :</label><input type="date" id="date_to" onchange="calcDays()" required></div>
+      <div class="frow"><label>Start Date :</label><input type="date" id="date_from" onchange="calcDays()" oninput="calcDays()" required></div>
+      <div class="frow"><label>End Date :</label><input type="date" id="date_to" onchange="calcDays()" oninput="calcDays()" required></div>
       <div class="frow">
         <label>Session :</label>
         <select id="session" onchange="calcDays()">
@@ -538,6 +541,7 @@ window.addEventListener('DOMContentLoaded', function(){
   f.value = generateFormNo('LR'); f.readOnly = true;
   f.style.cssText += ';background:#f0f4f8;color:#555;cursor:default;';
   calcDays();
+});
 
 function calcDays(){
   var from = document.getElementById('date_from').value;
@@ -582,6 +586,9 @@ function validate(){
     var el = document.getElementById(f.id);
     if(!el.value.trim()){ missing.push(f.label); el.classList.add('invalid'); }
     else el.classList.remove('invalid');
+  });
+  return missing;
+}
 
 function submitForm(){
   var missing = validate();
@@ -647,12 +654,14 @@ function submitForm(){
 }
 
 function printEmptyForm() {
-  // Exclude gate inputs — they're hidden and shouldn't be touched
+  // Hide gate overlay while printing
+  var gateEl = document.getElementById('env_gate');
+  var gateVis = gateEl ? gateEl.style.display : '';
+  if(gateEl) gateEl.style.display = 'none';
+  // Collect gate inputs to skip
   var gateEls = new Set();
-  ['env_gate','pv_gate','gate','gate-overlay'].forEach(function(id){
-    var g = document.getElementById(id);
-    if(g) g.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
-  });
+  if(gateEl) gateEl.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
+  // Save & clear form fields
   var saved = [];
   document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea').forEach(function(el){
     if(gateEls.has(el)) return;
@@ -670,6 +679,7 @@ function printEmptyForm() {
     clearTimeout(_t);
     saved.forEach(function(s){ s.el.value=s.v; s.el.placeholder=s.p; if(s.t==='date') s.el.setAttribute('type','date'); });
     sels.forEach(function(s){ s.sel.setAttribute('style',s.style); });
+    if(gateEl) gateEl.style.display = gateVis;
     window.removeEventListener('afterprint', restore);
   }
   var _t = setTimeout(restore, 5000);
