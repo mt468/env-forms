@@ -697,15 +697,22 @@ function closeModal(){
 }
 
 function clearForm(){
+  if(!confirm('Clear all entered data?')) return;
   var today = new Date().toISOString().split('T')[0];
-  ['emp_name','emp_id','emp_dept','emp_position','emp_email','emp_phone','emp_manager',
+  ['emp_name','emp_id','emp_position','emp_email','emp_phone','emp_manager',
    'wfh_location','tasks'].forEach(function(id){
     var el=document.getElementById(id); if(el) el.value='';
   });
-  document.getElementById('wfh_from').value = today;
-  document.getElementById('wfh_to').value = today;
-  document.querySelectorAll('select').forEach(function(s){s.selectedIndex=0;});
-  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){cb.checked=false;});
+  document.getElementById('date_from').value = today;
+  document.getElementById('date_to').value   = today;
+  document.querySelectorAll('select').forEach(function(s){ s.selectedIndex=0; });
+  document.querySelectorAll('input[type=radio]').forEach(function(r){ r.checked=false; });
+  document.querySelectorAll('input[type=checkbox]').forEach(function(cb){ cb.checked=false; });
+  document.querySelectorAll('.conn-card').forEach(function(c){ c.classList.remove('selected'); });
+  document.querySelectorAll('.invalid').forEach(function(el){ el.classList.remove('invalid'); });
+  document.getElementById('val_msg').style.display = 'none';
+  document.getElementById('wfh_no').value = generateFormNo('WFH');
+  calcDays();
 }
 
 </script>

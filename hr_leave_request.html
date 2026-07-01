@@ -687,6 +687,27 @@ function printEmptyForm() {
   window.print();
 }
 
+function clearForm(){
+  if(!confirm('Clear all entered data?')) return;
+  var today = new Date().toISOString().split('T')[0];
+  ['emp_name','emp_manager'].forEach(function(id){
+    var el=document.getElementById(id); if(el){ el.value=''; el.classList.remove('invalid'); }
+  });
+  ['emp_email'].forEach(function(id){
+    var el=document.getElementById(id); if(el){ el.value=''; el.classList.remove('invalid'); }
+  });
+  document.querySelectorAll('select').forEach(function(s){ s.selectedIndex=0; s.classList.remove('invalid'); });
+  document.getElementById('date_from').value = today;
+  document.getElementById('date_to').value   = today;
+  document.getElementById('return_date').value = '';
+  document.getElementById('submit_date').value = today;
+  document.getElementById('lr_no').value = generateFormNo('LR');
+  document.querySelectorAll('textarea').forEach(function(t){ t.value=''; });
+  document.querySelectorAll('.invalid').forEach(function(el){ el.classList.remove('invalid'); });
+  document.getElementById('val_msg').style.display = 'none';
+  calcDays();
+}
+
 function closeModal(){
   document.getElementById('success_overlay').classList.remove('show');
   location.reload();
