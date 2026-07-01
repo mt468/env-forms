@@ -919,10 +919,26 @@ function closeModal(){
 }
 
 function printEmptyForm() {
-  // Save all field values and placeholders
-  var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea');
-  var saved = Array.from(fields).map(function(el) {
-    return { el: el, value: el.value, placeholder: el.placeholder || '' };
+  var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),select,textarea');
+  var saved = Array.from(fields).map(function(el){
+    return {el:el,value:el.value,ph:el.placeholder||'',type:el.getAttribute('type')||''};
+  });
+  saved.forEach(function(s){
+    s.el.value=''; s.el.placeholder='';
+    if(s.type==='date') s.el.setAttribute('type','text');
+  });
+  document.body.classList.add('print-empty');
+  window.print();
+  function restore(){
+    saved.forEach(function(s){
+      s.el.value=s.value; s.el.placeholder=s.ph;
+      if(s.type==='date') s.el.setAttribute('type','date');
+    });
+    document.body.classList.remove('print-empty');
+    window.removeEventListener('afterprint',restore);
+  }
+  window.addEventListener('afterprint',restore);
+};
   });
   // Clear everything
   saved.forEach(function(s) { s.el.value = ''; s.el.placeholder = ''; });

@@ -553,6 +553,7 @@ function _checkGate(){
     <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
     <button class="btn btn-navy" onclick="window.print()">🖨 Print / PDF</button>
     <button class="btn btn-primary" onclick="submitForm()">✈ Submit Claim →</button>
+    <button class="btn btn-outline" onclick="printEmptyForm()" style="background:#fff;color:#1a2744;border:2px solid #1a2744;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='#fff'">🖨️ Download Empty Form</button>
     <a href="Expense_Claim_No_Receipt_Declaration.xlsx" download class="btn btn-outline" style="background:#fff;color:#00b8a9;border:2px solid #00b8a9;text-decoration:none;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#eafaf8'" onmouseout="this.style.background='#fff'">📋 No-Receipt Declaration Form</a>
   </div>
 
@@ -957,6 +958,28 @@ async function submitForm() {
 }
 
 // ── MODAL / CLEAR ─────────────────────────────────────────────────────
+function printEmptyForm() {
+  var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),select,textarea');
+  var saved = Array.from(fields).map(function(el){
+    return {el:el,value:el.value,ph:el.placeholder||'',type:el.getAttribute('type')||''};
+  });
+  saved.forEach(function(s){
+    s.el.value=''; s.el.placeholder='';
+    if(s.type==='date') s.el.setAttribute('type','text');
+  });
+  document.body.classList.add('print-empty');
+  window.print();
+  function restore(){
+    saved.forEach(function(s){
+      s.el.value=s.value; s.el.placeholder=s.ph;
+      if(s.type==='date') s.el.setAttribute('type','date');
+    });
+    document.body.classList.remove('print-empty');
+    window.removeEventListener('afterprint',restore);
+  }
+  window.addEventListener('afterprint',restore);
+}
+
 function closeModal() {
   document.getElementById('success_overlay').style.display = 'none';
   location.reload();
