@@ -891,15 +891,6 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('conn_dot').className='connection-dot ok';
     document.getElementById('conn_label').textContent='Connected';
   },1200);
-});
-
-// ── TABS ──────────────────────────────────────────────
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
-  document.getElementById('panel_'+name).classList.add('active');
-  btn.classList.add('active');
-}
 
 // ── UPDATE CHIP TOGGLE ────────────────────────────────
 function toggleChip(cb, chipId) {
@@ -956,9 +947,6 @@ function handleFiles(input, listId){
       '<span class="attach-item-size">'+sizeKB+' KB</span>'+
       '<button class="attach-remove" onclick="this.parentElement.remove()" title="Remove">✕</button>';
     list.appendChild(item);
-  });
-  input.value='';
-}
 
 // ── SUBMIT ────────────────────────────────────────────
 var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
@@ -980,139 +968,6 @@ function submitForm(){
   ['address','passport','visa','90day','tm30','other'].forEach(function(s){
     var cb = document.querySelector('#chip_'+s+' input[type="checkbox"]');
     if(cb && cb.checked) sections.push(s);
-  });
-
-  var refNo = document.getElementById('ref_no').value;
-
-  var payload = {
-    form_type      : 'Staff Info Update',
-    ref_no         : refNo,
-    req_date       : document.getElementById('submit_date').value,
-    // Personal
-    emp_name       : name,
-    emp_name_mm    : document.getElementById('emp_name_mm').value,
-    emp_id         : document.getElementById('emp_id').value,
-    dob            : document.getElementById('dob').value,
-    position       : document.getElementById('position').value,
-    dept           : document.getElementById('dept').value,
-    emp_email      : email,
-    emp_contact    : document.getElementById('emp_contact').value,
-    nationality    : document.getElementById('nationality').value,
-    nrc_no         : document.getElementById('nrc_no').value,
-    emergency_contact : document.getElementById('emergency_contact').value,
-    sections_to_update: sections.join(', '),
-    reason         : document.getElementById('update_reason').value,
-    // Address – Thailand
-    addr1_th       : document.getElementById('addr1_th').value,
-    addr2_th       : document.getElementById('addr2_th').value,
-    tambon         : document.getElementById('tambon').value,
-    amphoe         : document.getElementById('amphoe').value,
-    province       : document.getElementById('province').value,
-    postcode       : document.getElementById('postcode').value,
-    addr_moved_in  : document.getElementById('addr_moved_in').value,
-    landlord_name  : document.getElementById('landlord_name').value,
-    landlord_phone : document.getElementById('landlord_phone').value,
-    // Address – Myanmar
-    mm_addr1       : document.getElementById('mm_addr1').value,
-    mm_addr2       : document.getElementById('mm_addr2').value,
-    mm_township    : document.getElementById('mm_township').value,
-    mm_city        : document.getElementById('mm_city').value,
-    mm_emergency   : document.getElementById('mm_emergency').value,
-    // Passport
-    pp_status      : (document.querySelector('input[name="pp_status"]:checked') || {}).value || '',
-    pp_no          : document.getElementById('pp_no').value,
-    pp_type        : document.getElementById('pp_type').value,
-    pp_issue       : document.getElementById('pp_issue').value,
-    pp_expiry      : document.getElementById('pp_expiry').value,
-    pp_country     : document.getElementById('pp_country').value,
-    pp_place       : document.getElementById('pp_place').value,
-    pp_authority   : document.getElementById('pp_authority').value,
-    pp_old_no      : document.getElementById('pp_old_no').value,
-    pp_notes       : document.getElementById('pp_notes').value,
-    // Visa
-    visa_status    : (document.querySelector('input[name="visa_status"]:checked') || {}).value || '',
-    visa_type      : document.getElementById('visa_type').value,
-    visa_entry     : document.getElementById('visa_entry').value,
-    visa_issue     : document.getElementById('visa_issue').value,
-    visa_expiry    : document.getElementById('visa_expiry').value,
-    visa_stay_until: document.getElementById('visa_stay_until').value,
-    visa_stamp_no  : document.getElementById('visa_stamp_no').value,
-    visa_issued_at : document.getElementById('visa_issued_at').value,
-    visa_notes     : document.getElementById('visa_notes').value,
-    wp_no          : document.getElementById('wp_no').value,
-    wp_expiry      : document.getElementById('wp_expiry').value,
-    wp_office      : document.getElementById('wp_office').value,
-    wp_occupation  : document.getElementById('wp_occupation').value,
-    // 90-Day Report
-    r90_last_date  : document.getElementById('r90_last_date').value,
-    r90_next_due   : document.getElementById('r90_next_due').value,
-    r90_method     : (document.querySelector('input[name="r90_method"]:checked') || {}).value || '',
-    r90_receipt_no : document.getElementById('r90_receipt_no').value,
-    r90_office     : document.getElementById('r90_office').value,
-    r90_notes      : document.getElementById('r90_notes').value,
-    // TM30
-    tm30_type      : (document.querySelector('input[name="tm30_type"]:checked') || {}).value || '',
-    tm30_arrival   : document.getElementById('tm30_arrival').value,
-    tm30_deadline  : document.getElementById('tm30_deadline').value,
-    tm30_addr      : document.getElementById('tm30_addr').value,
-    tm30_province  : document.getElementById('tm30_province').value,
-    tm30_jurisdiction: document.getElementById('tm30_jurisdiction').value,
-    tm30_ref_no    : document.getElementById('tm30_ref_no').value,
-    tm30_filer     : (document.querySelector('input[name="tm30_filer"]:checked') || {}).value || '',
-    tm30_notes     : document.getElementById('tm30_notes').value,
-    // Other
-    other_doc_type : document.getElementById('other_doc_type').value,
-    other_desc     : document.getElementById('other_desc').value,
-    other_doc_date : document.getElementById('other_doc_date').value,
-    other_expiry   : document.getElementById('other_expiry').value,
-    other_ref_no   : document.getElementById('other_ref_no').value,
-    other_action   : document.getElementById('other_action').value,
-    // For email / tracker
-    purpose        : sections.length ? 'Update: ' + sections.join(', ') : 'Staff information update',
-    description    : document.getElementById('update_reason').value,
-    cert_name      : name,
-    cert_date      : document.getElementById('submit_date').value,
-    cc_emails      : 'admin@envisageworldwide.com, gift@envisageworldwide.com'
-  };
-
-  var btn = document.getElementById('submit_btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Submitting…';
-
-  // iframe POST (CORS-safe)
-  var form = document.createElement('form');
-  form.method = 'POST';
-  form.action = SCRIPT_URL;
-  form.target = 'hidden_iframe';
-  var inp = document.createElement('input');
-  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
-  form.appendChild(inp);
-  document.body.appendChild(form);
-  form.submit();
-  document.body.removeChild(form);
-
-  setTimeout(function(){
-    document.getElementById('modal_ref_id').textContent = refNo;
-    document.getElementById('success_overlay').classList.add('show');
-    btn.disabled = false;
-    btn.innerHTML = '✅ Submit Update to HR';
-  }, 5000);
-}
-
-function closeModal(){
-  document.getElementById('success_overlay').classList.remove('show');
-}
-
-function clearForm(){
-  document.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"],input[type="date"],input[type="time"],input[type="url"],textarea').forEach(function(el){
-    if(el.id!=='ref_no' && el.id!=='submit_date') el.value='';
-  });
-  document.querySelectorAll('select').forEach(function(el){ el.selectedIndex=0; });
-  document.querySelectorAll('input[type="radio"],input[type="checkbox"]').forEach(function(el){ el.checked=false; });
-  document.querySelectorAll('[id^="attach_list_"]').forEach(function(el){ el.innerHTML=''; });
-  document.querySelectorAll('.update-chip').forEach(function(c){ c.classList.remove('checked'); });
-  document.getElementById('val_msg').style.display='none';
-}
 
 function printEmptyForm() {
   var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),select,textarea');
@@ -1134,18 +989,17 @@ function printEmptyForm() {
     window.removeEventListener('afterprint',restore);
   }
   window.addEventListener('afterprint',restore);
-};
-  });
-  // Clear everything
-  saved.forEach(function(s) { s.el.value = ''; s.el.placeholder = ''; });
-  document.body.classList.add('print-empty');
-  window.print();
-  // Restore after print dialog closes
-  function restore() {
-    saved.forEach(function(s) { s.el.value = s.value; s.el.placeholder = s.placeholder; });
-    document.body.classList.remove('print-empty');
-    window.removeEventListener('afterprint', restore);
-  }
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+}
+
+function clearForm(){
+  document.querySelectorAll('input[type="text"],input[type="email"],input[type="tel"],input[type="date"],input[type="time"],input[type="url"],textarea').forEach(function(el){
+    if(el.id!=='ref_no' && el.id!=='submit_date') el.value='';
+
+;
   window.addEventListener('afterprint', restore);
 }
 </script>
@@ -1160,38 +1014,4 @@ function printEmptyForm() {
   var inputs=Array.from(document.querySelectorAll("input[type=email]")).filter(function(el){
     var id=(el.id||"").toLowerCase();
     return id!=="personal_email";
-  });
-  inputs.forEach(function(el){
-    var wrap=document.createElement("div");
-    wrap.style.cssText="position:relative;flex:1;min-width:0;";
-    el.parentNode.insertBefore(wrap,el);
-    wrap.appendChild(el);
-    el.style.width="100%";el.style.boxSizing="border-box";
-    var drop=document.createElement("div");
-    drop.className="es-drop";drop.style.display="none";drop.tabIndex=-1;
-    wrap.appendChild(drop);
-    el.addEventListener("input",function(){
-      var v=el.value;
-      if(!v||v.indexOf("@")!==-1){drop.style.display="none";return;}
-      drop.innerHTML=v+"<b>"+DOMAIN+"</b><small>Tab / ↵ to fill</small>";
-      drop._full=v+DOMAIN;drop.style.display="block";
-    });
-    el.addEventListener("keydown",function(e){
-      if(drop.style.display==="none")return;
-      if(e.key==="Escape"){drop.style.display="none";return;}
-      if(e.key==="Tab"||e.key==="Enter"){
-        e.preventDefault();el.value=drop._full;drop.style.display="none";
-        el.dispatchEvent(new Event("input",{bubbles:true}));
-        if(e.key==="Tab"){
-          var all=Array.from(document.querySelectorAll("input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled])"));
-          var i=all.indexOf(el);if(i>=0&&all[i+1])all[i+1].focus();
-        }
       }
-    });
-    el.addEventListener("blur",function(){setTimeout(function(){drop.style.display="none";},160);});
-    drop.addEventListener("mousedown",function(e){e.preventDefault();el.value=drop._full;drop.style.display="none";el.dispatchEvent(new Event("input",{bubbles:true}));el.focus();});
-  });
-})();
-</script>
-</body>
-</html>

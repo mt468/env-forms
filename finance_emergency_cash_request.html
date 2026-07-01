@@ -725,26 +725,6 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('input[name="pay_method"]').forEach(function(r){
     r.addEventListener('change', function(){
       document.getElementById('bank_row').style.display = this.value === 'Bank Transfer' ? 'flex' : 'none';
-    });
-  });
-
-  // Manager email toggle
-  document.getElementById('notify_manager').addEventListener('change', function(){
-    document.getElementById('manager_email_row').style.display = this.checked ? 'flex' : 'none';
-  });
-});
-
-// ── URGENCY SELECTOR ──────────────────────────────────
-function selectUrgency(level) {
-  ['critical','urgent','high'].forEach(function(l){
-    var el = document.getElementById('urg_'+l);
-    el.className = 'urgency-opt';
-    el.querySelector('input[type="radio"]').checked = false;
-  });
-  var sel = document.getElementById('urg_'+level);
-  sel.classList.add('selected-'+level);
-  sel.querySelector('input[type="radio"]').checked = true;
-}
 
 // ── ITEMS TABLE ──────────────────────────────────────
 var rowCount = 0;
@@ -777,11 +757,6 @@ function calcTotal() {
   document.querySelectorAll('[id^="amt_"]').forEach(function(el){
     var v = parseFloat(el.value) || 0;
     total += v;
-  });
-  var fmt = total.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-  document.getElementById('grand_total').textContent = fmt;
-  document.getElementById('total_display').textContent = fmt;
-}
 
 // ── APPROVAL CHANGE ───────────────────────────────────
 function handleApprovalChange() {
@@ -802,9 +777,6 @@ function handleFiles(input) {
       '<span class="attach-item-size">'+sizeKB+' KB</span>'+
       '<button class="attach-remove" onclick="this.parentElement.remove()" title="Remove">✕</button>';
     list.appendChild(item);
-  });
-  input.value = '';
-}
 
 // ── SUBMIT ────────────────────────────────────────────
 function submitForm() {
@@ -850,110 +822,6 @@ function submitForm() {
       totalAmt += a;
       items.push({ category: (cat && cat.value)||'', desc: desc.value, amount: a });
     }
-  });
-
-  var ecrNo = document.getElementById('ecr_no').value;
-  var payload = {
-    form_type      : 'Emergency Cash Request',
-    ref_no         : ecrNo,
-    req_date       : document.getElementById('submit_date').value,
-    dept           : document.getElementById('dept').value,
-    emp_name       : name,
-    emp_id         : document.getElementById('emp_id').value,
-    position       : document.getElementById('position').value,
-    emp_email      : email,
-    emp_contact    : document.getElementById('emp_contact').value,
-    urgency        : urgency ? urgency.value : '',
-    emerg_type     : document.getElementById('emerg_type').value,
-    purpose        : document.getElementById('emerg_desc').value,
-    emerg_location : document.getElementById('emerg_location').value,
-    cash_by        : cashBy,
-    cash_by_time   : document.getElementById('cash_by_time').value,
-    items          : JSON.stringify(items),
-    total_amount   : totalAmt,
-    bank_info      : document.getElementById('bank_info').value,
-    pay_notes      : document.getElementById('pay_notes').value,
-    settle_date    : document.getElementById('settle_date').value,
-    est_receipt    : document.getElementById('est_receipt').value,
-    req_sig        : sig,
-    cert_name      : name,
-    cert_date      : document.getElementById('req_date') ? document.getElementById('req_date').value : document.getElementById('submit_date').value,
-    description    : document.getElementById('emerg_desc').value,
-    approval_tier  : getEmailConfig(totalAmt).label,
-    approvers      : getEmailConfig(totalAmt).approvers.join(', '),
-    cc_emails      : getEmailConfig(totalAmt).cc,
-  };
-
-  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
-  var btn = document.getElementById('submit_btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Submitting…';
-
-  var form = document.createElement('form');
-  form.method = 'POST';
-  form.action = SCRIPT_URL;
-  form.target = 'hidden_iframe';
-  var inp = document.createElement('input');
-  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
-  form.appendChild(inp);
-  document.body.appendChild(form);
-  form.submit();
-  document.body.removeChild(form);
-
-  setTimeout(function(){
-    document.getElementById('modal_ecr_id').textContent = ecrNo;
-    document.getElementById('success_overlay').classList.add('show');
-    btn.disabled = false;
-    btn.innerHTML = '\U0001f6a8 Submit Emergency Request';
-  }, 5000);
-}
-
-function closeModal() {
-  document.getElementById('success_overlay').classList.remove('show');
-  clearForm();
-}
-
-function clearForm() {
-  ['emp_name','emp_id','position','emp_email','emp_contact','emerg_desc',
-   'emerg_location','cash_by','cash_by_time','pay_notes','bank_info',
-   'settle_date','est_receipt','req_sig','dir_name','dir_comments',
-   'fin_name','fin_comments','rejection_reason','manager_email'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.value = '';
-  });
-  ['dept','emerg_type','dir_decision','fin_decision'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.selectedIndex = 0;
-  });
-  document.querySelectorAll('input[type="checkbox"]').forEach(function(cb){
-    cb.checked = (cb.id === 'notify_director' || cb.id === 'notify_finance' || cb.id === 'notify_self');
-  });
-  document.querySelectorAll('input[name="urgency"]').forEach(function(r){ r.checked = false; });
-  ['critical','urgent','high'].forEach(function(l){
-    var el = document.getElementById('urg_'+l);
-    if(el) el.className = 'urgency-opt';
-  });
-  document.getElementById('est_body').innerHTML = '';
-  document.getElementById('attach_list').innerHTML = '';
-  rowCount = 0;
-  addRow(); addRow(); addRow();
-  calcTotal();
-  document.getElementById('rejection_panel').style.display = 'none';
-  document.getElementById('bank_row').style.display = 'none';
-  document.getElementById('manager_email_row').style.display = 'none';
-  document.getElementById('val_msg').style.display = 'none';
-  var today = new Date();
-  var dd   = String(today.getDate()).padStart(2,'0');
-  var mm   = String(today.getMonth()+1).padStart(2,'0');
-  var yyyy = today.getFullYear();
-  document.getElementById('submit_date').value = yyyy+'-'+mm+'-'+dd;
-
-  // Auto-generate ECR number
-  var ecr_no = document.getElementById('ecr_no');
-  if(ecr_no && !ecr_no.value){
-    ecr_no.value = 'ECR-' + yyyy + mm + dd + '-' + Math.floor(1000+Math.random()*9000);
-  }
-}
 
 function printEmptyForm() {
   var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),select,textarea');
@@ -975,18 +843,23 @@ function printEmptyForm() {
     window.removeEventListener('afterprint',restore);
   }
   window.addEventListener('afterprint',restore);
-};
-  });
-  // Clear everything
-  saved.forEach(function(s) { s.el.value = ''; s.el.placeholder = ''; });
-  document.body.classList.add('print-empty');
-  window.print();
-  // Restore after print dialog closes
-  function restore() {
-    saved.forEach(function(s) { s.el.value = s.value; s.el.placeholder = s.placeholder; });
-    document.body.classList.remove('print-empty');
-    window.removeEventListener('afterprint', restore);
-  }
+}
+
+function closeModal() {
+  document.getElementById('success_overlay').classList.remove('show');
+  clearForm();
+}
+
+function clearForm() {
+  ['emp_name','emp_id','position','emp_email','emp_contact','emerg_desc',
+   'emerg_location','cash_by','cash_by_time','pay_notes','bank_info',
+   'settle_date','est_receipt','req_sig','dir_name','dir_comments',
+   'fin_name','fin_comments','rejection_reason','manager_email'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.value = '';
+}
+
+;
   window.addEventListener('afterprint', restore);
 }
 </script>
@@ -1001,38 +874,4 @@ function printEmptyForm() {
   var inputs=Array.from(document.querySelectorAll("input[type=email]")).filter(function(el){
     var id=(el.id||"").toLowerCase();
     return id!=="personal_email";
-  });
-  inputs.forEach(function(el){
-    var wrap=document.createElement("div");
-    wrap.style.cssText="position:relative;flex:1;min-width:0;";
-    el.parentNode.insertBefore(wrap,el);
-    wrap.appendChild(el);
-    el.style.width="100%";el.style.boxSizing="border-box";
-    var drop=document.createElement("div");
-    drop.className="es-drop";drop.style.display="none";drop.tabIndex=-1;
-    wrap.appendChild(drop);
-    el.addEventListener("input",function(){
-      var v=el.value;
-      if(!v||v.indexOf("@")!==-1){drop.style.display="none";return;}
-      drop.innerHTML=v+"<b>"+DOMAIN+"</b><small>Tab / ↵ to fill</small>";
-      drop._full=v+DOMAIN;drop.style.display="block";
-    });
-    el.addEventListener("keydown",function(e){
-      if(drop.style.display==="none")return;
-      if(e.key==="Escape"){drop.style.display="none";return;}
-      if(e.key==="Tab"||e.key==="Enter"){
-        e.preventDefault();el.value=drop._full;drop.style.display="none";
-        el.dispatchEvent(new Event("input",{bubbles:true}));
-        if(e.key==="Tab"){
-          var all=Array.from(document.querySelectorAll("input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled])"));
-          var i=all.indexOf(el);if(i>=0&&all[i+1])all[i+1].focus();
-        }
       }
-    });
-    el.addEventListener("blur",function(){setTimeout(function(){drop.style.display="none";},160);});
-    drop.addEventListener("mousedown",function(e){e.preventDefault();el.value=drop._full;drop.style.display="none";el.dispatchEvent(new Event("input",{bubbles:true}));el.focus();});
-  });
-})();
-</script>
-</body>
-</html>

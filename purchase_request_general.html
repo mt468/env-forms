@@ -561,16 +561,6 @@ window.addEventListener('DOMContentLoaded', function(){
   prField.style.cssText += ';background:#f0f4f8;color:#555;cursor:default;';
   updateConnectionStatus();
   bindItemCalc();
-});
-
-function updateConnectionStatus(){
-  var dot   = document.getElementById('conn_dot');
-  var label = document.getElementById('conn_label');
-  if(SCRIPT_URL){
-    dot.className     = 'connection-dot ok';
-    label.textContent = 'Connected to Sheets';
-    label.style.color = '#27ae60';
-  }
 }
 
 // ── ITEM TABLE CALCULATION ──
@@ -588,8 +578,6 @@ function bindItemCalc(){
     }
     qty.addEventListener('input', calc);
     price.addEventListener('input', calc);
-  });
-}
 
 function calcTotal(){
   var total = 0;
@@ -597,17 +585,6 @@ function calcTotal(){
     var qty   = parseFloat(row.querySelector('.item-qty').value)   || 0;
     var price = parseFloat(row.querySelector('.item-price').value) || 0;
     total += qty * price;
-  });
-  var el = document.getElementById('grand-total');
-  el.textContent = total.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-  el.style.color = total >= 10000 ? '#e74c3c' : '#1a2744';
-  // Update approval tier badge
-  var cfg = getEmailConfig(total);
-  var badge = document.getElementById('appr_tier_badge');
-  var text  = document.getElementById('appr_tier_text');
-  if(badge && text){ badge.style.background=cfg.bg; badge.style.borderColor=cfg.border; badge.style.color=cfg.color; text.textContent=cfg.label; }
-  return total;
-}
 
 // ── PAYMENT TYPE ──
 function getPaymentFor(){
@@ -629,9 +606,6 @@ function collectItems(){
     if(desc || qty || price){
       items.push({no: i+1, desc: desc, qty: qty, price: price, amount: qty*price});
     }
-  });
-  return items;
-}
 
 // ── VALIDATE ──
 function validate(){
@@ -649,10 +623,6 @@ function validate(){
     var el = document.getElementById(f.id);
     if(!el.value.trim()){ missing.push(f.label); el.classList.add('invalid'); }
     else el.classList.remove('invalid');
-  });
-  if(calcTotal() <= 0) missing.push('At least one item with Qty & Price');
-  return missing;
-}
 
 // ── COLLECT ALL DATA ──
 function collectData(){
@@ -694,10 +664,6 @@ function onAttachChange(){
   var inp=document.getElementById('attachment_input');
   Array.from(inp.files).forEach(function(f){
     if(!_selFiles.find(function(x){return x.name===f.name&&x.size===f.size;})) _selFiles.push(f);
-  });
-  inp.value='';
-  _renderAttachList();
-}
 function _removeAttach(i){_selFiles.splice(i,1);_renderAttachList();}
 function _renderAttachList(){
   var list=document.getElementById('attach_list');
@@ -714,20 +680,12 @@ function _renderAttachList(){
       '<span class="attach-item-size">'+(f.size>1048576?(f.size/1048576).toFixed(1)+' MB':(f.size/1024).toFixed(0)+' KB')+'</span>'+
       '<button class="attach-remove" onclick="_removeAttach('+i+')" type="button">&#x2715;</button>'+
     '</div>';
-  });
-  var mb=total/1048576;
-  if(mb>20){warn.style.display='block';warn.textContent='⚠️ Total '+mb.toFixed(1)+' MB — keep under 25 MB for reliable upload.';}
-  else warn.style.display='none';
-}
 function _readFilesB64(){
   return Promise.all(_selFiles.map(function(f){
     return new Promise(function(res){
       var r=new FileReader();
       r.onload=function(e){res({name:f.name,type:f.type,size:f.size,b64:e.target.result.split(',')[1]});};
       r.readAsDataURL(f);
-    });
-  }));
-}
 
 async function submitForm(){
   var missing = validate();
@@ -779,11 +737,6 @@ async function submitForm(){
   }, 8000);
 }
 
-function closeModal(){
-  document.getElementById('success_overlay').classList.remove('show');
-  location.reload();
-}
-
 function printEmptyForm() {
   var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),select,textarea');
   var saved = Array.from(fields).map(function(el){
@@ -804,18 +757,14 @@ function printEmptyForm() {
     window.removeEventListener('afterprint',restore);
   }
   window.addEventListener('afterprint',restore);
-};
-  });
-  // Clear everything
-  saved.forEach(function(s) { s.el.value = ''; s.el.placeholder = ''; });
-  document.body.classList.add('print-empty');
-  window.print();
-  // Restore after print dialog closes
-  function restore() {
-    saved.forEach(function(s) { s.el.value = s.value; s.el.placeholder = s.placeholder; });
-    document.body.classList.remove('print-empty');
-    window.removeEventListener('afterprint', restore);
-  }
+}
+
+function closeModal(){
+  document.getElementById('success_overlay').classList.remove('show');
+  location.reload();
+}
+
+;
   window.addEventListener('afterprint', restore);
 }
 </script>
@@ -830,39 +779,4 @@ function printEmptyForm() {
   var inputs=Array.from(document.querySelectorAll("input[type=email]")).filter(function(el){
     var id=(el.id||"").toLowerCase();
     return id!=="personal_email";
-  });
-  inputs.forEach(function(el){
-    var wrap=document.createElement("div");
-    wrap.style.cssText="position:relative;flex:1;min-width:0;";
-    el.parentNode.insertBefore(wrap,el);
-    wrap.appendChild(el);
-    el.style.width="100%";el.style.boxSizing="border-box";
-    var drop=document.createElement("div");
-    drop.className="es-drop";drop.style.display="none";drop.tabIndex=-1;
-    wrap.appendChild(drop);
-    el.addEventListener("input",function(){
-      var v=el.value;
-      if(!v||v.indexOf("@")!==-1){drop.style.display="none";return;}
-      drop.innerHTML=v+"<b>"+DOMAIN+"</b><small>Tab / ↵ to fill</small>";
-      drop._full=v+DOMAIN;drop.style.display="block";
-    });
-    el.addEventListener("keydown",function(e){
-      if(drop.style.display==="none")return;
-      if(e.key==="Escape"){drop.style.display="none";return;}
-      if(e.key==="Tab"||e.key==="Enter"){
-        e.preventDefault();el.value=drop._full;drop.style.display="none";
-        el.dispatchEvent(new Event("input",{bubbles:true}));
-        if(e.key==="Tab"){
-          var all=Array.from(document.querySelectorAll("input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled])"));
-          var i=all.indexOf(el);if(i>=0&&all[i+1])all[i+1].focus();
-        }
       }
-    });
-    el.addEventListener("blur",function(){setTimeout(function(){drop.style.display="none";},160);});
-    drop.addEventListener("mousedown",function(e){e.preventDefault();el.value=drop._full;drop.style.display="none";el.dispatchEvent(new Event("input",{bubbles:true}));el.focus();});
-  });
-})();
-</script>
-</body>
-</html>
-                     

@@ -638,43 +638,6 @@ window.addEventListener('DOMContentLoaded', function(){
   // Sync dept to header
   document.getElementById('emp_dept').addEventListener('change', function(){
     document.getElementById('hdr_dept').value = this.value;
-  });
-
-  // Add default travel expense category rows
-  CATEGORIES.forEach(function(cat){ addRow(cat); });
-});
-
-// ── ADD EXPENSE ROW ───────────────────────────────────────────────────
-function addRow(defaultCat) {
-  _rowCount++;
-  var idx = _rowCount;
-  var tbody = document.getElementById('exp_body');
-  var tr = document.createElement('tr');
-  tr.id = 'erow_' + idx;
-
-  // Build category options
-  var catOpts = '<option value="">— Category —</option>' +
-    CATEGORIES.map(function(c){ return '<option' + (c===defaultCat?' selected':'') + '>'+c+'</option>'; }).join('');
-
-  // Build currency options
-  var currOpts = CURRENCIES.map(function(c){
-    return '<option value="'+c.code+'">'+c.code+'</option>';
-  }).join('');
-
-  tr.innerHTML =
-    '<td>' + idx + '</td>' +
-    '<td><select class="cat-sel" onchange="onCatChange(this)">' + catOpts + '</select></td>' +
-    '<td><input type="text" class="desc-inp" placeholder="Description / vendor"></td>' +
-    '<td><select class="curr-sel" onchange="onCurrChange(this)">' + currOpts + '</select></td>' +
-    '<td><input type="number" class="amt-foreign" placeholder="0.00" min="0" step="0.01" oninput="updateRowThb(this.closest(\'tr\'))"></td>' +
-    '<td class="rate-cell"><input type="number" class="rate-inp" placeholder="1.00" min="0" step="0.0001" value="1" oninput="updateRowThb(this.closest(\'tr\'))" style="display:none;"><span class="rate-fixed" style="font-size:11px;color:#aaa;padding:2px 4px;">1.00</span></td>' +
-    '<td><input type="number" class="amt-thb" placeholder="0.00" readonly></td>' +
-    '<td style="text-align:center;"><input type="checkbox" class="rcpt-chk" title="Receipt attached"></td>' +
-    '<td><button class="del-btn" onclick="delRow(' + idx + ')" title="Remove row">✕</button></td>';
-
-  tbody.appendChild(tr);
-  recalcTotal();
-}
 
 function onCatChange(sel) { /* future use */ }
 
@@ -715,22 +678,6 @@ function recalcTotal() {
   rows.forEach(function(tr){
     var v = parseFloat(tr.querySelector('.amt-thb').value) || 0;
     total += v;
-  });
-
-  // Add per diem
-  var perDiem = parseFloat(document.getElementById('per_diem_rate').value) || 0;
-  var nDays   = parseFloat(document.getElementById('no_days').value) || 0;
-  // Per diem is folded into the total if user set it
-  // (already captured in Daily Meals row if user prefers)
-
-  document.getElementById('grand_total').textContent = total.toFixed(2);
-  document.getElementById('net_total').textContent   = total.toFixed(2) + ' THB';
-
-  var advRecv = document.querySelector('input[name="adv_recv"]:checked');
-  var advAmt  = 0;
-  if (advRecv && advRecv.value === 'yes') {
-    advAmt = parseFloat(document.getElementById('adv_amount').value) || 0;
-  }
   var net = Math.max(0, total - advAmt);
   document.getElementById('net_reimburse').textContent = net.toFixed(2) + ' THB';
 
@@ -787,19 +734,6 @@ document.addEventListener('DOMContentLoaded', function(){
       var tc = document.getElementById('to_city').value;
       if (fc) document.getElementById('badge_from').textContent = fc;
       if (tc) document.getElementById('badge_to').textContent   = tc;
-    });
-  });
-});
-
-// ── ADVANCE TOGGLE ────────────────────────────────────────────────────
-function toggleAdv() {
-  var yes = document.getElementById('adv_yes').checked;
-  var fields = document.getElementById('adv_fields');
-  fields.style.opacity = yes ? '1' : '.4';
-  fields.style.pointerEvents = yes ? '' : 'none';
-  if (!yes) { document.getElementById('adv_amount').value = ''; }
-  recalcTotal();
-}
 
 // ── FILE ATTACHMENTS ──────────────────────────────────────────────────
 function onAttachChange() {
@@ -824,9 +758,6 @@ async function _readFilesB64() {
       r.onload = function(e){ res({name:f.name,type:f.type,size:f.size,b64:e.target.result.split(',')[1]}); };
       r.onerror = rej;
       r.readAsDataURL(f);
-    });
-  }));
-}
 
 // ── COLLECT EXPENSE ROWS ──────────────────────────────────────────────
 function collectExpenseRows() {
@@ -844,9 +775,6 @@ function collectExpenseRows() {
                   amount_foreign:amtF, rate_to_thb:rate,
                   amount_thb:amtT, receipt:rcpt ? 'Yes' : 'No' });
     }
-  });
-  return rows;
-}
 
 // ── VALIDATE ─────────────────────────────────────────────────────────
 function validate() {
@@ -868,11 +796,6 @@ function validate() {
       missing.push(f.label);
       if (el) el.classList.add('invalid');
     } else { el.classList.remove('invalid'); }
-  });
-  var total = parseFloat(document.getElementById('grand_total').textContent) || 0;
-  if (total <= 0) missing.push('At least one expense amount');
-  return missing;
-}
 
 // ── SUBMIT ────────────────────────────────────────────────────────────
 async function submitForm() {
@@ -958,6 +881,8 @@ async function submitForm() {
 }
 
 // ── MODAL / CLEAR ─────────────────────────────────────────────────────
+
+
 function printEmptyForm() {
   var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),select,textarea');
   var saved = Array.from(fields).map(function(el){
@@ -1001,38 +926,4 @@ function clearForm() {
   var inputs=Array.from(document.querySelectorAll("input[type=email]")).filter(function(el){
     var id=(el.id||"").toLowerCase();
     return id!=="personal_email";
-  });
-  inputs.forEach(function(el){
-    var wrap=document.createElement("div");
-    wrap.style.cssText="position:relative;flex:1;min-width:0;";
-    el.parentNode.insertBefore(wrap,el);
-    wrap.appendChild(el);
-    el.style.width="100%";el.style.boxSizing="border-box";
-    var drop=document.createElement("div");
-    drop.className="es-drop";drop.style.display="none";drop.tabIndex=-1;
-    wrap.appendChild(drop);
-    el.addEventListener("input",function(){
-      var v=el.value;
-      if(!v||v.indexOf("@")!==-1){drop.style.display="none";return;}
-      drop.innerHTML=v+"<b>"+DOMAIN+"</b><small>Tab / ↵ to fill</small>";
-      drop._full=v+DOMAIN;drop.style.display="block";
-    });
-    el.addEventListener("keydown",function(e){
-      if(drop.style.display==="none")return;
-      if(e.key==="Escape"){drop.style.display="none";return;}
-      if(e.key==="Tab"||e.key==="Enter"){
-        e.preventDefault();el.value=drop._full;drop.style.display="none";
-        el.dispatchEvent(new Event("input",{bubbles:true}));
-        if(e.key==="Tab"){
-          var all=Array.from(document.querySelectorAll("input:not([disabled]),select:not([disabled]),textarea:not([disabled]),button:not([disabled])"));
-          var i=all.indexOf(el);if(i>=0&&all[i+1])all[i+1].focus();
-        }
       }
-    });
-    el.addEventListener("blur",function(){setTimeout(function(){drop.style.display="none";},160);});
-    drop.addEventListener("mousedown",function(e){e.preventDefault();el.value=drop._full;drop.style.display="none";el.dispatchEvent(new Event("input",{bubbles:true}));el.focus();});
-  });
-})();
-</script>
-</body>
-</html>
