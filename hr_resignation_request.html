@@ -204,48 +204,34 @@ function _checkGate(){
   }
 }
 function printEmptyForm() {
-  // 1. Save & clear all inputs/textareas
-  var inputs = Array.from(document.querySelectorAll(
-    'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea'
-  ));
-  var saved = inputs.map(function(el){
-    return {el:el, value:el.value, ph:el.placeholder||'', type:el.getAttribute('type')||''};
+  // Exclude gate inputs — they're hidden and shouldn't be touched
+  var gateEls = new Set();
+  ['env_gate','pv_gate','gate','gate-overlay'].forEach(function(id){
+    var g = document.getElementById(id);
+    if(g) g.querySelectorAll('input,select,textarea').forEach(function(el){ gateEls.add(el); });
   });
-  saved.forEach(function(s){
-    s.el.value = '';
-    s.el.placeholder = '';
-    if (s.type === 'date') s.el.setAttribute('type','text');
+  var saved = [];
+  document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]),textarea').forEach(function(el){
+    if(gateEls.has(el)) return;
+    saved.push({el:el,v:el.value,p:el.placeholder||'',t:el.getAttribute('type')||''});
+    el.value=''; el.placeholder='';
+    if((el.getAttribute('type')||'')==='date') el.setAttribute('type','text');
   });
-
-  // 2. Replace selects with blank underline spans
-  var selects = Array.from(document.querySelectorAll('select'));
-  var selectSwaps = selects.map(function(sel){
-    var span = document.createElement('span');
-    var cs = window.getComputedStyle(sel);
-    span.style.cssText = 'display:inline-block;width:100%;border-bottom:1.5px solid #3a7bd5;height:18px;vertical-align:bottom;';
-    sel.parentNode.insertBefore(span, sel);
-    sel.style.display = 'none';
-    return {sel:sel, span:span};
+  var sels=[];
+  document.querySelectorAll('select').forEach(function(sel){
+    if(gateEls.has(sel)) return;
+    sels.push({sel:sel,style:sel.getAttribute('style')||''});
+    sel.style.cssText=(sel.getAttribute('style')||'')+';-webkit-appearance:none!important;appearance:none!important;color:transparent!important;';
   });
-
-  window.print();
-
-  // 3. Restore everything
   function restore(){
-    saved.forEach(function(s){
-      s.el.value = s.value;
-      s.el.placeholder = s.ph;
-      if (s.type === 'date') s.el.setAttribute('type','date');
-    });
-    selectSwaps.forEach(function(sw){
-      sw.sel.style.display = '';
-      if (sw.span.parentNode) sw.span.parentNode.removeChild(sw.span);
-    });
+    clearTimeout(_t);
+    saved.forEach(function(s){ s.el.value=s.v; s.el.placeholder=s.p; if(s.t==='date') s.el.setAttribute('type','date'); });
+    sels.forEach(function(s){ s.sel.setAttribute('style',s.style); });
     window.removeEventListener('afterprint', restore);
   }
+  var _t = setTimeout(restore, 5000);
   window.addEventListener('afterprint', restore);
-  // Fallback restore after 3s if afterprint doesn't fire
-  setTimeout(restore, 3000);
+  window.print();
 }
 
 </script>
@@ -723,4 +709,39 @@ function clearForm(silent){
   var inputs=Array.from(document.querySelectorAll("input[type=email]")).filter(function(el){
     var id=(el.id||"").toLowerCase();
     return id!=="personal_email";
+  });
+  inputs.forEach(function(inp){
+    var wrap=inp.parentNode;
+    if(getComputedStyle(wrap).position==="static") wrap.style.position="relative";
+    var drop=document.createElement("div");
+    drop.className="es-drop"; drop.style.display="none"; drop.tabIndex=0;
+    wrap.appendChild(drop);
+    function suggest(val){
+      var local=val.split("@")[0];
+      if(!local||val.indexOf("@")>-1&&val.split("@")[1].length>0){drop.style.display="none";return;}
+      drop.innerHTML="<b>"+local+"</b>"+DOMAIN+" <small>↵ confirm</small>";
+      drop.style.display="block";
+    }
+    inp.addEventListener("input",function(){ suggest(inp.value); });
+    inp.addEventListener("keydown",function(e){
+      if((e.key==="Tab"||e.key==="Enter")&&drop.style.display!=="none"){
+        e.preventDefault();
+        inp.value=inp.value.split("@")[0]+DOMAIN;
+        drop.style.display="none";
+        inp.dispatchEvent(new Event("input"));
       }
+      if(e.key==="Escape") drop.style.display="none";
+    });
+    drop.addEventListener("mousedown",function(e){
+      e.preventDefault();
+      inp.value=inp.value.split("@")[0]+DOMAIN;
+      drop.style.display="none"; inp.focus();
+    });
+    document.addEventListener("click",function(e){
+      if(e.target!==inp&&e.target!==drop) drop.style.display="none";
+    },{capture:false});
+  });
+})();
+</script>
+</body>
+</html>
