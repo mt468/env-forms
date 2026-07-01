@@ -74,6 +74,7 @@ input[type="checkbox"]{width:14px;height:14px;accent-color:#1a2744;cursor:pointe
 .exp-table td input[type="number"]{text-align:right;}
 .exp-amt-thb{background:#f0fdf4!important;color:#166534!important;font-weight:700;border-bottom:1px solid #86efac!important;}
 .exp-rate{background:#fffbeb!important;}
+.exp-rate-locked{background:#f0f4f8!important;color:#aaa!important;cursor:default;}
 .exp-total-row td{background:#f0f6fc;font-weight:800;border-top:2px solid #1a2744;padding:8px 6px;}
 .exp-total-label{text-align:right!important;padding-right:8px!important;font-size:12px;color:#1a2744;}
 .exp-total-amt{color:#e74c3c;font-size:15px;font-weight:800;text-align:right!important;}
@@ -680,23 +681,30 @@ function addRow(){
     '<td><input type="text" class="exp-rcpt" placeholder="Receipt No."></td>' +
     '<td><select class="exp-cur" onchange="updateRowThb(this.closest(\'tr\'))">' + curOpts + '</select></td>' +
     '<td><input type="number" class="exp-amt" placeholder="0.00" min="0" step="0.01" oninput="updateRowThb(this.closest(\'tr\'))"></td>' +
-    '<td><input type="number" class="exp-rate" placeholder="1.00" min="0" step="0.0001" value="1" style="display:none;" oninput="updateRowThb(this.closest(\'tr\'))"></td>' +
+    '<td><input type="number" class="exp-rate exp-rate-locked" placeholder="—" value="1" readonly tabindex="-1" oninput="updateRowThb(this.closest(\'tr\'))"></td>' +
     '<td><input type="number" class="exp-amt-thb" placeholder="0.00" readonly tabindex="-1"></td>' +
     '<td><button class="del-btn" onclick="delRow(\'row_' + rowCount + '\')" title="Remove row">✕</button></td>';
   tbody.appendChild(tr);
 }
 
 function updateRowThb(tr) {
-  var cur  = tr.querySelector('.exp-cur').value;
-  var amt  = parseFloat(tr.querySelector('.exp-amt').value) || 0;
+  var cur    = tr.querySelector('.exp-cur').value;
+  var amt    = parseFloat(tr.querySelector('.exp-amt').value) || 0;
   var rateEl = tr.querySelector('.exp-rate');
   var thbEl  = tr.querySelector('.exp-amt-thb');
   if (cur === 'THB') {
-    rateEl.style.display = 'none';
-    rateEl.value = '1';
+    rateEl.readOnly  = true;
+    rateEl.tabIndex  = -1;
+    rateEl.value     = '1';
+    rateEl.placeholder = '—';
+    rateEl.classList.add('exp-rate-locked');
     thbEl.value = amt > 0 ? amt.toFixed(2) : '';
   } else {
-    rateEl.style.display = '';
+    rateEl.readOnly  = false;
+    rateEl.tabIndex  = 0;
+    rateEl.placeholder = 'e.g. 35.50';
+    rateEl.classList.remove('exp-rate-locked');
+    if (rateEl.value === '1') rateEl.value = '';
     var rate = parseFloat(rateEl.value) || 0;
     thbEl.value = (amt > 0 && rate > 0) ? (amt * rate).toFixed(2) : '';
   }

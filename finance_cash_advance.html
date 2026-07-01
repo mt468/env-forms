@@ -73,6 +73,7 @@ input[type="checkbox"],input[type="radio"]{cursor:pointer;flex-shrink:0;accent-c
 .est-table td input[type="number"]{text-align:right;}
 .est-amt-thb{background:#f0fdf4!important;color:#166534!important;font-weight:700;border-bottom:1px solid #86efac!important;}
 .est-rate{background:#fffbeb!important;}
+.est-rate-locked{background:#f0f4f8!important;color:#aaa!important;cursor:default;}
 .est-total-row td{background:#f0f6fc;font-weight:800;border-top:2px solid #1a2744;padding:8px 6px;}
 .est-total-label{text-align:right!important;padding-right:8px!important;font-size:12px;color:#1a2744;}
 .est-total-amt{color:#e74c3c;font-size:15px;font-weight:800;text-align:right!important;}
@@ -699,7 +700,7 @@ function addRow(){
     '<td><input type="text" class="est-desc" placeholder="Details / vendor / notes"></td>' +
     '<td><select class="est-cur" onchange="updateEstRowThb(this.closest(\'tr\'))"><option>THB</option><option>USD</option><option>MMK</option><option>HKD</option><option>LAK</option></select></td>' +
     '<td><input type="number" class="est-amt" placeholder="0.00" min="0" step="0.01" oninput="updateEstRowThb(this.closest(\'tr\'))"></td>' +
-    '<td><input type="number" class="est-rate" placeholder="1.00" min="0" step="0.0001" value="1" style="display:none;" oninput="updateEstRowThb(this.closest(\'tr\'))"></td>' +
+    '<td><input type="number" class="est-rate est-rate-locked" placeholder="—" value="1" readonly tabindex="-1" oninput="updateEstRowThb(this.closest(\'tr\'))"></td>' +
     '<td><input type="number" class="est-amt-thb" placeholder="0.00" readonly tabindex="-1"></td>' +
     '<td><button class="del-btn" onclick="delRow(\'row_'+rowCount+'\')" title="Remove">✕</button></td>';
   tbody.appendChild(tr);
@@ -711,10 +712,18 @@ function updateEstRowThb(tr) {
   var rateEl = tr.querySelector('.est-rate');
   var thbEl  = tr.querySelector('.est-amt-thb');
   if (cur === 'THB') {
-    rateEl.style.display = 'none'; rateEl.value = '1';
+    rateEl.readOnly  = true;
+    rateEl.tabIndex  = -1;
+    rateEl.value     = '1';
+    rateEl.placeholder = '—';
+    rateEl.classList.add('est-rate-locked');
     thbEl.value = amt > 0 ? amt.toFixed(2) : '';
   } else {
-    rateEl.style.display = '';
+    rateEl.readOnly  = false;
+    rateEl.tabIndex  = 0;
+    rateEl.placeholder = 'e.g. 35.50';
+    rateEl.classList.remove('est-rate-locked');
+    if (rateEl.value === '1') rateEl.value = '';
     var rate = parseFloat(rateEl.value) || 0;
     thbEl.value = (amt > 0 && rate > 0) ? (amt * rate).toFixed(2) : '';
   }
