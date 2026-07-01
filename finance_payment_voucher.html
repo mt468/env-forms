@@ -467,7 +467,8 @@ function _checkGate(){
                 <th>No.</th>
                 <th style="text-align:left;padding-left:7px;">Description</th>
                 <th>Quantity</th>
-                <th>Unit Price (THB)</th>
+                <th>Currency</th>
+                <th>Unit Price</th>
                 <th>Amount (THB)</th>
                 <th></th>
               </tr>
@@ -475,7 +476,7 @@ function _checkGate(){
             <tbody id="items_body"></tbody>
             <tfoot>
               <tr class="total-row">
-                <td colspan="5" style="text-align:right;padding-right:10px;font-weight:800;color:#1a2744;">TOTAL AMOUNT (THB)</td>
+                <td colspan="6" style="text-align:right;padding-right:10px;font-weight:800;color:#1a2744;">TOTAL AMOUNT (THB)</td>
                 <td colspan="2" style="text-align:right;padding-right:8px;color:#e74c3c;font-size:13px;font-weight:800;" id="display_total">0.00</td>
               </tr>
             </tfoot>
@@ -774,6 +775,9 @@ function _checkGate(){
 
   <!-- SUBMIT + PRINT BUTTONS -->
   <div id="submit-bar" style="padding:16px 18px;text-align:center;background:#f7fbff;border-top:2px solid #e0eaf4;display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;">
+    <button onclick="clearForm()" style="background:#fff;color:#1a2744;border:2px solid #c0d0e4;border-radius:8px;padding:12px 22px;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='#fff'">
+      🗑 Clear Form
+    </button>
     <button onclick="submitForm()" style="background:#1a2744;color:#fff;border:none;border-radius:8px;padding:13px 48px;font-size:15px;font-weight:800;font-family:'Sarabun',sans-serif;cursor:pointer;letter-spacing:.5px;">
       Submit Payment Voucher →
     </button>
@@ -848,12 +852,16 @@ function onStaffSelect(){
 var _rowCount = 0;
 function addItemRow(){
   _rowCount++;
+  var curOpts=['THB','USD','MMK','HKD','LAK'].map(function(c){
+    return '<option value="'+c+'"'+(c==='THB'?' selected':'')+'>'+c+'</option>';
+  }).join('');
   var tbody = document.getElementById('items_body');
   var tr = document.createElement('tr');
   tr.innerHTML =
     '<td>' + _rowCount + '</td>' +
     '<td><input type="text" placeholder="Description"></td>' +
     '<td><input type="number" min="0" step="1" placeholder="0" oninput="recalc()"></td>' +
+    '<td><select class="item-cur" style="font-size:11px;">'+curOpts+'</select></td>' +
     '<td><input type="number" min="0" step="0.01" placeholder="0.00" oninput="recalc()"></td>' +
     '<td><input type="text" class="row-amt" readonly placeholder="0.00" style="text-align:right;background:#f5f8fc;color:#1a2744;font-weight:700;"></td>' +
     '<td><button class="del-btn" onclick="delRow(this)">✕</button></td>';
@@ -933,9 +941,10 @@ function collectItems(){
     var numInputs = tr.querySelectorAll('input[type="number"]');
     var txtInputs = tr.querySelectorAll('input[type="text"]');
     var desc  = txtInputs[0] ? txtInputs[0].value.trim() : '';
+    var cur   = (tr.querySelector('.item-cur')||{}).value || 'THB';
     var qty   = parseFloat(numInputs[0] ? numInputs[0].value : 0)||0;
     var price = parseFloat(numInputs[1] ? numInputs[1].value : 0)||0;
-    if(desc || qty || price) items.push({no:i+1,desc:desc,qty:qty,price:price,amount:qty*price});
+    if(desc || qty || price) items.push({no:i+1,desc:desc,currency:cur,qty:qty,price:price,amount:qty*price});
   });
   return items;
 }
@@ -955,6 +964,30 @@ function validate(){
     else el.classList.remove('invalid');
   });
   return missing;
+}
+
+function clearForm(){
+  document.querySelectorAll('input:not([type=hidden]):not([readonly]),textarea').forEach(function(el){
+    if(el.closest && el.closest('#pv_gate')) return;
+    if(el.type==='checkbox'||el.type==='radio') el.checked=false;
+    else el.value='';
+  });
+  document.querySelectorAll('select').forEach(function(s){
+    if(s.closest && s.closest('#pv_gate')) return;
+    s.selectedIndex=0;
+  });
+  _selFiles=[];
+  var list=document.getElementById('attach_list'); if(list) list.innerHTML='';
+  var warn=document.getElementById('attach_size_warn'); if(warn) warn.style.display='none';
+  var tbody=document.getElementById('items_body');
+  if(tbody){ tbody.innerHTML=''; _rowCount=0; addItemRow();addItemRow();addItemRow(); }
+  var d=new Date();
+  var today=d.toISOString().slice(0,10);
+  var stamp='PV-'+d.getFullYear().toString().slice(2)+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0')+'-'+Math.floor(1000+Math.random()*9000);
+  var pvNo=document.getElementById('pv_no'); if(pvNo) pvNo.value=stamp;
+  var pvDate=document.getElementById('pv_date'); if(pvDate) pvDate.value=today;
+  var certDate=document.getElementById('cert_date'); if(certDate) certDate.value=today;
+  var vm=document.getElementById('val_msg'); if(vm) vm.style.display='none';
 }
 
 // ── SUBMIT ───────────────────────────────────────────────────────
