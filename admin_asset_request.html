@@ -405,6 +405,7 @@ function _checkGate(){
     <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
     <button class="btn btn-navy" onclick="window.print()">🖨 Print / Save PDF</button>
     <button class="btn btn-primary" id="submit_btn" onclick="submitForm()">📤 Submit Request</button>
+    <button class="btn btn-outline" onclick="printEmptyForm()" style="background:#fff;color:#1a2744;border:2px solid #1a2744;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='#fff'">🖨️ Download Empty Form</button>
   </div>
 
   <div class="footer-banner">
@@ -549,6 +550,25 @@ function clearForm(){
   // Reset items table to 3 blank rows
   var tbody = document.querySelector('.items-table tbody');
   if(tbody){ tbody.innerHTML=''; for(var i=0;i<3;i++) addRow(); }
+}
+
+function printEmptyForm() {
+  // Save all field values and placeholders
+  var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea');
+  var saved = Array.from(fields).map(function(el) {
+    return { el: el, value: el.value, placeholder: el.placeholder || '' };
+  });
+  // Clear everything
+  saved.forEach(function(s) { s.el.value = ''; s.el.placeholder = ''; });
+  document.body.classList.add('print-empty');
+  window.print();
+  // Restore after print dialog closes
+  function restore() {
+    saved.forEach(function(s) { s.el.value = s.value; s.el.placeholder = s.placeholder; });
+    document.body.classList.remove('print-empty');
+    window.removeEventListener('afterprint', restore);
+  }
+  window.addEventListener('afterprint', restore);
 }
 </script>
 </body>

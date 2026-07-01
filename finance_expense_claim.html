@@ -56,19 +56,24 @@ input[type="checkbox"]{width:14px;height:14px;accent-color:#1a2744;cursor:pointe
 
 /* EXPENSE TABLE */
 .exp-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;margin-bottom:10px;}
-.exp-table th{background:#1a2744;color:#fff;padding:8px 6px;text-align:center;font-weight:700;font-size:11px;}
-.exp-table th:nth-child(1){width:34px;}
-.exp-table th:nth-child(2){width:100px;}
-.exp-table th:nth-child(3){width:130px;}
+.exp-table th{background:#1a2744;color:#fff;padding:8px 4px;text-align:center;font-weight:700;font-size:11px;}
+.exp-table th:nth-child(1){width:30px;}
+.exp-table th:nth-child(2){width:90px;}
+.exp-table th:nth-child(3){width:110px;}
 .exp-table th:nth-child(4){width:auto;}
-.exp-table th:nth-child(5){width:90px;}
-.exp-table th:nth-child(6){width:100px;}
-.exp-table th:nth-child(7){width:34px;}
-.exp-table td{padding:4px 6px;border-bottom:1px solid #e0eaf4;vertical-align:middle;height:36px;}
+.exp-table th:nth-child(5){width:78px;}
+.exp-table th:nth-child(6){width:68px;}
+.exp-table th:nth-child(7){width:82px;}
+.exp-table th:nth-child(8){width:76px;}
+.exp-table th:nth-child(9){width:88px;}
+.exp-table th:nth-child(10){width:30px;}
+.exp-table td{padding:4px 4px;border-bottom:1px solid #e0eaf4;vertical-align:middle;height:36px;}
 .exp-table td:first-child,.exp-table td:last-child{text-align:center;}
-.exp-table td:nth-child(6){text-align:right;}
+.exp-table td:nth-child(7),.exp-table td:nth-child(8),.exp-table td:nth-child(9){text-align:right;}
 .exp-table td input,.exp-table td select{width:100%;min-width:0;}
 .exp-table td input[type="number"]{text-align:right;}
+.exp-amt-thb{background:#f0fdf4!important;color:#166534!important;font-weight:700;border-bottom:1px solid #86efac!important;}
+.exp-rate{background:#fffbeb!important;}
 .exp-total-row td{background:#f0f6fc;font-weight:800;border-top:2px solid #1a2744;padding:8px 6px;}
 .exp-total-label{text-align:right!important;padding-right:8px!important;font-size:12px;color:#1a2744;}
 .exp-total-amt{color:#e74c3c;font-size:15px;font-weight:800;text-align:right!important;}
@@ -379,6 +384,9 @@ function _checkGate(){
           <th>Category</th>
           <th>Description / Vendor</th>
           <th>Receipt No.</th>
+          <th>Currency</th>
+          <th>Amount</th>
+          <th>Rate→THB</th>
           <th>Amount (THB)</th>
           <th></th>
         </tr>
@@ -388,7 +396,7 @@ function _checkGate(){
       </tbody>
       <tfoot>
         <tr class="exp-total-row">
-          <td colspan="5" class="exp-total-label">TOTAL CLAIM AMOUNT</td>
+          <td colspan="8" class="exp-total-label">TOTAL CLAIM AMOUNT (THB)</td>
           <td class="exp-total-amt" id="grand_total">0.00</td>
           <td></td>
         </tr>
@@ -558,6 +566,8 @@ function _checkGate(){
     <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
     <button class="btn btn-navy" onclick="window.print()">🖨 Print / Save PDF</button>
     <button class="btn btn-primary" id="submit_btn" onclick="submitForm()">☁️ Submit to Google Sheets</button>
+    <button class="btn btn-outline" onclick="printEmptyForm()" style="background:#fff;color:#1a2744;border:2px solid #1a2744;" onmouseover="this.style.background='#f0f4f8'" onmouseout="this.style.background='#fff'">🖨️ Download Empty Form</button>
+    <a href="Expense_Claim_No_Receipt_Declaration.xlsx" download class="btn btn-outline" style="background:#fff;color:#00b8a9;border:2px solid #00b8a9;text-decoration:none;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#eafaf8'" onmouseout="this.style.background='#fff'">📋 No-Receipt Declaration Form</a>
   </div>
 
   <!-- FOOTER -->
@@ -647,6 +657,8 @@ var CATEGORIES = [
   'Fuel / Mileage','Visa / Immigration','Other'
 ];
 
+var CURRENCIES = ['THB','USD','MMK','HKD','LAK'];
+
 function addRow(){
   rowCount++;
   var tbody = document.getElementById('exp_body');
@@ -656,6 +668,9 @@ function addRow(){
   var catOpts = CATEGORIES.map(function(c,i){
     return '<option value="'+(i===0?'':c)+'">'+(c)+'</option>';
   }).join('');
+  var curOpts = CURRENCIES.map(function(c){
+    return '<option value="'+c+'"'+(c==='THB'?' selected':'')+'>'+c+'</option>';
+  }).join('');
 
   tr.innerHTML =
     '<td style="text-align:center;color:#888;font-weight:700;">' + rowCount + '</td>' +
@@ -663,9 +678,29 @@ function addRow(){
     '<td><select class="exp-cat">' + catOpts + '</select></td>' +
     '<td><input type="text" class="exp-desc" placeholder="Description / vendor name"></td>' +
     '<td><input type="text" class="exp-rcpt" placeholder="Receipt No."></td>' +
-    '<td><input type="number" class="exp-amt" placeholder="0.00" min="0" step="0.01" oninput="calcTotal()"></td>' +
+    '<td><select class="exp-cur" onchange="updateRowThb(this.closest(\'tr\'))">' + curOpts + '</select></td>' +
+    '<td><input type="number" class="exp-amt" placeholder="0.00" min="0" step="0.01" oninput="updateRowThb(this.closest(\'tr\'))"></td>' +
+    '<td><input type="number" class="exp-rate" placeholder="1.00" min="0" step="0.0001" value="1" style="display:none;" oninput="updateRowThb(this.closest(\'tr\'))"></td>' +
+    '<td><input type="number" class="exp-amt-thb" placeholder="0.00" readonly tabindex="-1"></td>' +
     '<td><button class="del-btn" onclick="delRow(\'row_' + rowCount + '\')" title="Remove row">✕</button></td>';
   tbody.appendChild(tr);
+}
+
+function updateRowThb(tr) {
+  var cur  = tr.querySelector('.exp-cur').value;
+  var amt  = parseFloat(tr.querySelector('.exp-amt').value) || 0;
+  var rateEl = tr.querySelector('.exp-rate');
+  var thbEl  = tr.querySelector('.exp-amt-thb');
+  if (cur === 'THB') {
+    rateEl.style.display = 'none';
+    rateEl.value = '1';
+    thbEl.value = amt > 0 ? amt.toFixed(2) : '';
+  } else {
+    rateEl.style.display = '';
+    var rate = parseFloat(rateEl.value) || 0;
+    thbEl.value = (amt > 0 && rate > 0) ? (amt * rate).toFixed(2) : '';
+  }
+  calcTotal();
 }
 
 function delRow(id){
@@ -681,7 +716,7 @@ function renumberRows(){
 }
 
 function calcTotal(){
-  var amts = document.querySelectorAll('.exp-amt');
+  var amts = document.querySelectorAll('.exp-amt-thb');
   var total = 0;
   amts.forEach(function(a){ total += parseFloat(a.value)||0; });
   document.getElementById('grand_total').textContent = total.toLocaleString('en',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -695,7 +730,7 @@ function calcTotal(){
 }
 
 function calcNet(){
-  var amts = document.querySelectorAll('.exp-amt');
+  var amts = document.querySelectorAll('.exp-amt-thb');
   var total = 0;
   amts.forEach(function(a){ total += parseFloat(a.value)||0; });
   var hasAdv = document.getElementById('adv_yes').checked;
@@ -722,14 +757,21 @@ function collectItems(){
   var rows = document.getElementById('exp_body').querySelectorAll('tr');
   var items = [];
   rows.forEach(function(tr){
-    var amt = parseFloat(tr.querySelector('.exp-amt').value)||0;
+    var amt    = parseFloat(tr.querySelector('.exp-amt').value)||0;
+    var amtThb = parseFloat(tr.querySelector('.exp-amt-thb').value)||0;
     if(amt > 0 || tr.querySelector('.exp-desc').value.trim()){
+      var cur  = tr.querySelector('.exp-cur').value;
+      var rate = parseFloat(tr.querySelector('.exp-rate').value)||1;
       items.push({
         date: tr.querySelector('.exp-date').value,
         category: tr.querySelector('.exp-cat').value,
         description: tr.querySelector('.exp-desc').value,
         receipt_no: tr.querySelector('.exp-rcpt').value,
-        amount: amt
+        currency: cur,
+        amount_foreign: amt,
+        rate_to_thb: cur === 'THB' ? 1 : rate,
+        amount_thb: amtThb,
+        amount: amtThb   // backwards compat — sheet uses amount
       });
     }
   });
@@ -738,7 +780,7 @@ function collectItems(){
 
 // ── VALIDATION ──
 function validate(){
-  var required = ['emp_name','emp_id','emp_email','cert_name','submit_date'];
+  var required = ['emp_name','emp_email','cert_name','submit_date'];
   var ok = true;
   required.forEach(function(id){
     var el = document.getElementById(id);
@@ -803,7 +845,7 @@ async function submitForm(){
   }
   document.getElementById('val_msg').style.display='none';
 
-  var amts = document.querySelectorAll('.exp-amt');
+  var amts = document.querySelectorAll('.exp-amt-thb');
   var total = 0; amts.forEach(function(a){ total += parseFloat(a.value)||0; });
   var hasAdv = document.getElementById('adv_yes').checked;
   var adv = hasAdv ? (parseFloat(document.getElementById('adv_amount').value)||0) : 0;
@@ -871,6 +913,25 @@ async function submitForm(){
 function closeModal(){
   document.getElementById('success_overlay').classList.remove('show');
   location.reload();
+}
+
+function printEmptyForm() {
+  // Save all field values and placeholders
+  var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea');
+  var saved = Array.from(fields).map(function(el) {
+    return { el: el, value: el.value, placeholder: el.placeholder || '' };
+  });
+  // Clear everything
+  saved.forEach(function(s) { s.el.value = ''; s.el.placeholder = ''; });
+  document.body.classList.add('print-empty');
+  window.print();
+  // Restore after print dialog closes
+  function restore() {
+    saved.forEach(function(s) { s.el.value = s.value; s.el.placeholder = s.placeholder; });
+    document.body.classList.remove('print-empty');
+    window.removeEventListener('afterprint', restore);
+  }
+  window.addEventListener('afterprint', restore);
 }
 </script>
 </body>

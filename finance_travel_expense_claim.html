@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Expense Claim – Envisage</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sarabun',sans-serif;background:linear-gradient(135deg,#daeaf8 0%,#eaf4fb 100%);padding:20px;color:#1a2744;min-height:100vh;}
+
+.page{background:#fff;max-width:980px;margin:0 auto;border-radius:12px;overflow:hidden;box-shadow:0 6px 30px rgba(26,39,68,.18);}
+
+input[type="text"],input[type="number"],input[type="date"],input[type="email"],input[type="tel"],select,textarea{
+  font-family:'Sarabun',sans-serif;font-size:12px;color:#1a2744;
+  background:transparent;border:none;border-bottom:1.5px solid #3a7bd5;
+  outline:none;width:100%;padding:2px 4px;transition:border-color .2s,background .2s;border-radius:0;
+}
+input[type="text"]:focus,input[type="number"]:focus,input[type="date"]:focus,
+input[type="email"]:focus,input[type="tel"]:focus,select:focus,textarea:focus{
+  border-bottom-color:#00b8a9;background:rgba(0,184,169,.05);
+}
+input[type="number"]{text-align:right;}
+input.invalid,select.invalid{border-bottom-color:#e74c3c!important;background:rgba(231,76,60,.05);}
+input[type="checkbox"]{width:14px;height:14px;accent-color:#1a2744;cursor:pointer;flex-shrink:0;}
+select{cursor:pointer;}
+textarea{resize:vertical;border:1.5px solid #3a7bd5;border-radius:4px;padding:6px;background:#fafcff;}
+textarea:focus{border-color:#00b8a9;}
+
+/* HEADER */
+.header{background:#fff;padding:18px 24px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border-bottom:2px solid #e0eaf4;}
+.header-logo{width:70px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.header-logo .logo-circle{width:60px;height:60px;background:linear-gradient(135deg,#1a2744,#3a5580);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;}
+.header-center{flex:1;padding:0 12px;}
+.header-center h1{font-size:24px;font-weight:800;color:#1a2744;line-height:1.1;letter-spacing:.3px;}
+.header-center .sub{font-size:12px;color:#555;margin-top:4px;font-weight:600;}
+.header-center .note{font-size:11px;color:#888;margin-top:2px;}
+.header-right{width:200px;flex-shrink:0;border:2px solid #c5d8ec;border-radius:8px;padding:10px 12px;font-size:12px;}
+.pr-box-row{display:flex;align-items:center;gap:6px;margin-bottom:8px;font-weight:700;}
+.pr-box-row .lbl{white-space:nowrap;}
+.pr-box-row input,.pr-box-row select{flex:1;min-width:0;}
+
+/* SECTION HEADERS */
+.sec-hdr{background:#1a2744;color:#fff;font-size:13px;font-weight:700;padding:8px 14px;display:flex;align-items:center;gap:10px;letter-spacing:.4px;}
+.sec-hdr .ico{background:#00b8a9;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+
+/* SECTIONS */
+.section{padding:14px 20px;border-bottom:1px solid #e0eaf4;}
+.frow{display:flex;align-items:flex-end;gap:6px;margin-bottom:10px;font-size:12px;font-weight:700;}
+.frow label{white-space:nowrap;font-weight:700;color:#1a2744;}
+.frow input,.frow select,.frow textarea{flex:1;min-width:40px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 30px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 20px;}
+.four-col{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:0 16px;}
+
+/* TRAVEL BADGE */
+.trip-badge{display:inline-flex;align-items:center;gap:8px;background:#f0f6ff;border:1.5px solid #c0d4f0;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:#1a2744;margin-bottom:10px;}
+.trip-arrow{font-size:18px;color:#00b8a9;}
+
+/* EXPENSE TABLE */
+.exp-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.exp-table th{background:#1a2744;color:#fff;padding:7px 5px;text-align:center;font-weight:700;font-size:11px;white-space:nowrap;}
+.exp-table th:nth-child(1){width:28px;}   /* # */
+.exp-table th:nth-child(2){width:115px;}  /* Category */
+.exp-table th:nth-child(3){width:auto;}   /* Description */
+.exp-table th:nth-child(4){width:68px;}   /* Currency */
+.exp-table th:nth-child(5){width:88px;}   /* Amount */
+.exp-table th:nth-child(6){width:78px;}   /* Rate → THB */
+.exp-table th:nth-child(7){width:90px;}   /* THB Amt */
+.exp-table th:nth-child(8){width:36px;}   /* Receipt */
+.exp-table th:nth-child(9){width:28px;}   /* Del */
+.exp-table td{padding:3px 4px;border-bottom:1px solid #e8eef6;vertical-align:middle;height:34px;}
+.exp-table td:first-child{text-align:center;font-weight:700;font-size:11px;color:#888;}
+.exp-table td:last-child{text-align:center;}
+.exp-table td input,.exp-table td select{width:100%;min-width:0;font-size:11px;}
+.exp-table td input[type="number"]{text-align:right;}
+.exp-table td input[readonly]{background:#f7f9fc;color:#555;border-bottom-color:#ddd;}
+.exp-table td:nth-child(8){text-align:center;}
+.exp-total-row td{background:#f0f6fc;font-weight:800;border-top:2px solid #1a2744;padding:7px 5px;}
+.exp-total-label{text-align:right!important;padding-right:8px!important;font-size:12px;color:#1a2744;}
+.exp-total-amt{color:#e74c3c;font-size:14px;font-weight:800;text-align:right!important;padding-right:8px!important;}
+.del-btn{background:none;border:none;cursor:pointer;color:#e74c3c;font-size:15px;line-height:1;padding:2px 4px;}
+.del-btn:hover{color:#c0392b;}
+.add-row-btn{background:#f0f6fc;border:1.5px dashed #3a7bd5;color:#1a2744;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:700;padding:7px 18px;border-radius:6px;cursor:pointer;transition:all .2s;margin-top:8px;}
+.add-row-btn:hover{background:#daeaf8;border-color:#1a2744;}
+
+/* Rate cell coloring */
+.rate-cell{position:relative;}
+.curr-flag{font-size:10px;color:#888;position:absolute;right:4px;top:50%;transform:translateY(-50%);pointer-events:none;}
+
+/* ADVANCE / SUMMARY */
+.adv-toggle{display:flex;align-items:center;gap:14px;margin-bottom:12px;}
+.adv-opt{display:flex;align-items:center;gap:5px;font-size:12px;font-weight:700;cursor:pointer;}
+.net-summary{border:1.5px solid #c5d8ec;border-radius:8px;overflow:hidden;}
+.net-row{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;border-bottom:1px solid #e0eaf4;font-size:12px;}
+.net-row:last-child{border-bottom:none;}
+.net-row .lbl{font-weight:700;color:#555;}
+.net-row .val{font-weight:800;color:#1a2744;font-size:13px;}
+.net-row.total{background:#1a2744;}
+.net-row.total .lbl,.net-row.total .val{color:#fff;font-size:13px;}
+.net-row.total .val{color:#00b8a9;}
+
+/* APPROVAL TABLE */
+.appr-section{padding:0 0 14px;}
+.appr-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed;}
+.appr-table th{background:#f0f6fc;color:#1a2744;padding:7px 10px;font-weight:700;text-align:center;border:1px solid #c5d8ec;font-size:11px;}
+.appr-table th:nth-child(1){width:26%;}
+.appr-table th:nth-child(2){width:22%;}
+.appr-table th:nth-child(3){width:24%;}
+.appr-table th:nth-child(4){width:14%;}
+.appr-table th:nth-child(5){width:14%;}
+.appr-table td{padding:6px 10px;border:1px solid #e0eaf4;vertical-align:middle;height:34px;}
+.appr-table td input,.appr-table td select{width:100%;min-width:0;}
+.role-cell{display:flex;align-items:center;gap:7px;}
+.ava{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:#fff;}
+.ava-t{background:#00b8a9;}.ava-b{background:#3a7bd5;}.ava-p{background:#8e44ad;}
+.ava-g{background:#27ae60;}.ava-o{background:#e67e22;}.ava-r{background:#e74c3c;}
+.badge-submitted{display:inline-block;padding:3px 10px;border-radius:12px;background:#e8f8f0;color:#27ae60;font-size:11px;font-weight:700;border:1px solid #27ae60;}
+
+/* BOTTOM GRID */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e0eaf4;}
+.bottom-left{padding:14px 20px;border-right:1px solid #e0eaf4;}
+.bottom-right{padding:14px 20px;}
+
+/* INFO BAR */
+.info-bar{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #e0eaf4;}
+.docs-box,.notes-box{padding:14px 20px;}
+.docs-box{border-right:1px solid #e0eaf4;}
+.docs-title{font-size:12px;font-weight:800;color:#1a2744;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px;}
+.checklist-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11px;color:#333;}
+.checklist-item label{cursor:pointer;line-height:1.4;}
+.note-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:7px;font-size:11px;color:#333;line-height:1.4;}
+.note-dot{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px;}
+.nd-red{background:#fde8e8;color:#e74c3c;border:1.5px solid #e74c3c;}
+.nd-ora{background:#fff3e0;color:#e67e22;border:1.5px solid #e67e22;}
+.nd-yel{background:#fef9e7;color:#d4ac0d;border:1.5px solid #d4ac0d;}
+.nd-grn{background:#e8f8f0;color:#27ae60;border:1.5px solid #27ae60;}
+
+/* ATTACHMENTS */
+.attach-sec{padding:14px 20px;border-bottom:1px solid #e0eaf4;}
+.attach-hint{font-size:11px;color:#888;margin-bottom:10px;line-height:1.5;}
+.attach-upload-btn{display:inline-flex;align-items:center;gap:6px;background:#f0f6fc;border:1.5px dashed #3a7bd5;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:700;color:#1a2744;cursor:pointer;transition:all .2s;}
+.attach-upload-btn:hover{background:#daeaf8;}
+.attach-upload-btn input[type="file"]{display:none;}
+.file-list{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;}
+.file-chip{background:#f0f6fc;border:1px solid #c5d8ec;border-radius:4px;padding:4px 10px;font-size:11px;font-weight:600;color:#1a2744;display:flex;align-items:center;gap:5px;}
+.file-chip .rm{cursor:pointer;color:#e74c3c;font-weight:800;}
+
+/* VALIDATION */
+.val-msg{display:none;background:#fde8e8;border:1.5px solid #e74c3c;border-radius:6px;padding:10px 16px;font-size:12px;font-weight:700;color:#c0392b;margin:0 20px 10px;}
+
+/* ACTION BAR */
+.action-bar{display:flex;justify-content:center;gap:14px;padding:14px 20px;background:#f7fbff;border-top:2px solid #e0eaf4;flex-wrap:wrap;}
+.btn{padding:10px 26px;border-radius:6px;font-family:'Sarabun',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s;}
+.btn-primary{background:#00b8a9;color:#fff;}
+.btn-primary:hover{background:#009e90;transform:translateY(-1px);}
+.btn-navy{background:#1a2744;color:#fff;}
+.btn-navy:hover{background:#243660;transform:translateY(-1px);}
+.btn-outline{background:#fff;color:#1a2744;border:2px solid #c5d8ec;}
+.btn-outline:hover{border-color:#1a2744;}
+
+/* FOOTER */
+.footer-banner{background:#1a2744;color:rgba(255,255,255,.55);display:flex;align-items:center;gap:16px;padding:12px 22px;font-size:11px;}
+.footer-banner .shield{font-size:22px;}
+.footer-banner .main-txt{font-size:13px;font-weight:700;color:#fff;}
+.footer-banner .sub-txt{font-size:11px;color:rgba(255,255,255,.55);}
+
+/* SUCCESS OVERLAY */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;}
+.modal{background:#fff;border-radius:16px;padding:40px;max-width:420px;width:90%;text-align:center;}
+.modal h2{font-size:20px;font-weight:800;color:#1a2744;margin-bottom:8px;}
+.modal p{font-size:13px;color:#555;margin-bottom:6px;}
+.ref-id{font-size:16px;font-weight:800;color:#00b8a9;background:#e8faf8;border:1.5px solid #00b8a9;border-radius:8px;padding:8px 16px;display:inline-block;margin:10px 0;}
+.close-btn{background:#1a2744;color:#fff;border:none;border-radius:8px;padding:12px 32px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;margin-top:14px;}
+.close-btn:hover{background:#00b8a9;}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;border-radius:0;}
+  .action-bar,.attach-upload-btn,.add-row-btn,.del-btn,.overlay,#env_gate,.back-link-wrap{display:none!important;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ ENVISAGE ACCESS GATE ══════════════════════════════════════ -->
+<div id="env_gate" style="position:fixed;inset:0;background:#0d1a35;z-index:99999;display:flex;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#fff;border-radius:16px;padding:36px 40px;max-width:400px;width:100%;text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.4);">
+    <div style="width:56px;height:56px;background:#1a2744;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px;">🔒</div>
+    <div style="font-size:20px;font-weight:800;color:#1a2744;margin-bottom:4px;">Staff Access Only</div>
+    <div style="font-size:12px;color:#6b7c93;margin-bottom:20px;line-height:1.6;">This page is for internal staff only.<br>Enter your company email to continue.</div>
+    <input type="email" id="gate_email" placeholder="Enter your company email"
+      style="width:100%;padding:10px 14px;border:2px solid #c0d0e4;border-radius:8px;font-size:13px;font-family:'Sarabun',sans-serif;color:#1a2744;outline:none;margin-bottom:6px;box-sizing:border-box;"
+      onkeydown="if(event.key==='Enter')_checkGate()">
+    <div id="gate_err" style="color:#e74c3c;font-size:11.5px;font-weight:700;margin-bottom:10px;display:none;">❌ Access restricted to company email only.</div>
+    <button onclick="_checkGate()"
+      style="width:100%;background:#1a2744;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Sarabun',sans-serif;"
+      onmouseover="this.style.background='#00b8a9'" onmouseout="this.style.background='#1a2744'">
+      Continue →
+    </button>
+    <div style="margin-top:18px;font-size:10px;color:#bbb;border-top:1px solid #f0f0f0;padding-top:12px;">ENVISAGE WORLDWIDE · Internal Use Only</div>
+  </div>
+</div>
+<script>
+(function(){
+  if(sessionStorage.getItem('env_auth')==='ok'){
+    var g=document.getElementById('env_gate'); if(g) g.style.display='none';
+  }
+})();
+function _checkGate(){
+  var email=(document.getElementById('gate_email').value||'').trim().toLowerCase();
+  var err=document.getElementById('gate_err');
+  if(email.endsWith('@envisageworldwide.com')){
+    sessionStorage.setItem('env_auth','ok');
+    document.getElementById('env_gate').style.display='none';
+    err.style.display='none';
+  } else {
+    err.style.display='block';
+    document.getElementById('gate_email').style.borderColor='#e74c3c';
+    setTimeout(function(){document.getElementById('gate_email').style.borderColor='#c0d0e4';},2000);
+  }
+}
+</script>
+<!-- ══ END ACCESS GATE ══════════════════════════════════════════ -->
+
+<div class="back-link-wrap" style="max-width:980px;margin:0 auto;padding:14px 20px 0;">
+  <a href="https://mt468.github.io/env-forms/forms_portal.html"
+     style="display:inline-flex;align-items:center;gap:6px;color:#1a2744;font-size:13px;font-weight:700;text-decoration:none;padding:6px 14px;background:#fff;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.12);font-family:'Sarabun',sans-serif;">← Back to Portal</a>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="overlay" id="success_overlay" style="display:none;">
+  <div class="modal">
+    <div style="font-size:46px;margin-bottom:8px;">✅</div>
+    <h2>Travel Expense Submitted!</h2>
+    <p>Your claim has been sent for approval.</p>
+    <div class="ref-id" id="modal_ref_id">TEC-XXXXXXX</div>
+    <p>You will receive an email notification when it is reviewed.</p>
+    <button class="close-btn" onclick="closeModal()">OK – New Claim</button>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ── HEADER ─────────────────────────────────────────────────── -->
+  <div class="header">
+    <div class="header-logo"><div class="logo-circle">E</div></div>
+    <div class="header-center">
+      <h1>✈ TRAVEL EXPENSE CLAIM</h1>
+      <div class="sub">Finance Department · Envisage Worldwide</div>
+      <div class="note">ENV-FIN-TEC-2026 · For official travel reimbursement only</div>
+    </div>
+    <div class="header-right">
+      <div class="pr-box-row">
+        <span class="lbl">📋 TEC No. :</span>
+        <input type="text" id="tec_no" placeholder="Auto-generated" readonly style="background:#f0f4f8;color:#555;cursor:default;">
+      </div>
+      <div class="pr-box-row">
+        <span class="lbl">📅 Date :</span>
+        <input type="date" id="submit_date">
+      </div>
+      <div class="pr-box-row">
+        <span class="lbl">🏢 Dept :</span>
+        <select id="hdr_dept">
+          <option value="">— Select —</option>
+          <option>Administration</option>
+          <option>CMT – Executive</option>
+          <option>CMT – Operations</option>
+          <option>Commercial - SAM</option>
+          <option>Finance &amp; Accounting</option>
+          <option>Myanmar Country Research</option>
+          <option>Myanmar In-Country</option>
+          <option>Software Development</option>
+          <option>Zimbabwe Country Research</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 1: TRAVELLER INFORMATION ──────────────────────── -->
+  <div class="sec-hdr"><div class="ico">👤</div>1. Traveller Information</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Full Name :</label><input type="text" id="emp_name" placeholder="As per company records" required></div>
+      <div class="frow"><label>Employee ID :</label><input type="text" id="emp_id" placeholder="e.g. ENV-0001"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Email :</label><input type="email" id="req_email" placeholder="Company email address" required></div>
+      <div class="frow"><label>Phone :</label><input type="tel" id="emp_phone" placeholder="Contact number during travel"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>Department :</label>
+        <select id="emp_dept" required>
+          <option value="">— Select Department —</option>
+          <option>Administration</option>
+          <option>CMT – Executive</option>
+          <option>CMT – Operations</option>
+          <option>Commercial - SAM</option>
+          <option>Finance &amp; Accounting</option>
+          <option>Myanmar Country Research</option>
+          <option>Myanmar In-Country</option>
+          <option>Software Development</option>
+          <option>Zimbabwe Country Research</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="frow"><label>Position / Title :</label><input type="text" id="emp_position" placeholder="Job title" style="display:none;"></div>
+      <div class="frow"><label>Office / Base :</label>
+        <select id="emp_office">
+          <option value="">— Select —</option>
+          <option>Chiang Rai</option>
+          <option>Chiang Mai</option>
+          <option>Bangkok</option>
+          <option>Yangon</option>
+          <option>Myitkyina</option>
+          <option>Remote</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: TRAVEL DETAILS ─────────────────────────────── -->
+  <div class="sec-hdr"><div class="ico">✈</div>2. Travel Details</div>
+  <div class="section">
+    <div class="two-col">
+      <div class="frow"><label>Purpose of Travel :</label>
+        <input type="text" id="purpose" placeholder="e.g. Client meeting, Conference, Field research" required>
+      </div>
+      <div class="frow"><label>Category :</label>
+        <select id="trip_category" required>
+          <option value="">— Select Category —</option>
+          <option>Business Trip</option>
+          <option>Client Visit</option>
+          <option>Conference / Seminar</option>
+          <option>Training / Workshop</option>
+          <option>Field Research</option>
+          <option>Visa / Immigration</option>
+          <option>Other Official Travel</option>
+        </select>
+      </div>
+    </div>
+    <div class="four-col">
+      <div class="frow"><label>Travel Date From :</label><input type="date" id="travel_from" onchange="calcTripDays()" required></div>
+      <div class="frow"><label>Travel Date To :</label><input type="date" id="travel_to" onchange="calcTripDays()" required></div>
+      <div class="frow"><label>No. of Days :</label><input type="number" id="no_days" placeholder="0" min="0" step="0.5" readonly style="background:#f7f9fc;color:#00b8a9;font-weight:800;border-bottom-color:#00b8a9;"></div>
+      <div class="frow"><label>Per Diem (THB/day) :</label><input type="number" id="per_diem_rate" placeholder="0" min="0" step="50" oninput="recalcTotal()"></div>
+    </div>
+    <div class="two-col">
+      <div class="frow"><label>From City / Country :</label><input type="text" id="from_city" placeholder="Departure city or country" required></div>
+      <div class="frow"><label>To City / Country (Destination) :</label><input type="text" id="to_city" placeholder="Destination city or country" required></div>
+    </div>
+    <!-- Trip summary badge -->
+    <div class="trip-badge" id="trip_badge" style="display:none;">
+      <span id="badge_from">–</span>
+      <span class="trip-arrow">✈</span>
+      <span id="badge_to">–</span>
+      <span style="color:#888;font-size:11px;margin-left:8px;" id="badge_days"></span>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: EXPENSE BREAKDOWN ──────────────────────────── -->
+  <div class="sec-hdr"><div class="ico">🧾</div>3. Expense Breakdown — Estimated / Actual</div>
+  <div class="section" style="padding-bottom:6px;overflow-x:auto;">
+
+    <!-- Currency legend -->
+    <div style="font-size:11px;color:#888;margin-bottom:8px;display:flex;flex-wrap:wrap;gap:10px;">
+      <span style="font-weight:700;color:#1a2744;">Currency codes:</span>
+      <span>THB = Thai Baht</span><span>USD = US Dollar</span>
+      <span>MMK = Myanmar Kyat</span><span>HKD = Hong Kong Dollar</span>
+      <span>LAK = Lao Kip</span>
+    </div>
+
+    <table class="exp-table" id="exp_table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Category</th>
+          <th>Description / Vendor</th>
+          <th>Curr.</th>
+          <th>Amount</th>
+          <th>Rate→THB</th>
+          <th>THB Amt</th>
+          <th>Rcpt</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="exp_body">
+        <!-- Rows injected by JS -->
+      </tbody>
+      <tfoot>
+        <tr class="exp-total-row">
+          <td colspan="6" class="exp-total-label">TOTAL CLAIM (THB)</td>
+          <td class="exp-total-amt" id="grand_total">0.00</td>
+          <td colspan="2"></td>
+        </tr>
+      </tfoot>
+    </table>
+    <button class="add-row-btn" onclick="addRow()">＋ Add Expense Row</button>
+    <div style="margin-top:6px;font-size:11px;color:#aaa;">* For foreign currency: enter Amount in original currency + exchange rate → THB amount auto-calculates.</div>
+  </div>
+
+  <!-- ── SECTION 4: ADVANCE SETTLEMENT ─────────────────────────── -->
+  <div class="sec-hdr"><div class="ico">💳</div>4. Advance Settlement</div>
+  <div class="section">
+    <div class="adv-toggle">
+      <span style="font-size:12px;font-weight:700;color:#1a2744;">Was a cash advance received for this trip?</span>
+      <label class="adv-opt"><input type="radio" name="adv_recv" value="no" id="adv_no" checked onchange="toggleAdv()"> No</label>
+      <label class="adv-opt"><input type="radio" name="adv_recv" value="yes" id="adv_yes" onchange="toggleAdv()"> Yes</label>
+    </div>
+    <div id="adv_fields" style="opacity:.4;pointer-events:none;">
+      <div class="two-col">
+        <div class="frow"><label>Advance Reference / PR No. :</label><input type="text" id="adv_ref" placeholder="e.g. ADVPAY-260601-1234"></div>
+        <div class="frow"><label>Advance Amount (THB) :</label><input type="number" id="adv_amount" placeholder="0.00" min="0" step="0.01" oninput="recalcTotal()"></div>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="net-summary">
+        <div class="net-row"><span class="lbl">Total Claim Amount (THB)</span><span class="val" id="net_total">0.00 THB</span></div>
+        <div class="net-row" id="net_adv_row" style="display:none;"><span class="lbl">Less: Advance Received</span><span class="val" id="net_adv">0.00 THB</span></div>
+        <div class="net-row total"><span class="lbl">💰 Net Amount to Reimburse</span><span class="val" id="net_reimburse">0.00 THB</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5: GL CODES ────────────────────────────────────── -->
+  <div class="sec-hdr"><div class="ico">📊</div>5. Accounting Codes</div>
+  <div class="section">
+    <div class="three-col">
+      <div class="frow"><label>GL Account :</label><input type="text" id="gl_account" placeholder="e.g. 6100-001"></div>
+      <div class="frow"><label>Cost Centre :</label><input type="text" id="cost_centre" placeholder="Cost centre code"></div>
+      <div class="frow"><label>Project Code :</label><input type="text" id="project_code" placeholder="Project code (if applicable)"></div>
+    </div>
+    <div class="frow"><label>Reference (PR No. / Contract) :</label><input type="text" id="reference" placeholder="Related reference number (optional)"></div>
+  </div>
+
+  <!-- ── SECTION 6: CERTIFICATION + PAYMENT ────────────────────── -->
+  <div class="bottom-grid">
+    <div class="bottom-left">
+      <div style="font-size:12px;font-weight:800;color:#1a2744;margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;">Employee Certification</div>
+      <div style="font-size:11px;color:#444;line-height:1.6;margin-bottom:10px;font-style:italic;">
+        I hereby certify that the expenses listed above were incurred by me in the course of official business, are accurate, and supported by original receipts / documents attached.
+      </div>
+      <div class="frow"><label>Name :</label><input type="text" id="cert_name" placeholder="Your full name"></div>
+      <div class="frow"><label>Date :</label><input type="date" id="cert_date"></div>
+    </div>
+    <div class="bottom-right">
+      <div style="font-size:12px;font-weight:800;color:#1a2744;margin-bottom:8px;text-transform:uppercase;letter-spacing:.4px;">Reimbursement Details</div>
+      <div class="frow"><label>Preferred Payment Method :</label>
+        <select id="pay_method">
+          <option value="">— Select —</option>
+          <option>Bank Transfer</option>
+          <option>Cash</option>
+          <option>Cheque</option>
+        </select>
+      </div>
+      <div class="frow"><label>Bank / Account No. :</label><input type="text" id="bank_account" placeholder="Bank name &amp; account number"></div>
+      <div class="frow"><label>Requested Pay Date :</label><input type="date" id="pay_date"></div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 7: APPROVAL ────────────────────────────────────── -->
+  <div class="sec-hdr" style="margin-top:0;"><div class="ico">✅</div>6. Approval</div>
+  <div class="appr-section" style="padding:0 0 0;">
+    <table class="appr-table">
+      <thead>
+        <tr><th>Role</th><th>Name</th><th>Signature / Notes</th><th>Status</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-t">👤</div>Requester</div></td>
+          <td><input type="text" id="appr_requester" placeholder="Full name"></td>
+          <td><input type="text" placeholder="Signed"></td>
+          <td><span class="badge-submitted">✔ Submitted</span></td>
+          <td><input type="date"></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-b">🏢</div>Department Manager</div></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="date" disabled></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-g">💰</div>Finance Dept</div></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="date" disabled></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-p">👑</div>CFO<br><span style="font-size:10px;color:#888;">(if &gt; 20,000 THB)</span></div></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="date" disabled></td>
+        </tr>
+        <tr>
+          <td><div class="role-cell"><div class="ava ava-o">🎯</div>Director<br><span style="font-size:10px;color:#888;">(if &gt; 50,000 THB)</span></div></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="text" placeholder="For approver use" readonly></td>
+          <td><input type="date" disabled></td>
+        </tr>
+      </tbody>
+    </table>
+    <div id="appr_tier_badge" style="margin:10px 20px;padding:8px 14px;border-radius:6px;font-size:12px;font-weight:700;background:#f0f6ff;border:1.5px solid #c0d4f0;color:#1a2744;display:flex;align-items:center;gap:8px;">
+      <span>📋</span><span id="appr_tier_text">Enter expenses above to see required approval chain</span>
+    </div>
+  </div>
+
+  <!-- ── DOCUMENTS + NOTES ──────────────────────────────────────── -->
+  <div class="info-bar">
+    <div class="docs-box">
+      <div class="docs-title">📎 Required Documents</div>
+      <div class="checklist-item"><input type="checkbox" id="doc1"><label for="doc1">Original receipts / tax invoices for all items</label></div>
+      <div class="checklist-item"><input type="checkbox" id="doc2"><label for="doc2">Flight tickets / boarding passes</label></div>
+      <div class="checklist-item"><input type="checkbox" id="doc3"><label for="doc3">Hotel booking confirmation &amp; receipt</label></div>
+      <div class="checklist-item"><input type="checkbox" id="doc4"><label for="doc4">Event invitation / agenda (for conferences)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="doc5"><label for="doc5">Visa / entry fee receipts (if applicable)</label></div>
+      <div class="checklist-item"><input type="checkbox" id="doc6"><label for="doc6">Advance settlement form (if advance received)</label></div>
+    </div>
+    <div class="notes-box">
+      <div class="docs-title">📌 Submission Policy</div>
+      <div class="note-item"><div class="note-dot nd-red">!</div>Claims must be submitted within <strong>15 days</strong> of return.</div>
+      <div class="note-item"><div class="note-dot nd-ora">!</div>Claims without original receipts will <strong>not be reimbursed</strong>.</div>
+      <div class="note-item"><div class="note-dot nd-yel">!</div>≤ 2,000: No approval · 2,001–20,000: Manager → Finance · 20,001–50,000: + CFO · 50,001+: + Director</div>
+      <div class="note-item"><div class="note-dot nd-grn">✓</div>Per diem rates: 500 / 700 / 900 THB/day by staff level.</div>
+      <div class="note-item"><div class="note-dot nd-grn">✓</div>Enter foreign amounts + exchange rate — THB converts automatically.</div>
+    </div>
+  </div>
+
+  <!-- ── ATTACHMENTS ────────────────────────────────────────────── -->
+  <div class="attach-sec">
+    <div style="font-size:12px;font-weight:800;color:#1a2744;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:7px;">
+      <span style="background:#00b8a9;border-radius:50%;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;color:#fff;flex-shrink:0;">📎</span>
+      Supporting Documents
+    </div>
+    <div class="attach-hint">Upload receipts, boarding passes, hotel invoices, or other supporting files (PDF, JPG, PNG, Excel, Word). Saved to Google Drive → Finance → Travel Expense. Max 25 MB total.</div>
+    <label class="attach-upload-btn">
+      <input type="file" id="attachment_input" multiple accept=".pdf,.jpg,.jpeg,.png,.xlsx,.xls,.doc,.docx,.csv" onchange="onAttachChange()">
+      ＋ Add Files
+    </label>
+    <div class="file-list" id="file_list"></div>
+  </div>
+
+  <!-- VALIDATION -->
+  <div class="val-msg" id="val_msg">⚠️ Please complete: <span id="val_fields"></span></div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="action-bar">
+    <button class="btn btn-outline" onclick="clearForm()">🗑 Clear Form</button>
+    <button class="btn btn-navy" onclick="window.print()">🖨 Print / PDF</button>
+    <button class="btn btn-primary" onclick="submitForm()">✈ Submit Claim →</button>
+    <a href="Expense_Claim_No_Receipt_Declaration.xlsx" download class="btn btn-outline" style="background:#fff;color:#00b8a9;border:2px solid #00b8a9;text-decoration:none;display:inline-flex;align-items:center;gap:6px;" onmouseover="this.style.background='#eafaf8'" onmouseout="this.style.background='#fff'">📋 No-Receipt Declaration Form</a>
+  </div>
+
+  <div class="footer-banner">
+    <div class="shield">✈</div>
+    <div>
+      <div class="main-txt">TRAVEL EXPENSE REIMBURSEMENT</div>
+      <div class="sub-txt">Submit within 15 days of return · Attach all original receipts · Claims without receipts will not be processed</div>
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz40Iw1BHxNapXZ_Bq1Hsq4sw5cv0e3EcQnxoCFMOxxII8NavsYL-bM72-TjNcLGSYHPw/exec';
+var _submitting = false;
+var _selFiles = [];
+
+// ── APPROVAL TIER CONFIG ─────────────────────────────────────────
+var APPROVER_MANAGER  = 'mt@envisageworldwide.com';
+var APPROVER_CFO      = 'admin@envisageworldwide.com';
+var APPROVER_FINANCE  = 'mallika@envisageworldwide.com';
+var APPROVER_DIRECTOR = 'joelh@envisageworldwide.com';
+
+function getEmailConfig(amount) {
+  var base = ['accounting@envisageworldwide.com','mallika@envisageworldwide.com','admin@envisageworldwide.com'];
+  if (amount <= 2000) {
+    return { approvers: [], cc: base.join(', '),
+      label: '✅ ≤ 2,000 THB — No approval required',
+      color: '#27ae60', bg: '#eafaf1', border: '#a9dfbf' };
+  } else if (amount <= 20000) {
+    return { approvers: [APPROVER_MANAGER, APPROVER_FINANCE],
+      cc: base.concat(['apple@envisageworldwide.com']).join(', '),
+      label: '🔵 2,001–20,000 THB — Manager → Finance Dept',
+      color: '#2471a3', bg: '#eaf4fb', border: '#a9cce3' };
+  } else if (amount <= 50000) {
+    return { approvers: [APPROVER_MANAGER, APPROVER_FINANCE, APPROVER_CFO],
+      cc: base.concat(['apple@envisageworldwide.com','joelh@envisageworldwide.com']).join(', '),
+      label: '🟠 20,001–50,000 THB — Manager → Finance Dept → CFO',
+      color: '#ca6f1e', bg: '#fef5e7', border: '#f5cba7' };
+  } else {
+    return { approvers: [APPROVER_MANAGER, APPROVER_FINANCE, APPROVER_CFO, APPROVER_DIRECTOR],
+      cc: base.concat(['apple@envisageworldwide.com','joelh@envisageworldwide.com']).join(', '),
+      label: '🔴 > 50,000 THB — Manager → Finance → CFO → Director',
+      color: '#c0392b', bg: '#fdedec', border: '#f1948a' };
+  }
+}
+
+// ── CATEGORIES ──────────────────────────────────────────────────────
+var CATEGORIES = [
+  'Airfare / Flight',
+  'Airport Transfer',
+  'Accommodation (Hotel)',
+  'Daily Meals / Per Diem',
+  'Ground Transport',
+  'Seminar / Conference Fee',
+  'Visa / Entry Fees',
+  'Other Expenses'
+];
+
+var CURRENCIES = [
+  { code: 'THB', label: 'THB — Thai Baht',         flag: '🇹🇭' },
+  { code: 'USD', label: 'USD — US Dollar',           flag: '🇺🇸' },
+  { code: 'MMK', label: 'MMK — Myanmar Kyat',        flag: '🇲🇲' },
+  { code: 'HKD', label: 'HKD — Hong Kong Dollar',   flag: '🇭🇰' },
+  { code: 'LAK', label: 'LAK — Lao Kip',             flag: '🇱🇦' }
+];
+
+var _rowCount = 0;
+
+// ── INIT ─────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', function(){
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('submit_date').value = today;
+  document.getElementById('cert_date').value = today;
+  var tec = document.getElementById('tec_no');
+  var d = new Date(); var yy = d.getFullYear().toString().slice(2);
+  var mm = String(d.getMonth()+1).padStart(2,'0'); var dd = String(d.getDate()).padStart(2,'0');
+  tec.value = 'TEC-' + yy + mm + dd + '-' + String(Math.floor(1000+Math.random()*9000));
+
+  // Sync dept to header
+  document.getElementById('emp_dept').addEventListener('change', function(){
+    document.getElementById('hdr_dept').value = this.value;
+  });
+
+  // Add default travel expense category rows
+  CATEGORIES.forEach(function(cat){ addRow(cat); });
+});
+
+// ── ADD EXPENSE ROW ───────────────────────────────────────────────────
+function addRow(defaultCat) {
+  _rowCount++;
+  var idx = _rowCount;
+  var tbody = document.getElementById('exp_body');
+  var tr = document.createElement('tr');
+  tr.id = 'erow_' + idx;
+
+  // Build category options
+  var catOpts = '<option value="">— Category —</option>' +
+    CATEGORIES.map(function(c){ return '<option' + (c===defaultCat?' selected':'') + '>'+c+'</option>'; }).join('');
+
+  // Build currency options
+  var currOpts = CURRENCIES.map(function(c){
+    return '<option value="'+c.code+'">'+c.code+'</option>';
+  }).join('');
+
+  tr.innerHTML =
+    '<td>' + idx + '</td>' +
+    '<td><select class="cat-sel" onchange="onCatChange(this)">' + catOpts + '</select></td>' +
+    '<td><input type="text" class="desc-inp" placeholder="Description / vendor"></td>' +
+    '<td><select class="curr-sel" onchange="onCurrChange(this)">' + currOpts + '</select></td>' +
+    '<td><input type="number" class="amt-foreign" placeholder="0.00" min="0" step="0.01" oninput="updateRowThb(this.closest(\'tr\'))"></td>' +
+    '<td class="rate-cell"><input type="number" class="rate-inp" placeholder="1.00" min="0" step="0.0001" value="1" oninput="updateRowThb(this.closest(\'tr\'))" style="display:none;"><span class="rate-fixed" style="font-size:11px;color:#aaa;padding:2px 4px;">1.00</span></td>' +
+    '<td><input type="number" class="amt-thb" placeholder="0.00" readonly></td>' +
+    '<td style="text-align:center;"><input type="checkbox" class="rcpt-chk" title="Receipt attached"></td>' +
+    '<td><button class="del-btn" onclick="delRow(' + idx + ')" title="Remove row">✕</button></td>';
+
+  tbody.appendChild(tr);
+  recalcTotal();
+}
+
+function onCatChange(sel) { /* future use */ }
+
+function onCurrChange(sel) {
+  var tr = sel.closest('tr');
+  updateRowThb(tr);
+}
+
+function updateRowThb(tr) {
+  var curr     = tr.querySelector('.curr-sel').value;
+  var amtFgn   = parseFloat(tr.querySelector('.amt-foreign').value) || 0;
+  var rateInp  = tr.querySelector('.rate-inp');
+  var rateFixed= tr.querySelector('.rate-fixed');
+  var amtThbEl = tr.querySelector('.amt-thb');
+
+  if (curr === 'THB') {
+    rateInp.style.display   = 'none';
+    rateFixed.style.display = '';
+    amtThbEl.value = amtFgn > 0 ? amtFgn.toFixed(2) : '';
+  } else {
+    rateInp.style.display   = '';
+    rateFixed.style.display = 'none';
+    var rate = parseFloat(rateInp.value) || 0;
+    amtThbEl.value = (amtFgn > 0 && rate > 0) ? (amtFgn * rate).toFixed(2) : '';
+  }
+  recalcTotal();
+}
+
+function delRow(idx) {
+  var tr = document.getElementById('erow_' + idx);
+  if (tr) { tr.remove(); recalcTotal(); }
+}
+
+// ── RECALC TOTAL ──────────────────────────────────────────────────────
+function recalcTotal() {
+  var rows = document.querySelectorAll('#exp_body tr');
+  var total = 0;
+  rows.forEach(function(tr){
+    var v = parseFloat(tr.querySelector('.amt-thb').value) || 0;
+    total += v;
+  });
+
+  // Add per diem
+  var perDiem = parseFloat(document.getElementById('per_diem_rate').value) || 0;
+  var nDays   = parseFloat(document.getElementById('no_days').value) || 0;
+  // Per diem is folded into the total if user set it
+  // (already captured in Daily Meals row if user prefers)
+
+  document.getElementById('grand_total').textContent = total.toFixed(2);
+  document.getElementById('net_total').textContent   = total.toFixed(2) + ' THB';
+
+  var advRecv = document.querySelector('input[name="adv_recv"]:checked');
+  var advAmt  = 0;
+  if (advRecv && advRecv.value === 'yes') {
+    advAmt = parseFloat(document.getElementById('adv_amount').value) || 0;
+  }
+  var net = Math.max(0, total - advAmt);
+  document.getElementById('net_reimburse').textContent = net.toFixed(2) + ' THB';
+
+  var advRow = document.getElementById('net_adv_row');
+  if (advAmt > 0) {
+    advRow.style.display = '';
+    document.getElementById('net_adv').textContent = advAmt.toFixed(2) + ' THB';
+  } else {
+    advRow.style.display = 'none';
+  }
+
+  // Approval tier badge
+  var cfg = getEmailConfig(total);
+  var badge = document.getElementById('appr_tier_badge');
+  var text  = document.getElementById('appr_tier_text');
+  if (badge && text) {
+    badge.style.background  = cfg.bg;
+    badge.style.borderColor = cfg.border;
+    badge.style.color       = cfg.color;
+    text.textContent        = cfg.label;
+  }
+}
+
+// ── CALC TRIP DAYS ────────────────────────────────────────────────────
+function calcTripDays() {
+  var from = document.getElementById('travel_from').value;
+  var to   = document.getElementById('travel_to').value;
+  var badge = document.getElementById('trip_badge');
+  if (from && to) {
+    var dFrom = new Date(from); var dTo = new Date(to);
+    if (dTo >= dFrom) {
+      var days = Math.round((dTo - dFrom) / 86400000) + 1;
+      document.getElementById('no_days').value = days;
+      // Trip badge
+      badge.style.display = '';
+      var fmtFrom = dFrom.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+      var fmtTo   = dTo.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+      document.getElementById('badge_from').textContent = document.getElementById('from_city').value || from;
+      document.getElementById('badge_to').textContent   = document.getElementById('to_city').value   || to;
+      document.getElementById('badge_days').textContent = days + ' day' + (days!==1?'s':'') + '  (' + fmtFrom + ' – ' + fmtTo + ')';
+    }
+  } else {
+    document.getElementById('no_days').value = '';
+    badge.style.display = 'none';
+  }
+}
+
+// Update badge city names when user types
+document.addEventListener('DOMContentLoaded', function(){
+  ['from_city','to_city'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.addEventListener('input', function(){
+      var fc = document.getElementById('from_city').value;
+      var tc = document.getElementById('to_city').value;
+      if (fc) document.getElementById('badge_from').textContent = fc;
+      if (tc) document.getElementById('badge_to').textContent   = tc;
+    });
+  });
+});
+
+// ── ADVANCE TOGGLE ────────────────────────────────────────────────────
+function toggleAdv() {
+  var yes = document.getElementById('adv_yes').checked;
+  var fields = document.getElementById('adv_fields');
+  fields.style.opacity = yes ? '1' : '.4';
+  fields.style.pointerEvents = yes ? '' : 'none';
+  if (!yes) { document.getElementById('adv_amount').value = ''; }
+  recalcTotal();
+}
+
+// ── FILE ATTACHMENTS ──────────────────────────────────────────────────
+function onAttachChange() {
+  var inp = document.getElementById('attachment_input');
+  for (var i=0;i<inp.files.length;i++) _selFiles.push(inp.files[i]);
+  renderFileList();
+  inp.value = '';
+}
+function renderFileList() {
+  var list = document.getElementById('file_list');
+  list.innerHTML = _selFiles.map(function(f,i){
+    return '<div class="file-chip">📄 ' + escHtml(f.name) + ' <span class="rm" onclick="removeFile('+i+')">✕</span></div>';
+  }).join('');
+}
+function removeFile(i) { _selFiles.splice(i,1); renderFileList(); }
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+async function _readFilesB64() {
+  return Promise.all(_selFiles.map(function(f){
+    return new Promise(function(res,rej){
+      var r = new FileReader();
+      r.onload = function(e){ res({name:f.name,type:f.type,size:f.size,b64:e.target.result.split(',')[1]}); };
+      r.onerror = rej;
+      r.readAsDataURL(f);
+    });
+  }));
+}
+
+// ── COLLECT EXPENSE ROWS ──────────────────────────────────────────────
+function collectExpenseRows() {
+  var rows = [];
+  document.querySelectorAll('#exp_body tr').forEach(function(tr){
+    var cat   = tr.querySelector('.cat-sel').value;
+    var desc  = tr.querySelector('.desc-inp').value;
+    var curr  = tr.querySelector('.curr-sel').value;
+    var amtF  = tr.querySelector('.amt-foreign').value;
+    var rate  = tr.querySelector('.rate-inp').value || '1';
+    var amtT  = tr.querySelector('.amt-thb').value;
+    var rcpt  = tr.querySelector('.rcpt-chk').checked;
+    if (cat || desc || amtF) {
+      rows.push({ category:cat, description:desc, currency:curr,
+                  amount_foreign:amtF, rate_to_thb:rate,
+                  amount_thb:amtT, receipt:rcpt ? 'Yes' : 'No' });
+    }
+  });
+  return rows;
+}
+
+// ── VALIDATE ─────────────────────────────────────────────────────────
+function validate() {
+  var missing = [];
+  var req = [
+    {id:'emp_name',      label:'Full Name'},
+    {id:'req_email',     label:'Email'},
+    {id:'emp_dept',      label:'Department'},
+    {id:'purpose',       label:'Purpose of Travel'},
+    {id:'trip_category', label:'Travel Category'},
+    {id:'travel_from',   label:'Travel Date From'},
+    {id:'travel_to',     label:'Travel Date To'},
+    {id:'from_city',     label:'From City'},
+    {id:'to_city',       label:'Destination City'}
+  ];
+  req.forEach(function(f){
+    var el = document.getElementById(f.id);
+    if (!el || !el.value.trim()) {
+      missing.push(f.label);
+      if (el) el.classList.add('invalid');
+    } else { el.classList.remove('invalid'); }
+  });
+  var total = parseFloat(document.getElementById('grand_total').textContent) || 0;
+  if (total <= 0) missing.push('At least one expense amount');
+  return missing;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────────────────
+async function submitForm() {
+  if (_submitting) return;
+  var errors = validate();
+  var vm = document.getElementById('val_msg');
+  if (errors.length > 0) {
+    document.getElementById('val_fields').textContent = errors.join(', ');
+    vm.style.display = 'block';
+    vm.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  vm.style.display = 'none';
+  _submitting = true;
+  var btn = document.querySelector('.btn-primary');
+  btn.disabled = true; btn.textContent = '⏳ Submitting…';
+
+  var total  = parseFloat(document.getElementById('grand_total').textContent) || 0;
+  var cfg    = getEmailConfig(total);
+  var advAmt = document.getElementById('adv_yes').checked
+    ? (parseFloat(document.getElementById('adv_amount').value) || 0) : 0;
+
+  var attachFiles = [];
+  if (_selFiles.length > 0) {
+    try { attachFiles = await _readFilesB64(); } catch(e) { console.error(e); }
+  }
+
+  var rows = collectExpenseRows();
+  var payload = {
+    form_type        : 'Travel Expense Claim',
+    tec_no           : document.getElementById('tec_no').value,
+    submit_date      : document.getElementById('submit_date').value,
+    emp_name         : document.getElementById('emp_name').value,
+    emp_id           : document.getElementById('emp_id').value,
+    emp_email        : document.getElementById('req_email').value,
+    contact          : document.getElementById('req_email').value,
+    emp_phone        : document.getElementById('emp_phone').value,
+    emp_dept         : document.getElementById('emp_dept').value,
+    emp_office       : document.getElementById('emp_office').value,
+    purpose          : document.getElementById('purpose').value,
+    trip_category    : document.getElementById('trip_category').value,
+    travel_from      : document.getElementById('travel_from').value,
+    travel_to        : document.getElementById('travel_to').value,
+    no_days          : document.getElementById('no_days').value,
+    from_city        : document.getElementById('from_city').value,
+    to_city          : document.getElementById('to_city').value,
+    expense_rows     : JSON.stringify(rows),
+    total_amount_thb : total.toFixed(2),
+    adv_received     : document.getElementById('adv_yes').checked ? 'Yes' : 'No',
+    adv_ref          : document.getElementById('adv_ref').value,
+    adv_amount       : advAmt.toFixed(2),
+    net_reimburse    : Math.max(0, total - advAmt).toFixed(2),
+    gl_account       : document.getElementById('gl_account').value,
+    cost_centre      : document.getElementById('cost_centre').value,
+    project_code     : document.getElementById('project_code').value,
+    reference        : document.getElementById('reference').value,
+    pay_method       : document.getElementById('pay_method').value,
+    bank_account     : document.getElementById('bank_account').value,
+    pay_date         : document.getElementById('pay_date').value,
+    cert_name        : document.getElementById('cert_name').value,
+    total_amount     : total.toFixed(2),
+    approval_tier    : cfg.label,
+    approvers        : cfg.approvers.join(', '),
+    cc_emails        : cfg.cc,
+    attachments_files: attachFiles
+  };
+
+  var iframe = document.createElement('iframe');
+  iframe.name = '_gas_' + Date.now(); iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  var form = document.createElement('form');
+  form.method = 'POST'; form.action = SCRIPT_URL; form.target = iframe.name;
+  var inp = document.createElement('input');
+  inp.type = 'hidden'; inp.name = 'data'; inp.value = JSON.stringify(payload);
+  form.appendChild(inp); document.body.appendChild(form); form.submit();
+
+  setTimeout(function(){
+    document.getElementById('modal_ref_id').textContent = payload.tec_no;
+    document.getElementById('success_overlay').style.display = 'flex';
+    _submitting = false; btn.disabled = false; btn.textContent = '✈ Submit Claim →';
+    try { document.body.removeChild(form); document.body.removeChild(iframe); } catch(e) {}
+  }, 2200);
+}
+
+// ── MODAL / CLEAR ─────────────────────────────────────────────────────
+function closeModal() {
+  document.getElementById('success_overlay').style.display = 'none';
+  location.reload();
+}
+
+function clearForm() {
+  if (!confirm('Clear all fields and start over?')) return;
+  location.reload();
+}
+</script>
+</body>
+</html>

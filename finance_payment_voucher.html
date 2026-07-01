@@ -195,7 +195,8 @@ input[readonly]{background:#f0f4f8;color:#555;cursor:default;}
 @media print{
   body{background:#fff;padding:0;}
   .page{box-shadow:none;border-radius:0;}
-  .action-bar,.back-link-wrap,.val-msg,.staff-select-bar{display:none;}
+  .action-bar,.back-link-wrap,.val-msg,.staff-select-bar,#submit-bar,#pv_gate,#success_overlay{display:none!important;}
+  .attach-sec{display:none;}
 }
 
 @media(max-width:680px){
@@ -733,10 +734,13 @@ function _checkGate(){
     <div class="attach-size-warn" id="attach_size_warn" style="display:none;">⚠️ One or more files exceed 4 MB and will be skipped.</div>
   </div>
 
-  <!-- SUBMIT BUTTON -->
-  <div style="padding:16px 18px;text-align:center;background:#f7fbff;border-top:2px solid #e0eaf4;">
+  <!-- SUBMIT + PRINT BUTTONS -->
+  <div id="submit-bar" style="padding:16px 18px;text-align:center;background:#f7fbff;border-top:2px solid #e0eaf4;display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;">
     <button onclick="submitForm()" style="background:#1a2744;color:#fff;border:none;border-radius:8px;padding:13px 48px;font-size:15px;font-weight:800;font-family:'Sarabun',sans-serif;cursor:pointer;letter-spacing:.5px;">
       Submit Payment Voucher →
+    </button>
+    <button onclick="printEmptyForm()" style="background:#fff;color:#1a2744;border:2px solid #1a2744;border-radius:8px;padding:12px 28px;font-size:14px;font-weight:700;font-family:'Sarabun',sans-serif;cursor:pointer;display:flex;align-items:center;gap:7px;" onmouseover="this.style.background='#e8f0fb'" onmouseout="this.style.background='#fff'">
+      🖨️ Print / Save PDF
     </button>
   </div>
 
@@ -1012,6 +1016,25 @@ function getEmailConfig(amount) {
       cc: base.concat(['apple@envisageworldwide.com','joelh@envisageworldwide.com']).join(', '),
       label: '🔴 50,001–100,000 THB — Manager → Finance Dept → CFO → Director approval required', color: '#c0392b', bg: '#fdedec', border: '#f1948a' };
   }
+}
+
+function printEmptyForm() {
+  // Save all field values and placeholders
+  var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea');
+  var saved = Array.from(fields).map(function(el) {
+    return { el: el, value: el.value, placeholder: el.placeholder || '' };
+  });
+  // Clear everything
+  saved.forEach(function(s) { s.el.value = ''; s.el.placeholder = ''; });
+  document.body.classList.add('print-empty');
+  window.print();
+  // Restore after print dialog closes
+  function restore() {
+    saved.forEach(function(s) { s.el.value = s.value; s.el.placeholder = s.placeholder; });
+    document.body.classList.remove('print-empty');
+    window.removeEventListener('afterprint', restore);
+  }
+  window.addEventListener('afterprint', restore);
 }
 </script>
 </body>

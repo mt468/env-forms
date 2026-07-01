@@ -384,6 +384,25 @@ function clearForm(silent){
   document.getElementById('ob_date').value = today;
   updateProgress();
 }
+
+function printEmptyForm() {
+  // Save all field values and placeholders
+  var fields = document.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea');
+  var saved = Array.from(fields).map(function(el) {
+    return { el: el, value: el.value, placeholder: el.placeholder || '' };
+  });
+  // Clear everything
+  saved.forEach(function(s) { s.el.value = ''; s.el.placeholder = ''; });
+  document.body.classList.add('print-empty');
+  window.print();
+  // Restore after print dialog closes
+  function restore() {
+    saved.forEach(function(s) { s.el.value = s.value; s.el.placeholder = s.placeholder; });
+    document.body.classList.remove('print-empty');
+    window.removeEventListener('afterprint', restore);
+  }
+  window.addEventListener('afterprint', restore);
+}
 </script>
 </body>
 </html>
