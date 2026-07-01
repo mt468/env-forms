@@ -819,6 +819,23 @@ async function submitForm(){
   }, 8000);
 }
 
+function clearForm(){
+  document.querySelectorAll('input:not([type=hidden]):not([readonly]),textarea').forEach(function(el){
+    if(el.closest && el.closest('#env_gate')) return;
+    if(el.type==='checkbox'||el.type==='radio') el.checked=false;
+    else el.value='';
+  });
+  document.querySelectorAll('select').forEach(function(s){
+    if(s.closest && s.closest('#env_gate')) return;
+    s.selectedIndex=0;
+  });
+  _selFiles=[];
+  var list=document.getElementById('attach_list'); if(list) list.innerHTML='';
+  var warn=document.getElementById('attach_size_warn'); if(warn) warn.style.display='none';
+  calcTotal();
+  var vm=document.getElementById('val_msg'); if(vm) vm.style.display='none';
+}
+
 function printEmptyForm() {
   // Hide gate overlay while printing
   var gateEl = document.getElementById('env_gate');

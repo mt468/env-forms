@@ -828,7 +828,9 @@ function onAttachChange() {
 function renderFileList() {
   var list = document.getElementById('file_list');
   list.innerHTML = _selFiles.map(function(f,i){
-    return '<div class="file-chip">📄 ' + escHtml(f.name) + ' <span class="rm" onclick="removeFile('+i+')">✕</span></div>';
+    return '<div class="file-chip">📄 ' + escHtml(f.name) +
+      ' <button class="attach-preview-btn" onclick="_openPreview('+i+')" type="button" title="Preview">&#x1F441;</button>' +
+      ' <span class="rm" onclick="removeFile('+i+')">✕</span></div>';
   }).join('');
 }
 function removeFile(i) { _selFiles.splice(i,1); renderFileList(); }
@@ -1009,41 +1011,23 @@ function printEmptyForm() {
   window.print();
 }
 
-function closeModal() {
-  document.getElementById('success_overlay').style.display = 'none';
-  location.reload();
+function clearForm(){
+  document.querySelectorAll('input:not([type=hidden]):not([readonly]),textarea').forEach(function(el){
+    if(el.closest && el.closest('#env_gate')) return;
+    if(el.type==='checkbox'||el.type==='radio'){el.checked=false;}
+    else{el.value='';}
+  });
+  document.querySelectorAll('select').forEach(function(s){
+    if(s.closest && s.closest('#env_gate')) return;
+    s.selectedIndex=0;
+  });
+  _selFiles=[];
+  var list=document.getElementById('file_list'); if(list) list.innerHTML='';
+  var tbody=document.getElementById('exp_body');
+  if(tbody){ tbody.innerHTML=''; _rowCount=0; addRow();addRow();addRow(); }
+  recalcTotal();
+  var vm=document.getElementById('val_msg'); if(vm) vm.style.display='none';
 }
-
-function clearForm() {
-  if (!confirm('Clear all fields and start over?')) return;
-  location.reload();
-}
-
-// ── File preview ─────────────────────────────────────────
-var _previewUrl=null;
-function _openPreview(i){var f=_selFiles[i];if(f)_showPreview(f);}
-function _showPreview(f){
-  var ext=f.name.split('.').pop().toLowerCase();
-  document.getElementById('previewFileName').textContent=f.name;
-  if(_previewUrl){URL.revokeObjectURL(_previewUrl);_previewUrl=null;}
-  _previewUrl=URL.createObjectURL(f);
-  var body=document.getElementById('previewBody');
-  if(['jpg','jpeg','png','gif','webp','bmp','svg'].indexOf(ext)>-1){
-    body.innerHTML='<img src="'+_previewUrl+'" alt="">';
-  }else if(ext==='pdf'){
-    body.innerHTML='<iframe src="'+_previewUrl+'#toolbar=1"></iframe>';
-  }else{
-    var sz=f.size>1048576?(f.size/1048576).toFixed(1)+' MB':(f.size/1024).toFixed(0)+' KB';
-    body.innerHTML='<div class="preview-no-support"><div class="pns-icon">📎</div><div class="pns-msg"><strong>'+f.name+'</strong><br>'+sz+'<br><br>Preview not available for <strong>.'+ext+'</strong> files.<br>File is attached and will upload on submit.</div></div>';
-  }
-  document.getElementById('previewOverlay').classList.add('active');
-}
-function _closePreview(){
-  document.getElementById('previewOverlay').classList.remove('active');
-  if(_previewUrl){URL.revokeObjectURL(_previewUrl);_previewUrl=null;}
-  document.getElementById('previewBody').innerHTML='';
-}
-document.addEventListener('keydown',function(e){if(e.key==='Escape')_closePreview();});
 </script>
 
 <script>
@@ -1054,6 +1038,78 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')_closePrevie
   st.textContent=".es-drop{position:absolute;top:calc(100% + 3px);left:0;right:0;background:#fff;border:1.5px solid #00b8a9;border-radius:6px;padding:7px 12px;font-size:12px;color:#1a2744;cursor:pointer;z-index:300;box-shadow:0 4px 14px rgba(0,184,169,.18);white-space:nowrap;font-family:Sarabun,sans-serif;line-height:1.4;}.es-drop:hover,.es-drop:focus{background:#e8faf8;outline:none;}.es-drop b{color:#00b8a9;font-weight:700;}.es-drop small{color:#aaa;float:right;margin-top:1px;font-weight:400;font-size:10px;}";
   document.head.appendChild(st);
   var inputs=Array.from(document.querySelectorAll("input[type=email]")).filter(function(el){
-    var id=(el.id||"").toLowerCase();
-    return id!=="personal_email";
+    return (el.id||"").toLowerCase()!=="personal_email";
+  });
+  inputs.forEach(function(inp){
+    var wrap=inp.parentNode;
+    if(getComputedStyle(wrap).position==="static") wrap.style.position="relative";
+    var drop=document.createElement("div");
+    drop.className="es-drop"; drop.style.display="none"; drop.tabIndex=0;
+    wrap.appendChild(drop);
+    function suggest(val){
+      var local=val.split("@")[0];
+      if(!local||val.indexOf("@")>-1&&val.split("@")[1].length>0){drop.style.display="none";return;}
+      drop.innerHTML="<b>"+local+"</b>"+DOMAIN+" <small>&#x21B5; confirm</small>";
+      drop.style.display="block";
+    }
+    inp.addEventListener("input",function(){ suggest(inp.value); });
+    inp.addEventListener("keydown",function(e){
+      if((e.key==="Tab"||e.key==="Enter")&&drop.style.display!=="none"){
+        e.preventDefault();
+        inp.value=inp.value.split("@")[0]+DOMAIN;
+        drop.style.display="none";
+        inp.dispatchEvent(new Event("input"));
       }
+      if(e.key==="Escape") drop.style.display="none";
+    });
+    drop.addEventListener("mousedown",function(e){
+      e.preventDefault();
+      inp.value=inp.value.split("@")[0]+DOMAIN;
+      drop.style.display="none"; inp.focus();
+    });
+    document.addEventListener("click",function(e){
+      if(e.target!==inp&&e.target!==drop) drop.style.display="none";
+    },{capture:false});
+  });
+})();
+</script>
+
+<script>
+/* ── File Preview ── */
+function _openPreview(i){var f=_selFiles[i];if(f)_showPreview(f);}
+function _showPreview(f){
+  var ext=f.name.split('.').pop().toLowerCase();
+  document.getElementById('previewFileName').textContent=f.name;
+  var url=URL.createObjectURL(f);
+  var body=document.getElementById('previewBody');
+  if(['jpg','jpeg','png','gif','webp','bmp','svg'].indexOf(ext)>-1){
+    body.innerHTML='<img src="'+url+'" alt="" style="max-width:100%;max-height:68vh;border-radius:6px;object-fit:contain;display:block;">';
+  }else if(ext==='pdf'){
+    body.innerHTML='<iframe src="'+url+'#toolbar=1" style="width:min(660px,80vw);height:min(520px,68vh);border:none;border-radius:6px;display:block;"></iframe>';
+  }else{
+    var sz=f.size>1048576?(f.size/1048576).toFixed(1)+' MB':(f.size/1024).toFixed(0)+' KB';
+    body.innerHTML='<div class="preview-no-support"><div class="pns-icon">&#128206;</div><div class="pns-msg"><strong>'+f.name+'</strong><br>'+sz+'<br><br>Preview not available for <strong>.'+ext+'</strong> files.<br>File is attached and will upload on submit.</div></div>';
+  }
+  document.getElementById('previewOverlay').classList.add('active');
+  setTimeout(function(){URL.revokeObjectURL(url);},60000);
+}
+function _closePreview(){
+  document.getElementById('previewOverlay').classList.remove('active');
+  document.getElementById('previewBody').innerHTML='';
+}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')_closePreview();});
+</script>
+
+<!-- ── File Preview Overlay ── -->
+<div id="previewOverlay">
+  <div style="background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.35);padding:22px 26px;max-width:min(720px,94vw);max-height:90vh;display:flex;flex-direction:column;gap:14px;overflow:hidden;">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span id="previewFileName" style="font-family:'Sarabun',Arial,sans-serif;font-size:14px;font-weight:600;color:#1a2744;word-break:break-all;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;"></span>
+      <button onclick="_closePreview()" style="background:none;border:none;font-size:22px;color:#888;cursor:pointer;padding:0 4px;line-height:1;" title="Close">&#x2715;</button>
+    </div>
+    <div id="previewBody" style="flex:1;overflow:auto;display:flex;align-items:center;justify-content:center;background:#e8eef5;border-radius:6px;min-height:200px;"></div>
+  </div>
+</div>
+
+</body>
+</html>

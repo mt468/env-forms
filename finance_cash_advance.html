@@ -923,6 +923,36 @@ async function submitForm(){
   }, 5000);
 }
 
+function clearForm(){
+  document.querySelectorAll('input:not([type=hidden]):not([readonly]),textarea').forEach(function(el){
+    if(el.closest && el.closest('#env_gate')) return;
+    if(el.type==='checkbox'||el.type==='radio') el.checked=false;
+    else el.value='';
+  });
+  document.querySelectorAll('select').forEach(function(s){
+    if(s.closest && s.closest('#env_gate')) return;
+    s.selectedIndex=0;
+  });
+  _selFiles=[];
+  var list=document.getElementById('attach_list'); if(list) list.innerHTML='';
+  var warn=document.getElementById('attach_size_warn'); if(warn) warn.style.display='none';
+  var tbody=document.getElementById('est_body');
+  if(tbody){ tbody.innerHTML=''; rowCount=0; addRow();addRow();addRow(); }
+  var caNo=document.getElementById('ca_no');
+  if(caNo){ caNo.value=generateFormNo('CA'); caNo.readOnly=true; }
+  var today=new Date().toISOString().split('T')[0];
+  ['submit_date','cert_date','appr_req_date','activity_from','activity_to'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value=today;
+  });
+  var byDate=new Date(); byDate.setDate(byDate.getDate()+5);
+  ['advance_by','pay_by_date'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value=byDate.toISOString().split('T')[0];
+  });
+  var settle=new Date(); settle.setDate(settle.getDate()+30);
+  var sEl=document.getElementById('settle_date'); if(sEl) sEl.value=settle.toISOString().split('T')[0];
+  var vm=document.getElementById('val_msg'); if(vm) vm.style.display='none';
+}
+
 function printEmptyForm() {
   // Hide gate overlay while printing
   var gateEl = document.getElementById('env_gate');
